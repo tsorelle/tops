@@ -1,0 +1,21 @@
+{
+  "name": "twoquakers/tops",
+  "version" : "3.0",
+  "description": "PHP Library for Dynamic Service Commands",
+  "minimum-stability": "stable",
+  "license": "GPL-3.0+",
+  "authors": [
+    {
+      "name": "Terry SoRelle",
+      "email": "tls@2quakers.net"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Tops\\": "tops/lib"
+    }
+  },
+  "require": {
+    "phpunit/phpunit": "6.1.3"
+  }
+}
