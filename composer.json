@@ -12,7 +12,8 @@
   ],
   "autoload": {
     "psr-4": {
-      "Tops\\": "tops/lib"
+      "Tops\\": "tops/lib",
+      "TwoQuakers\\testing\\" : "tests/lib"
     }
   },
   "require": {
