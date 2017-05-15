@@ -8,7 +8,6 @@
  */
 
 namespace Tops\services;
-use Tops\sys\IMessageContainer;
 
 /**
  * Class TServiceContext

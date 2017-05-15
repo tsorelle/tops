@@ -6,7 +6,7 @@
  * Time: 6:37 AM
  */
 
-namespace Tops\sys;
+namespace Tops\services;
 
 
 interface IMessageContainer {
