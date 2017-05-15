@@ -1,4 +1,4 @@
 # Created by .ignore support plugin (hsz.mobi)
 vendor/*
 composer.lock
-tops/lib/settings.ini
+tops/lib/sys/settings.ini
