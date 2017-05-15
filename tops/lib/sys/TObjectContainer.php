@@ -11,7 +11,6 @@ namespace Tops\sys;
 /**
  * Class TObjectContainer
  * @package Tops\sys
- *
  * Temporary "poor man's" dependency injection
  * Only supports parameterless singleton instances.
  */
@@ -30,7 +29,7 @@ class TObjectContainer
         if (isset(self::$instances[$key])) {
             return self::$instances[$key];
         };
-        $className = TopsConfiguration::getValue($key,'classes',false);
+        $className = TConfiguration::getValue($key,'classes',false);
         if (empty($className)) {
             return false;
         }
@@ -44,7 +43,7 @@ class TObjectContainer
      * @return bool
      */
     public static function HasDefinition($id) {
-        $className = TopsConfiguration::getValue($id,'classes',false);
+        $className = TConfiguration::getValue($id,'classes',false);
         return (!empty($className));
         // return self::GetContainer()->hasDefinition($id);
     }

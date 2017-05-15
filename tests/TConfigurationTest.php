@@ -16,7 +16,7 @@ class TConfigurationTest extends TestCase
     {
         TConfiguration::clearCache();
         $expected = 'services';
-        $actual = TConfiguration::getIniValue('servicesNamespace', 'classes');
+        $actual = TConfiguration::getValue('servicesNamespace', 'classes');
         $this->assertNotNull($actual);
         $this->assertEquals($expected, $actual);
     }
@@ -38,17 +38,17 @@ class TConfigurationTest extends TestCase
         TConfiguration::loadAppSettings('settings.ini,database.ini,test.ini');
 
         $expected = 'services';
-        $actual = TConfiguration::getIniValue('servicesNamespace', 'classes');
+        $actual = TConfiguration::getValue('servicesNamespace', 'classes');
         $this->assertNotNull($actual);
         $this->assertEquals($expected, $actual);
 
         $expected = 'topuser';
-        $actual = TConfiguration::getIniValue('username', 'database');
+        $actual = TConfiguration::getValue('username', 'database');
         $this->assertNotNull($actual);
         $this->assertEquals($expected, $actual);
 
         $expected = 'ok';
-        $actual = TConfiguration::getIniValue('loaded', 'test-values');
+        $actual = TConfiguration::getValue('loaded', 'test-values');
         $this->assertNotNull($actual);
         $this->assertEquals($expected, $actual);
 

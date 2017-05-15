@@ -86,7 +86,7 @@ class TConfiguration
      * @param bool $defaultValue - returned if value does not exist
      * @return bool|mixed
      */
-    public static function getIniValue($key, $sectionKey, $defaultValue = false)
+    public static function getValue($key, $sectionKey, $defaultValue = false)
     {
         $section = self::getIniSection($sectionKey);
         if (is_array($section) && array_key_exists($key, $section)) {
