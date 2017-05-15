@@ -42,10 +42,14 @@ class TSession
         if (!isset($_SESSION['tops']['security-token'])) {
             $_SESSION['tops']['security-token'] = self::createToken();
         }
-        // setcookie('peanutSecurity','fakexssatack');
-        setcookie('peanutSecurity',$_SESSION['tops']['security-token']);
-    }
 
+        try {
+            setcookie('peanutSecurity', $_SESSION['tops']['security-token']);
+        } catch (\Exception $ex) {
+            // probably in test environment.
+            $_COOKIE['peanutSecurity'] = $_SESSION['tops']['security-token'];
+        }
+    }
     private static function createToken($length = 64)
     {
         $length = $length + self::devurandom_rand(0,15);
@@ -91,4 +95,6 @@ class TSession
         // if tokens have value compare them
         return ($token === $currentToken);
     }
+
+
 }
