@@ -12,28 +12,46 @@ namespace Tops\sys;
 class TPath
 {
     private static $fileRoot = null;
-    const docRootOffset = 3;
+    private static $configPath = null;
 
-    public static function clearFileRoot() {
-        self::$fileRoot = null;
+
+    public static function getConfigPath() {
+        if (self::$configPath === null) {
+            self::getPaths();
+        }
+        return self::$configPath;
     }
 
     /**
      * Return cleaned and verified path to document root or offset.
      */
-    public static function getFileRoot($offset = 0)
+    public static function getFileRoot($offset = false)
     {
 
         if (self::$fileRoot === null) {
-            $offset = self::docRootOffset - $offset;
-            $path = __DIR__;
-            for($i = 0; $i < $offset; $i++) {
-                $path .= '\..';
-            }
-            self::$fileRoot = self::normalize($path);
+            self::getPaths($offset);
         }
         return self::$fileRoot;
+    }
 
+    private static function getPaths($offset = false)
+    {
+        $ini = parse_ini_file(__DIR__.'/settings.ini');
+        if ($offset === false) {
+            $offset = ($ini === false || empty($ini['root-level'])) ? 3 : $ini['root-level'];
+        }
+        $configLocation = ($ini === false || empty($ini['app-config-location'])) ? 'application/config' : $ini['app-config-location'];
+        $path = __DIR__;
+        for($i = 0; $i < $offset; $i++) {
+            $path .= '\..';
+        }
+        self::$fileRoot = self::normalize($path).'/';
+        self::$configPath = self::$fileRoot.self::fixSlashes($configLocation).'/settings.ini';
+    }
+
+    public static function clearCache() {
+        self::$configPath = null;
+        self::$fileRoot = null;
     }
 
     public static function stripDriveLetter($path)
@@ -51,8 +69,7 @@ class TPath
         while(strpos($path,'//') !== false) {
             $path = str_replace('//','/',$path);
         }
-        return $path;
-
+        return trim($path);
     }
 
     public static function normalize($path)

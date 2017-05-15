@@ -15,20 +15,27 @@ class TPathTest extends TestCase
         $testpath = __DIR__;
         $actual = TPath::normalize($testpath);
         $this->assertNotNull($actual);
-        print"actual normalized: $actual\n";
+        print"normalized current path: $actual\n";
     }
 
     public function testFileRoot() {
-        TPath::clearFileRoot();
+        TPath::clearCache();
         $actual = TPath::getFileRoot();
         $this->assertNotNull($actual);
-        print"actual file root: $actual\n";
+        print"file root: $actual\n";
     }
+    public function testConfigPath() {
+        TPath::clearCache();
+        $actual = TPath::getConfigPath();
+        $this->assertNotNull($actual);
+        print"config path: $actual\n";
+    }
+
     public function testFileRootWithOffset() {
-        TPath::clearFileRoot();
+        TPath::clearCache();
         $actual = TPath::getFileRoot(1);
         $this->assertNotNull($actual);
-        print"actual with offset: $actual\n";
+        print"file root with offset = 1: $actual\n";
     }
     public function testCombine() {
         $p1 = 'one\\two\\three\\';
