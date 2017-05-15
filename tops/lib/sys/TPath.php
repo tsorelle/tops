@@ -13,8 +13,6 @@ class TPath
 {
     private static $fileRoot = null;
     private static $configPath = null;
-
-
     public static function getConfigPath() {
         if (self::$configPath === null) {
             self::getPaths();
@@ -46,7 +44,7 @@ class TPath
             $path .= '\..';
         }
         self::$fileRoot = self::normalize($path).'/';
-        self::$configPath = self::$fileRoot.self::fixSlashes($configLocation).'/settings.ini';
+        self::$configPath = self::$fileRoot.self::fixSlashes($configLocation).'/';
     }
 
     public static function clearCache() {

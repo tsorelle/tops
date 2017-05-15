@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 class BootTest extends TestCase
 {
     public function testAutoloadTops() {
-        $actual = new \Tops\sys\ConfigurationManager();
+        $actual = new \Tops\sys\TConfiguration();
         $this->assertNotNull($actual,'cannot load CofigurationManager class');
     }
 
