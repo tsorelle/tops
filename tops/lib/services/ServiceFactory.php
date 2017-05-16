@@ -16,19 +16,35 @@
  */
 namespace Tops\services;
 
-use Concrete\Core\Controller\Controller;
-use Concrete\Core\Http\Request;
-use Core;
-use Concrete\Core\Utility\Service\Text;
 use Tops\sys;
+use Tops\services\ServiceRequestInputHandler;
 
 
-class ServiceRequestHandler extends Controller
+class ServiceFactory
 {
 
-    private function getSecurityToken(Request $request) {
+    /**
+     * @var ServiceRequestInputHandler
+     */
+    private $inputHandler;
+    
+    private static $instance;
+    public static function Execute() {
+        if (!isset(self::$instance)) {
+            self::$instance = new ServiceFactory();
+        }
+        self::$instance->executeService();
+    }
 
-        $tokensEnabled = sys\TopsConfiguration::getValue('xxstokens','security',true);
+    public function __construct()
+    {
+        $inputHandler = sys\TObjectContainer::Get('request-input-handler');
+        $this->inputHandler = $inputHandler === false ?  new DefaultInputHandler() : $inputHandler;
+    }
+
+    private function getSecurityToken(ServiceRequestInputHandler $request) {
+
+        $tokensEnabled = sys\TConfiguration::getValue('xxstokens','security',true);
         if ($request != null && $tokensEnabled) {
             $securityToken = $request->get('topsSecurityToken');
             if (!$securityToken) {
@@ -38,42 +54,26 @@ class ServiceRequestHandler extends Controller
         return '';
     }
 
-
     public function executeService() {
         $response = '';
         try {
-            /**
-             * @var $th \Concrete\Core\Utility\Service\Text
-             */
-            $th = Core::make('helper/text');
-            $request = Request::getInstance();
-            $method = $request->getMethod();
 
-            if ($method == 'POST') {
-                $serviceId = $request->get('serviceCode');
-                $input = $request->get('request');
-                $input = json_decode($input);
-            } else {
-                $serviceId = $request->get('sid');
-                $serviceId = $th->sanitize($serviceId);
-                $input = $request->get('arg');
-                $input = $th->sanitize($input);
-            }
+            $serviceId = $this->inputHandler->getServiceId();
 
             if ($serviceId == 'getxsstoken') {
                 sys\TSession::Initialize();
                 return;
             }
 
-            $securityToken = $request->get('topsSecurityToken');
+            $securityToken = $this->inputHandler->getSecurityToken();
+            $input = $this->inputHandler->getInput();
 
             $parts = explode('::', $serviceId);
             if (sizeof($parts) == 1) {
-                $namespace =  sys\TopsConfiguration::getValue('applicationNamespace', 'services');
+                $namespace =  sys\TConfiguration::getValue('applicationNamespace', 'services');
             } else {
-                $namespace = $parts[0];
-                $namespace = "\\Concrete\\Package\\$namespace\\Src\\Services";
-                $serviceId = $parts[1];
+                $namespace = $this->inputHandler->getServiceNamespace($parts[0]);
+                $serviceId =  $parts[1];
             }
 
             $className = $namespace . "\\" . $serviceId . 'Command';
