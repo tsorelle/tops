@@ -31,15 +31,31 @@ class TServiceCommandTest extends TestCase
         return false;
     }
 
-    public function testHelloWorld() {
-        FakeInputHandler::setServiceId('HelloWorld');
-        $response = ServiceFactory::Execute();
-        $this->assertNotNull($response);
-        $expected = ResultType::Success;
+    private function showMessages(TServiceResponse $response) {
+        print "\nMessages:\n";
+        foreach ($response->Messages as $message) {
+            switch ($message->MessageType) {
+                case MessageType::Info :    print 'Info:    '; break;
+                case MessageType::Error :   print 'Error:   '; break;
+                case MessageType::Warning : print 'Warning: '; break;
+            }
+            print $message->Text."\n";
+        }
+    }
+
+    private function showDebugInfo($response) {
         if (!empty($response->debugInfo->message)) {
             print $response->debugInfo->message."\n";
             print $response->debugInfo->location."\n";
         }
+    }
+
+    public function testHelloWorld() {
+        FakeInputHandler::setServiceId('HelloWorld');
+        $response = ServiceFactory::Execute();
+        $this->assertNotNull($response);
+        $this->showDebugInfo($response);
+        $expected = ResultType::Success;
         $actual = $response->Result;
         $this->assertEquals($expected,$actual,"Service failed.");
         $expected = 'Hello World';
@@ -51,6 +67,13 @@ class TServiceCommandTest extends TestCase
         $expected = MessageType::Info;
         $actual = $message->MessageType;
         $this->assertEquals($expected,$actual,'Wrong message type.');
+        $this->showMessages($response);
+        $this->assertNotEmpty($response->Value,"No Value returned.");
+        $this->assertNotEmpty($response->Value->message,"Value->message not assigned.");
+        $expected = "Greatings earthlings.";
+        $actual = $response->Value->message;
+        $this->assertEquals($expected,$actual);
+
     }
 
 }

@@ -49,6 +49,7 @@ class ServiceRequestHandler
 {
     public function executeService()
     {
-        ServiceFactory::Execute();
+        $response = ServiceFactory::Execute();
+        print json_encode($response);
     }
 }

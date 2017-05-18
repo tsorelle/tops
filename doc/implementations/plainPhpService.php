@@ -8,4 +8,4 @@
 // Assumes script at document root. And using Composer autoloading
 include __DIR__."/vendor/autoload.php";
 $response = \Tops\services\ServiceFactory::Execute();
-echo json_encode($response);
+print json_encode($response);
