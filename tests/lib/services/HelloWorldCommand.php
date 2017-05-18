@@ -9,7 +9,7 @@
 namespace TwoQuakers\testing\services;
 
 
-class HelloWorldService extends \Tops\services\TServiceCommand
+class HelloWorldCommand extends \Tops\services\TServiceCommand
 {
 
     protected function run()

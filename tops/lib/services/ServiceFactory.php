@@ -33,12 +33,12 @@ class ServiceFactory
         if (!isset(self::$instance)) {
             self::$instance = new ServiceFactory();
         }
-        self::$instance->executeService();
+        return self::$instance->executeService();
     }
 
     public function __construct()
     {
-        $inputHandler = sys\TObjectContainer::Get('request-input-handler');
+        $inputHandler = sys\TObjectContainer::Get('services.inputhandler');
         $this->inputHandler = $inputHandler === false ?  new DefaultInputHandler() : $inputHandler;
     }
 
@@ -54,6 +54,9 @@ class ServiceFactory
         return '';
     }
 
+    /**
+     * @return string|TServiceResponse
+     */
     public function executeService() {
         $response = '';
         try {
@@ -62,7 +65,7 @@ class ServiceFactory
 
             if ($serviceId == 'getxsstoken') {
                 sys\TSession::Initialize();
-                return;
+                return '';
             }
 
             $securityToken = $this->inputHandler->getSecurityToken();
@@ -71,6 +74,7 @@ class ServiceFactory
             $parts = explode('::', $serviceId);
             if (sizeof($parts) == 1) {
                 $namespace =  sys\TConfiguration::getValue('applicationNamespace', 'services');
+                $namespace .= "\\". sys\TConfiguration::getValue('servicesNamespace', 'services');
             } else {
                 $namespace = $this->inputHandler->getServiceNamespace($parts[0]);
                 $serviceId =  $parts[1];
@@ -105,7 +109,8 @@ class ServiceFactory
             $response = $this->getFailureResponse($debugInfo);
         }
 
-        echo json_encode($response);
+        return $response;
+        // echo json_encode($response);
     }
 
     /**
