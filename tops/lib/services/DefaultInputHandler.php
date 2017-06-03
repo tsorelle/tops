@@ -33,8 +33,14 @@ class DefaultInputHandler extends ServiceRequestInputHandler
 
     public function getSecurityToken()
     {
-        return empty($_GET[ServiceRequestInputHandler::securityTokenKey]) ? null
+        $result = empty($_GET[ServiceRequestInputHandler::securityTokenKey]) ? null
             : $_GET[ServiceRequestInputHandler::securityTokenKey];
+        if (empty($result)) {
+            $result = empty($_POST[ServiceRequestInputHandler::securityTokenKey]) ? null
+                : $_POST[ServiceRequestInputHandler::securityTokenKey];
+
+        }
+        return $result;
     }
 
     public function getServiceNamespace($key)
