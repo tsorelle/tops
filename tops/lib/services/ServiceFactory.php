@@ -80,6 +80,9 @@ class ServiceFactory
                 $serviceId =  $parts[1];
             }
 
+            // get subdirectories  e.g. where serviceId is 'subdirectory.serviceId'
+            $serviceId = str_replace('.',"\\",$serviceId);
+
             $className = $namespace . "\\" . $serviceId . 'Command';
 
             if (!class_exists($className)) {
