@@ -46,6 +46,8 @@ class TServiceCommandTest extends TestCase
     private function showDebugInfo($response) {
         if (!empty($response->debugInfo->message)) {
             print $response->debugInfo->message."\n";
+        }
+        if (!empty($response->debugInfo->location)) {
             print $response->debugInfo->location."\n";
         }
     }
@@ -74,6 +76,16 @@ class TServiceCommandTest extends TestCase
         $actual = $response->Value->message;
         $this->assertEquals($expected,$actual);
 
+    }
+
+    public function testServiceException() {
+        FakeInputHandler::setServiceId('NoSuchCommand');
+        $response = ServiceFactory::Execute();
+        $this->assertNotNull($response);
+        $this->showDebugInfo($response);
+        $expected = ResultType::ServiceFailure;
+        $actual = $response->Result;
+        $this->assertEquals($expected,$actual,"Service should have failed.");
     }
 
     function testSubService() {

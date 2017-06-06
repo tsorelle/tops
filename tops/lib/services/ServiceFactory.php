@@ -16,6 +16,7 @@
  */
 namespace Tops\services;
 
+use PHPUnit\Runner\Exception;
 use Tops\sys;
 use Tops\services\ServiceRequestInputHandler;
 
@@ -97,17 +98,24 @@ class ServiceFactory
 
         }
         catch (\Exception $ex) {
-            // todo: exception logging
-            /*
-            $rethrow = $instance->handleException($ex);
-            if ($rethrow) {
-                throw $ex;
-            }
-            */
             $debugInfo = new \stdClass();
-            $debugInfo->message = $ex->getMessage();
-            $debugInfo->location = $ex->getFile().": Line ".$ex->getLine();
-            $debugInfo->trace = $ex->getTraceAsString();
+
+            if (sys\TObjectContainer::HasDefinition('tops.errorLogger')) {
+                try {
+                    $logger = sys\TObjectContainer::Get('tops.errorLogger');
+                    $logReference = $logger->log($ex);
+                    $debugInfo->message = "See errorlog: $logReference";
+                }
+                catch (\Exception $logEx) {
+                    $debugInfo->message = 'Logging error: '.$ex->getMessage();
+                }
+            }
+            else {
+                $debugInfo->message = $ex->getMessage();
+                $debugInfo->location = $ex->getFile().": Line ".$ex->getLine();
+                $debugInfo->trace = $ex->getTraceAsString();
+            }
+
 
             $response = $this->getFailureResponse($debugInfo);
         }
