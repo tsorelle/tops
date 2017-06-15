@@ -9,16 +9,12 @@
 namespace TwoQuakers\testing;
 
 
+use Tops\sys\TAbstractUser;
 use Tops\sys\TConfiguration;
 
-class TestUser implements \Tops\sys\IUser
+class TestUser extends TAbstractUser
+    // implements \Tops\sys\IUser
 {
-
-    private $username = 'tester';
-    private $roles = array();
-    private $id;
-
-
 
     /**
      * @param $id
@@ -35,7 +31,7 @@ class TestUser implements \Tops\sys\IUser
      */
     public function loadByUserName($userName)
     {
-        $this->username = $userName;
+        $this->userName = $userName;
         if ($userName == 'admin') {
             $this->id = 1;
             $this->roles = array('admin');
@@ -63,14 +59,6 @@ class TestUser implements \Tops\sys\IUser
         return (
             $this->isAdmin() || in_array($roleName,$this->roles)
         );
-    }
-
-    /**
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**
@@ -107,56 +95,6 @@ class TestUser implements \Tops\sys\IUser
     }
 
     /**
-     * @return string
-     */
-    public function getFirstName()
-    {
-        return "Tommy";
-    }
-
-    /**
-     * @return string
-     */
-    public function getLastName()
-    {
-        return "Tester";
-    }
-
-    /**
-     * @return string
-     */
-    public function getUserName()
-    {
-        return $this->username;
-    }
-
-    /**
-     * @param bool $defaultToUsername
-     * @return string
-     */
-    public function getFullName($defaultToUsername = true)
-    {
-        return "Tommy Tester";
-    }
-
-    /**
-     * @param bool $defaultToUsername
-     * @return string
-     */
-    public function getUserShortName($defaultToUsername = true)
-    {;
-        return $this->username;
-    }
-
-    /**
-     * @return string
-     */
-    public function getEmail()
-    {
-        return 'tester@tops.com';
-    }
-
-    /**
      * @return bool
      */
     public function isAdmin()
@@ -164,21 +102,40 @@ class TestUser implements \Tops\sys\IUser
         return in_array('admin',$this->roles);
     }
 
-    /**
-     * @return bool
-     */
-    public function isCurrent()
-    {
-        return true;
-    }
-
     public function getProfileValue($key)
     {
-        // TODO: Implement getProfileValue() method.
+        switch ($key) {
+            case 'firstName' : return 'Tommy';
+            case 'lastName' : return 'Tester';
+            case  'fullName' : return 'Tommy the Tester';
+            case 'shortName' : return 'Tom';
+            case 'email' : return 'tommy@testing.com';
+        }
+        return '';
     }
 
-    public function setProfileValue($key, $value)
+
+    protected function test()
     {
-        // TODO: Implement setProfileValue() method.
+        return 'TestUser';
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getRoles()
+    {
+        // TODO: Implement getRoles() method.
+    }
+
+    protected function loadProfile()
+    {
+        $this->profile = array(
+            'firstName' => 'Tommy',
+            'lastName' => 'Tester',
+            'fullName' => 'Tommy the Tester',
+            'shortName' => 'Tom',
+            'email' => 'tommy@testing.com'
+        );
     }
 }
