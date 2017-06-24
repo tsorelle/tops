@@ -6,6 +6,5 @@
  * Time: 6:01 AM
  */
 $projectFileRoot =   str_replace('\\','/', realpath(__DIR__.'/..')).'/';
-// print $projectFileRoot;
-require_once $projectFileRoot.'vendor/autoload.php';
+\Tops\sys\TPath::Initialize($projectFileRoot,'tests/config');
 

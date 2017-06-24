@@ -20,6 +20,11 @@ class TPath
         return self::$configPath;
     }
 
+    public static function Initialize($projectRoot,$configLocation = 'application/config') {
+        self::$fileRoot = self::normalize($projectRoot).'/';
+        self::$configPath = self::$fileRoot.self::fixSlashes($configLocation).'/';
+    }
+
     /**
      * Return cleaned and verified path to document root or offset.
      */
@@ -34,17 +39,23 @@ class TPath
 
     private static function getPaths($offset = false)
     {
-        $ini = parse_ini_file(__DIR__.'/settings.ini');
-        if ($offset === false) {
-            $offset = ($ini === false || empty($ini['root-level'])) ? 3 : $ini['root-level'];
+        if (empty(self::$fileRoot)) {
+            if ($offset === false) {
+                $path = $_SERVER['DOCUMENT_ROOT'];
+            }
+            else {
+                $path = __DIR__;
+                for($i = 0; $i < $offset; $i++) {
+                    $path .= '\..';
+                }
+            }
+            self::$fileRoot = self::normalize($path).'/';
         }
-        $configLocation = ($ini === false || empty($ini['app-config-location'])) ? 'application/config' : $ini['app-config-location'];
-        $path = __DIR__;
-        for($i = 0; $i < $offset; $i++) {
-            $path .= '\..';
+        if (empty(self::$configPath)) {
+            $configLocation = 'application/config';
+            self::$configPath = self::$fileRoot.self::fixSlashes($configLocation).'/';
         }
-        self::$fileRoot = self::normalize($path).'/';
-        self::$configPath = self::$fileRoot.self::fixSlashes($configLocation).'/';
+
     }
 
     public static function clearCache() {
