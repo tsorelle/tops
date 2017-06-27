@@ -9,6 +9,7 @@
 namespace TwoQuakers\testing;
 
 
+use PHPUnit\Runner\Exception;
 use Tops\sys\TAbstractUser;
 use Tops\sys\TConfiguration;
 
@@ -137,5 +138,14 @@ class TestUser extends TAbstractUser
             'shortName' => 'Tom',
             'email' => 'tommy@testing.com'
         );
+    }
+
+    /**
+     * @param $email
+     * @return mixed
+     */
+    public function loadByEmail($email)
+    {
+        throw new Exception("Unsupported method 'loadByEmail");
     }
 }

@@ -58,6 +58,12 @@ class TUser {
         return $result;
     }
 
+    public static function getByEmail($email) {
+        $result = self::Create();
+        $result->loadByEmail($email);
+        return $result;
+    }
+
     private static $userFactory;
     public static function setUserFactory(IUserFactory $factory)
     {

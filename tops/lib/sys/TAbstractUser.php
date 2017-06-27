@@ -31,6 +31,12 @@ abstract class TAbstractUser implements IUser
     public abstract function loadById($id);
 
     /**
+     * @param $email
+     * @return mixed
+     */
+    public abstract function loadByEmail($email);
+
+    /**
      * @param $userName
      * @return mixed
      */

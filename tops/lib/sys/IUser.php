@@ -22,6 +22,12 @@ interface IUser
     public function loadByUserName($userName);
 
     /**
+     * @param $email
+     * @return mixed
+     */
+    public function loadByEmail($email);
+
+    /**
      * @return mixed
      */
     public function loadCurrentUser();
