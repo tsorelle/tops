@@ -6,7 +6,7 @@
  * Time: 6:37 AM
  */
 
-namespace Application\Tops\sys;
+namespace Tops\sys;
 
 /**
  * Class TNullUser
@@ -159,6 +159,15 @@ class TNullUser implements IUser {
     }
 
     public function getContentTypes()
+    {
+        // ignore
+    }
+
+    /**
+     * @param $email
+     * @return mixed
+     */
+    public function loadByEmail($email)
     {
         // ignore
     }
