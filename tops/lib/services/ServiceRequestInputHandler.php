@@ -57,6 +57,7 @@ abstract class ServiceRequestInputHandler
     public function getInput() {
         if ($this->getMethod() == 'POST') {
             $input = $this->get('request');
+            $input = stripslashes($input);  // wordpress and others may add slashes.
             $input = json_decode($input);
         } else {
             $input = $this->get('arg');
