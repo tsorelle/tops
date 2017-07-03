@@ -23,10 +23,10 @@ class TConfigurationTest extends TestCase
     public function testGetSection()
     {
         TConfiguration::clearCache();
-        TConfiguration::loadAppSettings('settings.ini,database.ini,test.ini');
+        TConfiguration::loadAppSettings('settings.ini,test.ini');
 
-        $expected = 3;
-        $section = TConfiguration::getIniSection('database');
+        $expected = 2;
+        $section = TConfiguration::getIniSection('test-values');
         $this->assertNotNull($section);
         $actual = sizeof($section);
         $this->assertEquals($expected, $actual);
@@ -35,15 +35,10 @@ class TConfigurationTest extends TestCase
     public function testMultipleAppSettings()
     {
         TConfiguration::clearCache();
-        TConfiguration::loadAppSettings('settings.ini,database.ini,test.ini');
+        TConfiguration::loadAppSettings('settings.ini,test.ini');
 
         $expected = 'services';
         $actual = TConfiguration::getValue('servicesNamespace', 'services');
-        $this->assertNotNull($actual);
-        $this->assertEquals($expected, $actual);
-
-        $expected = 'topuser';
-        $actual = TConfiguration::getValue('username', 'database');
         $this->assertNotNull($actual);
         $this->assertEquals($expected, $actual);
 
