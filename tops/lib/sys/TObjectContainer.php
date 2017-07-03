@@ -16,7 +16,19 @@ namespace Tops\sys;
  */
 class TObjectContainer
 {
-    private static $instances = array();
+    /**
+     * @var IObjectContainer
+     */
+    private static $container;
+
+    private static function GetContainer()
+    {
+        if (!isset(self::$container)) {
+            $className = TConfiguration::getValue('container','classes','\Tops\sys\TSimpleObjectContainer');
+            self::$container = new $className();
+        }
+        return self::$container;
+    }
 
     /**
      * @param $key
@@ -25,27 +37,14 @@ class TObjectContainer
      * Retrieve instance from the container.
      */
     public static function Get($key) {
-        // return self::GetContainer()->get($key);
-        if (isset(self::$instances[$key])) {
-            return self::$instances[$key];
-        };
-        $className = TConfiguration::getValue($key,'classes',false);
-        if (empty($className)) {
-            return false;
-        }
-        $instance = new $className();
-        self::$instances[$key] = $instance;
-        return $instance;
+        return self::GetContainer()->get($key);
     }
 
     /**
      * @param $id
      * @return bool
      */
-    public static function HasDefinition($id) {
-        $className = TConfiguration::getValue($id,'classes',false);
-        return (!empty($className));
-        // return self::GetContainer()->hasDefinition($id);
+    public static function HasDefinition($key) {
+        return self::GetContainer()->hasDefinition($key);
     }
-
 }

@@ -1,0 +1,5 @@
+Projects to update for changes:
+D:\dev\labs\drupal8\pnutdpl8.root (copy from: D:\dev\twoquakers\tops\tops\lib)
+D:\dev\labs\peanut2017 (update composer)
+D:\dev\labs\wp\wpeanut.root (update composer)
+D:\dev\concrete5\c5demo.root (copy from: D:\dev\twoquakers\tops\tops\lib)
