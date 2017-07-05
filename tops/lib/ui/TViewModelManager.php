@@ -18,22 +18,6 @@ class TViewModelManager
     private static $vmSettings;
     private static $instance;
 
-
-    public static function toCamelCase($s) {
-        $parts = explode('-',$s);
-        $len = sizeof($parts);
-        for ($i = 0; $i<$len;$i++) {
-            $part = $parts[$i];
-            $initial = substr($part,0,1);
-            if ($initial) {
-                $initial = strtoupper($initial);
-                $remainder = substr($part,1);
-                $parts[$i] = strtoupper($initial).($remainder ? $remainder : '');
-            }
-        }
-        return join('',$parts);
-    }
-
     private static $packageList;
     public static function getPackageList() {
         if (!isset(self::$packageList)) {
@@ -104,7 +88,7 @@ class TViewModelManager
 
             $view = empty($item['view']) ? $vmName . '.html' : $item['view'];
             if (empty($item['package'])) {
-                $root = TConfiguration::getValue('mvvmPath', 'peanut', 'application/mvvm');
+                $root = TConfiguration::getValue('mvvmPath', 'peanut', 'applition/mvvm');
             }
             else {
                 $root =  TConfiguration::getValue('peanutRootPath','peanut','pnut')."/packages/".$item['package'];

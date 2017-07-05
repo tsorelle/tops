@@ -9,6 +9,8 @@
 namespace Tops\services;
 
 
+use Tops\sys\TStrings;
+
 class DefaultInputHandler extends ServiceRequestInputHandler
 {
 
@@ -45,7 +47,7 @@ class DefaultInputHandler extends ServiceRequestInputHandler
 
     public function getServiceNamespace($key)
     {
-        return $key; //assume literal namespace
+        return TStrings::formatNamespace($key);
     }
 
 }
