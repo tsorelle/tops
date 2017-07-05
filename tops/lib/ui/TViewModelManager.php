@@ -24,9 +24,11 @@ class TViewModelManager
             $fileRoot = TPath::getFileRoot();
             $peanutRoot = TConfiguration::getValue('peanutRootPath','peanut');
             self::$packageList = array();
+            $packagePath = $fileRoot.$peanutRoot."/packages";
             $files = scandir($fileRoot.$peanutRoot."/packages");
             foreach ($files as $file) {
-                if ($file != '.' && $file != '..') {
+                // package must be a directory containing a package.ini file.
+                if ($file != '.' && $file != '..' && file_exists("$packagePath/$file/package.ini")) {
                     self::$packageList[] = $file;
                 }
             }
@@ -75,8 +77,8 @@ class TViewModelManager
                         foreach ($keys as $key) {
                             $pkgini[$key]['package'] = $package;
                         }
+                        self::$vmSettings = array_merge(self::$vmSettings, $pkgini);
                     }
-                    self::$vmSettings = array_merge(self::$vmSettings, $pkgini);
                 }
             }
         }

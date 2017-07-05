@@ -28,4 +28,16 @@ class ViewModelManagerTest extends TestCase
         $this->assertEquals($expected,$actual->view);
 
     }
+
+    function testGetPackageList() {
+        // reinitialize test path, maybe changed by previous test
+        $projectFileRoot =   str_replace('\\','/', realpath(__DIR__.'/..')).'/';
+        \Tops\sys\TPath::Initialize($projectFileRoot,'tests/config');
+
+        $actual = TViewModelManager::getPackageList();
+        $this->assertNotEmpty($actual);
+        $expected = 2;
+        $this->assertEquals($expected, sizeof($actual),'Wrong package count.');
+
+    }
 }
