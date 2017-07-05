@@ -23,16 +23,18 @@ class TConfiguration
      * @var array
      */
     private static $ini = null;
+    private static $configs = array();
 
     public static function clearCache() {
         self::$ini = null;
     }
 
-    private static function getIni()
+    private static function getIni(array $packages=null)
     {
         if (self::$ini === null) {
             self::$ini = self::loadIni();
         }
+        self::$configs = array();
         return self::$ini;
     }
 
