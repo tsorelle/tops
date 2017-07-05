@@ -45,9 +45,4 @@ class DefaultInputHandler extends ServiceRequestInputHandler
         return $result;
     }
 
-    public function getServiceNamespace($key)
-    {
-        return TStrings::formatNamespace($key);
-    }
-
 }

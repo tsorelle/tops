@@ -63,8 +63,4 @@ class FakeInputHandler extends \Tops\services\ServiceRequestInputHandler
             : $_GET[ServiceRequestInputHandler::securityTokenKey];
     }
 
-    public function getServiceNamespace($key)
-    {
-        return $key; //assume literal namespace
-    }
 }

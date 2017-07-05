@@ -9,6 +9,8 @@
 namespace Tops\services;
 
 
+use Tops\sys\TStrings;
+
 abstract class ServiceRequestInputHandler
 {
     const securityTokenKey = 'topsSecurityToken';
@@ -25,7 +27,6 @@ abstract class ServiceRequestInputHandler
     public abstract function get(string $key);
 
     public abstract function getSecurityToken();
-    public abstract function getServiceNamespace($key);
 
     /**
      * Strips tags and optionally reduces string to specified length.
@@ -65,6 +66,12 @@ abstract class ServiceRequestInputHandler
         }
         return $input;
     }
+
+    public function getServiceNamespace($key)
+    {
+        return TStrings::formatNamespace($key);
+    }
+
 
 
 }
