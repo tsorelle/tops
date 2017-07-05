@@ -69,7 +69,8 @@ abstract class ServiceRequestInputHandler
 
     public function getServiceNamespace($key)
     {
-        return TStrings::formatNamespace($key);
+        $namespace = TStrings::formatNamespace($key);
+        return $namespace."\\services";
     }
 
 

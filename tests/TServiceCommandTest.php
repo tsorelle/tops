@@ -78,6 +78,32 @@ class TServiceCommandTest extends TestCase
 
     }
 
+    public function testHelloMars() {
+        FakeInputHandler::setServiceId('test-package::HelloMars');
+        $response = ServiceFactory::Execute();
+        $this->assertNotNull($response);
+        $this->showDebugInfo($response);
+        $expected = ResultType::Success;
+        $actual = $response->Result;
+        $this->assertEquals($expected,$actual,"Service failed.");
+        $expected = 'Hello Mars';
+        $message = $this->findMessage($response,$expected);
+        $actual = $message !== false;
+        $this->assertTrue($actual,"Message not found.");
+        $actual = $message->Text;
+        $this->assertEquals($expected,$actual);
+        $expected = MessageType::Info;
+        $actual = $message->MessageType;
+        $this->assertEquals($expected,$actual,'Wrong message type.');
+        $this->showMessages($response);
+        $this->assertNotEmpty($response->Value,"No Value returned.");
+        $this->assertNotEmpty($response->Value->message,"Value->message not assigned.");
+        $expected = "Greatings earthlings from the Big Giant Head.";
+        $actual = $response->Value->message;
+        $this->assertEquals($expected,$actual);
+
+    }
+
     public function testServiceException() {
         FakeInputHandler::setServiceId('NoSuchCommand');
         $response = ServiceFactory::Execute();

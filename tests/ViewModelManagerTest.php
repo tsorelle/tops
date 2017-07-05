@@ -24,7 +24,7 @@ class ViewModelManagerTest extends TestCase
 
         $actual = TViewModelManager::getViewModelSettings('qnut/test');
         $this->assertNotEmpty($actual);
-        $expected = 'tests/pnut/packages/qnut/view/QnutTest.html';
+        $expected = 'tests/pnut/packages/test-package/view/QnutTest.html';
         $this->assertEquals($expected,$actual->view);
 
     }

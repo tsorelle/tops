@@ -5,6 +5,7 @@
       <sourceFolder url="file://$MODULE_DIR$/tests/lib" isTestSource="false" packagePrefix="TwoQuakers/testing" />
       <sourceFolder url="file://$MODULE_DIR$/tops/lib" isTestSource="false" packagePrefix="Tops" />
       <sourceFolder url="file://$MODULE_DIR$/vendor/phpunit" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/tests/pnut/packages/test-package/src" isTestSource="false" packagePrefix="TestPackage" />
       <excludeFolder url="file://$MODULE_DIR$/doc/implementations" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/composer" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/doctrine/instantiator" />

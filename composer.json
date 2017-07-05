@@ -13,7 +13,8 @@
   "autoload": {
     "psr-4": {
       "Tops\\": "tops/lib",
-      "TwoQuakers\\testing\\" : "tests/lib"
+      "TwoQuakers\\testing\\" : "tests/lib",
+      "TestPackage\\" : "tests/pnut/packages/test-package/src"
     }
   },
   "require": {
