@@ -12,10 +12,31 @@ namespace TwoQuakers\testing;
 use PHPUnit\Runner\Exception;
 use Tops\sys\TAbstractUser;
 use Tops\sys\TConfiguration;
+use Tops\sys\TPath;
 
 class TestUser extends TAbstractUser
-    // implements \Tops\sys\IUser
 {
+    private static $permissionsConfig;
+    private static $rolesConfig;
+
+    public function __construct()
+    {
+        if (isset(self::$rolesConfig)) {
+            return;
+        }
+        self::$rolesConfig = array();
+        self::$permissionsConfig = array();
+        $path = TPath::getConfigPath() . 'users.ini';
+        $ini = parse_ini_file($path, true);
+        if (!empty($ini)) {
+            if (!empty($ini['user']['roles'])) {
+                self::$rolesConfig = explode(',',$ini['user']['roles']);
+            }
+            if (!empty($ini['permissions'])) {
+                self::$permissionsConfig = $ini['permissions'];
+            }
+        }
+    }
 
     /**
      * @param $id
@@ -70,6 +91,7 @@ class TestUser extends TAbstractUser
         return true;
     }
 
+
     /**
      * @param string $value
      * @return bool
@@ -79,10 +101,14 @@ class TestUser extends TAbstractUser
         if ($this->isAdmin()) {
             return true;
         }
-        $roles = TConfiguration::getValue($value,'permissions');
-        if (empty($roles)) {
+
+
+        if (empty(self::$permissionsConfig[$value]) ) {
             return false;
         }
+
+        $roles = self::$permissionsConfig[$value];
+
         if ($roles == 'authenticated') {
             return $this->isAuthenticated();
         }
@@ -126,7 +152,7 @@ class TestUser extends TAbstractUser
      */
     public function getRoles()
     {
-        // TODO: Implement getRoles() method.
+        return self::$roles;
     }
 
     protected function loadProfile()

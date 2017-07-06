@@ -64,18 +64,13 @@ class ServiceFactory
 
             $serviceId = $this->inputHandler->getServiceId();
 
-            if ($serviceId == 'getxsstoken') {
-                sys\TSession::Initialize();
-                return '';
-            }
-
             $securityToken = $this->inputHandler->getSecurityToken();
             $input = $this->inputHandler->getInput();
 
             $parts = explode('::', $serviceId);
             if (sizeof($parts) == 1) {
                 $namespace =  sys\TConfiguration::getValue('applicationNamespace', 'services');
-                $namespace .= "\\". sys\TConfiguration::getValue('servicesNamespace', 'services');
+                $namespace .= "\\". sys\TConfiguration::getValue('servicesNamespace', 'services','services');
             } else {
                 $namespace = $this->inputHandler->getServiceNamespace($parts[0]);
                 $serviceId =  $parts[1];

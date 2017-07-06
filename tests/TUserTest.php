@@ -12,6 +12,9 @@ use PHPUnit\Framework\TestCase;
 class TUserTest extends TestCase
 {
     public function testCreateUser() {
+        $projectFileRoot =   str_replace('\\','/', realpath(__DIR__.'/..')).'/';
+        \Tops\sys\TPath::Initialize($projectFileRoot,'tests/config');
+
         $user = TUser::getCurrent();
         $this->assertNotNull($user);
         $expected = 'tester';
