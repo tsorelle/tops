@@ -44,28 +44,6 @@ class TViewModelManager
         return self::$packagePath;
     }
 
-    private static function expandLocationPath($path) {
-        if (empty($path)) {
-            return TConfiguration::getValue('mvvmPath','peanut','');
-        }
-        else if (substr($path,0,1) === '/') {
-            return $path;
-        }
-        $parts = explode('/',$path);
-        $alias = array_shift($parts);
-        $peanutPath = TConfiguration::getValue('peanutRootPath','peanut','');
-        switch($alias) {
-            case '@app'  : $alias = TConfiguration::getValue('mvvmPath','peanut',''); break;
-            case '@core' : $alias = $peanutPath.'/core'; break;
-            case '@pkg'  : $alias = $peanutPath.'/packages'; break;
-        }
-        if (empty($parts)) {
-            return $alias;
-        }
-        $path = $alias.'/'.join('/',$parts);
-        return $path;
-    }
-
     public static function getViewModelSettings($pathAlias)
     {
         if (!isset(self::$vmSettings)) {
@@ -97,10 +75,10 @@ class TViewModelManager
 
             $view = empty($item['view']) ? $vmName . '.html' : $item['view'];
             if (empty($item['package'])) {
-                $root = TConfiguration::getValue('mvvmPath', 'peanut', 'applition/mvvm');
+                $root = TConfiguration::getValue('mvvmPath', 'peanut', 'application/mvvm');
             }
             else {
-                $root =  TConfiguration::getValue('peanutRootPath','peanut','pnut')."/packages/".$item['package'];
+                $root =  TViewModelManager::getPackagePath()."/".$item['package'];
                 $vmName = "@pkg/" . $item['package']."/$vmName";
             }
 
