@@ -17,18 +17,18 @@ class TViewModelManager
     private static $info;
     private static $vmSettings;
     private static $instance;
+    private static $packagePath;
 
     private static $packageList;
     public static function getPackageList() {
         if (!isset(self::$packageList)) {
-            $fileRoot = TPath::getFileRoot();
-            $peanutRoot = TConfiguration::getValue('peanutRootPath','peanut');
             self::$packageList = array();
-            $packagePath = $fileRoot.$peanutRoot."/packages";
-            $files = scandir($fileRoot.$peanutRoot."/packages");
+            $fileRoot = TPath::getFileRoot();
+            $packagePath = self::getPackagePath();
+            $files = scandir($fileRoot.$packagePath);
             foreach ($files as $file) {
                 // package must be a directory containing a package.ini file.
-                if ($file != '.' && $file != '..' && file_exists("$packagePath/$file/package.ini")) {
+                if ($file != '.' && $file != '..' && file_exists($fileRoot."$packagePath/$file/package.ini")) {
                     self::$packageList[] = $file;
                 }
             }
@@ -36,6 +36,13 @@ class TViewModelManager
         return self::$packageList;
     }
 
+    public static function getPackagePath() {
+        if (!isset(self::$packagePath)) {
+            self::$packagePath = TConfiguration::getValue('packagePath','peanut',
+                TConfiguration::getValue('peanutRootPath','peanut','').'/packages');
+        }
+        return self::$packagePath;
+    }
 
     private static function expandLocationPath($path) {
         if (empty($path)) {
@@ -63,7 +70,7 @@ class TViewModelManager
     {
         if (!isset(self::$vmSettings)) {
             $path = TPath::getConfigPath();
-            $packagePath = TConfiguration::getValue('peanutRootPath', 'peanut') . '/packages';
+            $packagePath = self::getPackagePath();
             self::$vmSettings = parse_ini_file($path . 'viewmodels.ini', true);
             $packages = self::getPackageList();
             if (!empty($packages)) {
