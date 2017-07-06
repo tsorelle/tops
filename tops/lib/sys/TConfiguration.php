@@ -97,6 +97,14 @@ class TConfiguration
         return $defaultValue;
     }
 
+    public static function getBoolean($key, $sectionKey, $defaultValue = false)
+    {
+        $section = self::getIniSection($sectionKey);
+        if (is_array($section) && array_key_exists($key, $section)) {
+            return  !empty($section[$key]);
+        }
+        return $defaultValue;
+    }
 
     /**
      * Get array of values by section key

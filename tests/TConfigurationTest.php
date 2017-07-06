@@ -52,4 +52,19 @@ class TConfigurationTest extends TestCase
 
 
     }
+    
+    public function testBoolSetting() {
+        $actual = TConfiguration::getBoolean('trueValue','test',false);
+        $this->assertTrue($actual);
+
+        $actual = TConfiguration::getBoolean('falseValue','test',true);
+        $this->assertFalse($actual);
+
+        $actual = TConfiguration::getBoolean('unassignedValue','test',true);
+        $this->assertTrue($actual);
+
+        $actual = TConfiguration::getBoolean('unassignedValue','test',false);
+        $this->assertFalse($actual);
+
+    }
 }
