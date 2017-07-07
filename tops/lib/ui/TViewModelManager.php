@@ -14,6 +14,9 @@ use Tops\sys\TPath;
 
 class TViewModelManager
 {
+    /**
+     * @var TViewModelInfo
+     */
     private static $info;
     private static $vmSettings;
     private static $instance;
@@ -97,6 +100,9 @@ class TViewModelManager
         return false;
     }
 
+    /**
+     * @return bool|TViewModelInfo
+     */
     public static function getViewModelInfo()
     {
         return isset(self::$info) ? self::$info : false;

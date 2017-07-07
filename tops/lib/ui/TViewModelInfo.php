@@ -11,8 +11,8 @@ namespace Tops\ui;
 
 class TViewModelInfo
 {
+    public $id; // used if a unique id is required. see Drupal 8 implementation.
     public $pathAlias;
     public $vmName;
     public $view;
-
 }

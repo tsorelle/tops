@@ -11,6 +11,8 @@ namespace Tops\sys;
 
 class TStrings
 {
+
+
     public static function toCamelCase($s) {
         $parts = explode('-',$s);
         $len = sizeof($parts);
@@ -24,6 +26,27 @@ class TStrings
             }
         }
         return join('',$parts);
+    }
+
+    public static function toTitle($s,$seperator=false) {
+        if ($seperator) {
+            $s = str_replace($seperator,' ',$s);
+        }
+        $parts = explode(' ',$s);
+        $len = sizeof($parts);
+        for ($i = 0; $i<$len;$i++) {
+            $part = $parts[$i];
+            if ($i > 0 && ($part == 'the' || $part == 'a' || $part == 'of' || $part == 'an' || $part == 'in')) {
+                continue;
+            }
+            $initial = substr($part,0,1);
+            if ($initial) {
+                $initial = strtoupper($initial);
+                $remainder = substr($part,1);
+                $parts[$i] = strtoupper($initial).($remainder ? $remainder : '');
+            }
+        }
+        return join(' ',$parts);
     }
 
     /**

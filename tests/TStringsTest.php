@@ -41,4 +41,17 @@ class TStringsTest extends TestCase
         $expected = 'TwoQuakers\\Testing\\services\\SubServices';
         $this->assertEquals($expected,$actual);
     }
+
+    function testToTitle() {
+        $expected = "The Wind in the Willows";
+
+        $title = "the wind in the willows";
+        $actual = \Tops\sys\TStrings::toTitle($title);
+        $this->assertEquals($expected,$actual);
+
+        $title = "the-wind-in-the-willows";
+        $actual = \Tops\sys\TStrings::toTitle($title,'-');
+        $this->assertEquals($expected,$actual);
+
+    }
 }
