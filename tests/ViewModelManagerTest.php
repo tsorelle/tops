@@ -29,6 +29,19 @@ class ViewModelManagerTest extends TestCase
 
     }
 
+    function testGetSubdirViewModelSettings()
+    {
+        // reinitialize test path, maybe changed by previous test
+        $projectFileRoot =   str_replace('\\','/', realpath(__DIR__.'/..')).'/';
+        \Tops\sys\TPath::Initialize($projectFileRoot,'tests/config');
+
+        $actual = TViewModelManager::getViewModelSettings('subdir/testpage');
+        $this->assertNotEmpty($actual);
+        $expected = 'application/mvvm/subdir/view/TestPage.html';
+        $this->assertEquals($expected,$actual->view);
+
+    }
+
     function testGetPackageList() {
         // reinitialize test path, maybe changed by previous test
         $projectFileRoot =   str_replace('\\','/', realpath(__DIR__.'/..')).'/';

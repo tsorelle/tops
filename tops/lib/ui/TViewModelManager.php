@@ -92,6 +92,13 @@ class TViewModelManager
                 $result->view = $view;
             } else {
                 $location = empty($item['location']) ? '': '/'.$item['location'];
+                $parts = explode('/',$view);
+                if (sizeof($parts) > 1) {
+                    $view = array_pop($parts);
+                    $subdir = join($parts);
+                    $location .= '/'.join($parts);
+                }
+
                 $result->view = $root."$location/view/$view";
             }
             self::$info = $result;
