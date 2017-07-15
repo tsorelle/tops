@@ -25,7 +25,7 @@ class DefaultInputHandler extends ServiceRequestInputHandler
     /**
      * @return mixed
      */
-    public function get(string $key)
+    public function get($key)
     {
         if ($this->getMethod() == 'POST') {
             return $_POST[$key];

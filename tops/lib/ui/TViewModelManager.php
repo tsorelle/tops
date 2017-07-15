@@ -137,7 +137,7 @@ class TViewModelManager
         // print "\n<!-- start script for '$vmName' goes here -->\n";
 
         return
-            "\n<script>\n" .
+        "\n<script>\n" .
             "   Peanut.PeanutLoader.startApplication('$vmName'); \n"
             . "</script>\n";
 
@@ -154,5 +154,27 @@ class TViewModelManager
         return !empty(self::$info);
     }
 
+    private static $peanutVersion;
+    public static function GetPeanutVersion() {
+        if (isset(self::$peanutVersion)) {
+            return self::$peanutVersion;
+        }
+        $fileRoot = TPath::getFileRoot();
+        $peanutPath = TConfiguration::getValue('peanutRootPath','peanut');
+        $pnutIniPath = "$fileRoot$peanutPath/dist/peanut.ini";
+        if (file_exists($pnutIniPath)) {
+            $pnutIni = parse_ini_file($pnutIniPath,true);
+            if (empty($pnutIni['peanut']['version'])) {
+                return 'error-invalid-peanut-ini';
+            }
+            else {
+                self::$peanutVersion = $pnutIni['peanut']['version'];
+                return self::$peanutVersion;
+            }
+        }
+        return 'error-no-peanut-ini';
+
+
+    }
 
 }

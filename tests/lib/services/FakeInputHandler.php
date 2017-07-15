@@ -52,7 +52,7 @@ class FakeInputHandler extends \Tops\services\ServiceRequestInputHandler
     /**
      * @return mixed
      */
-    public function get(string $key)
+    public function get($key)
     {
         return empty(self::$values[$key]) ? '' : self::$values[$key];
     }

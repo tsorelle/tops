@@ -24,7 +24,7 @@ abstract class ServiceRequestInputHandler
     /**
      * @return mixed
      */
-    public abstract function get(string $key);
+    public abstract function get($key);
 
     public abstract function getSecurityToken();
 
