@@ -74,6 +74,7 @@ class Autoloader
         return $loader;
     }
 
+
     /**
      * An associative array where the key is a namespace prefix and the value
      * is an array of base directories for classes in that namespace.
@@ -122,6 +123,11 @@ class Autoloader
         } else {
             array_push($this->prefixes[$prefix], $base_dir);
         }
+    }
+
+    // alias for addNamespace - simulates composer autoloader syntax
+    public function addPsr4($prefix, $base_dir, $prepend = false)  {
+        $this->addNamespace($prefix,$base_dir);
     }
 
     /**
