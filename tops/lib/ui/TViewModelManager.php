@@ -41,8 +41,13 @@ class TViewModelManager
 
     public static function getPackagePath() {
         if (!isset(self::$packagePath)) {
-            self::$packagePath = TConfiguration::getValue('packagePath','peanut',
-                TConfiguration::getValue('peanutRootPath','peanut','').'/packages');
+            self::$packagePath = TConfiguration::getValue('packagePath','peanut');
+            if (empty(self::$packagePath)) {
+                $modulePath = TConfiguration::getValue('modulePath','peanut','modules');
+                $peanutRootPath = TConfiguration::getValue('peanutRootPath','peanut',
+                    "$modulePath/pnut");
+                self::$packagePath = "$peanutRootPath/packages";
+            }
         }
         return self::$packagePath;
     }
