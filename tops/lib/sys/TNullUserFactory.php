@@ -6,7 +6,7 @@
  * Time: 6:43 AM
  */
 
-namespace Application\Tops\sys;
+namespace Tops\sys;
 
 
 /**
