@@ -125,7 +125,7 @@ class TConfiguration
     public function getIniEmailValues($key, $sectionKey)
     {
         $result = array();
-        $keys = self::getIniValue($key, $sectionKey);
+        $keys = self::getValue($key, $sectionKey);
         if ($keys !== false) {
             $keys = explode(',', $keys);
             foreach ($keys as $key) {
@@ -133,7 +133,7 @@ class TConfiguration
                 if (strstr($key, '@')) {
                     $email = $key;
                 } else {
-                    $email = self::getIniValue($key, 'email');
+                    $email = self::getValue($key, 'email');
                 }
                 if (!empty($email)) {
                     $result[] = $email;

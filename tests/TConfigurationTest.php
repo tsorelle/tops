@@ -28,7 +28,7 @@ class TConfigurationTest extends TestCase
         TConfiguration::clearCache();
         TConfiguration::loadAppSettings('settings.ini,test.ini');
 
-        $expected = 2;
+        $expected = 5;
         $section = TConfiguration::getIniSection('test-values');
         $this->assertNotNull($section);
         $actual = sizeof($section);
