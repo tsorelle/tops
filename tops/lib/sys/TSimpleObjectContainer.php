@@ -17,9 +17,13 @@ class TSimpleObjectContainer implements IObjectContainer
 
     public function __construct()
     {
-        $configPath = TPath::getConfigPath();
-        $ini = TPath::combine($configPath, 'classes.ini');
-        $this->config = parse_ini_file($ini, true);
+        $configPath = TPath::getConfigPath()."classes.ini";
+        if (file_exists($configPath)) {
+            $this->config = parse_ini_file($configPath, true);
+        }
+        else {
+            $this->config = array();
+        }
     }
 
     public function get($key)
