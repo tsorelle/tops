@@ -21,6 +21,10 @@ class TObjectContainer
      */
     private static $container;
 
+    public static function ClearCache() {
+        self::$container = null;
+    }
+
     private static function GetContainer()
     {
         if (!isset(self::$container)) {
