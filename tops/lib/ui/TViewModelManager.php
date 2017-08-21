@@ -52,6 +52,10 @@ class TViewModelManager
         return self::$packagePath;
     }
 
+    /**
+     * @param $pathAlias
+     * @return bool|TViewModelInfo
+     */
     public static function getViewModelSettings($pathAlias)
     {
         if (!isset(self::$vmSettings)) {
@@ -90,6 +94,7 @@ class TViewModelManager
                 $vmName = "@pkg/" . $item['package']."/$vmName";
             }
 
+
             $result = new TViewModelInfo();
             $result->pathAlias = $pathAlias;
             $result->vmName = $vmName;
@@ -106,6 +111,9 @@ class TViewModelManager
 
                 $result->view = $root."$location/view/$view";
             }
+            $result->template = empty($item['template']) ? false : $item['template'];
+            $result->theme = empty($item['theme']) ? false : $item['theme'];
+
             self::$info = $result;
             return $result;
         }
@@ -181,5 +189,6 @@ class TViewModelManager
 
 
     }
+
 
 }

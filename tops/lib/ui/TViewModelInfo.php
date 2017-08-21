@@ -15,4 +15,6 @@ class TViewModelInfo
     public $pathAlias;
     public $vmName;
     public $view;
+    public $template;
+    public $theme;
 }
