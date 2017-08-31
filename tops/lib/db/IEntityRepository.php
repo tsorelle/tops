@@ -8,6 +8,12 @@
 
 namespace Tops\db;
 
+/**
+ * Interface IEntityRepository
+ * @package Tops\db
+ *
+ * See the tops-db project for implementations.
+ */
 interface IEntityRepository
 {
     public function startTransaction();
@@ -33,4 +39,6 @@ interface IEntityRepository
     public function remove($id);
 
     public function getAll($where = '', $includeInactive = false);
+
+    public function getFirst($where = '', $includeInactive = false);
 }
