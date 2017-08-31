@@ -48,7 +48,7 @@ namespace Tops\mail;
       */
      public function findByCode($mailboxCode)
      {
-         $result = $this->repository->getFirst("boxcode='$mailboxCode'");
+         $result = $this->repository->getFirst("code='$mailboxCode'");
          if (empty($result)) {
              return false;
          }
