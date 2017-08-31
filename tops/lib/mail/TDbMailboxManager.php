@@ -53,7 +53,7 @@ namespace Tops\mail;
              return false;
          }
          return TMailbox::Create($result->mailboxcode,$result->displayText,$result->address,
-             empty($result->description) ? '' : $result->description);
+             empty($result->description) ? '' : $result->description,$result->id);
 
      }
 

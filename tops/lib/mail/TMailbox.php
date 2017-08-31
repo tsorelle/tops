@@ -124,12 +124,13 @@ class TMailbox implements IMailbox
      * @param $description
      * @return TMailbox
      */
-    public static function Create ($code, $name, $address, $description) {
+    public static function Create ($code, $name, $address, $description,$id=0) {
         $result = new TMailbox();
         $result->setMailboxCode($code);
         $result->setEmail($address);
         $result->setDescription($description);
         $result->setName($name);
+        $result->setMailboxId($id);
         return $result;
     }
 }
