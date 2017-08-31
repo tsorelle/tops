@@ -19,19 +19,19 @@ class TMailbox implements IMailbox
     /**
      * @var int
      */
-    public $id;
+    private $id;
     /**
      * @var string
      */
-    public $mailboxcode;
+    private $mailboxcode;
     /**
      * @var string
      */
-    public $displaytext;
+    private $displaytext;
 
-    public $description;
+    private $description;
 
-    public $address;
+    private $address;
 
 
     /**
@@ -71,7 +71,7 @@ class TMailbox implements IMailbox
      */
     public function getName()
     {
-        return $this->displaytext;
+        return  empty($this->displaytext) ? '' : $this->displaytext;
     }
 
     /**
@@ -103,7 +103,7 @@ class TMailbox implements IMailbox
      */
     public function getDescription()
     {
-        return $this->description;
+        return empty($this->description) ? '' : $this->description;
     }
 
     /**
