@@ -52,8 +52,11 @@ namespace Tops\mail;
          if (empty($result)) {
              return false;
          }
+         return $result;
+         /*
          return TMailbox::Create($result->mailboxcode,$result->displayText,$result->address,
              empty($result->description) ? '' : $result->description,$result->id);
+         */
 
      }
 

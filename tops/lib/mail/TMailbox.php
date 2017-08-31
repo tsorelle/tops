@@ -19,22 +19,27 @@ class TMailbox implements IMailbox
     /**
      * @var int
      */
-    private $mailBoxId;
+    public $id;
     /**
      * @var string
      */
-    private $mailBoxCode;
+    public $mailboxcode;
     /**
      * @var string
      */
-    private $name;
+    public $displaytext;
+
+    public $description;
+
+    public $address;
+
 
     /**
      * @return int
      */
     public function getMailboxId()
     {
-        return $this->mailBoxId;
+        return $this->id;
     }
 
     /**
@@ -42,7 +47,7 @@ class TMailbox implements IMailbox
      */
     public function setMailboxId($mailBoxId)
     {
-        $this->mailBoxId = $mailBoxId;
+        $this->id = $mailBoxId;
     }
 
     /**
@@ -50,7 +55,7 @@ class TMailbox implements IMailbox
      */
     public function getMailboxCode()
     {
-        return $this->mailBoxCode;
+        return $this->mailboxcode;
     }
 
     /**
@@ -58,7 +63,7 @@ class TMailbox implements IMailbox
      */
     public function setMailboxCode($mailBoxCode)
     {
-        $this->mailBoxCode = $mailBoxCode;
+        $this->mailboxcode = $mailBoxCode;
     }
 
     /**
@@ -66,7 +71,7 @@ class TMailbox implements IMailbox
      */
     public function getName()
     {
-        return $this->name;
+        return $this->displaytext;
     }
 
     /**
@@ -74,7 +79,7 @@ class TMailbox implements IMailbox
      */
     public function setName($name)
     {
-        $this->name = $name;
+        $this->displayText = $name;
     }
 
     /**
@@ -82,7 +87,7 @@ class TMailbox implements IMailbox
      */
     public function getEmail()
     {
-        return $this->email;
+        return $this->address;
     }
 
     /**
@@ -90,7 +95,7 @@ class TMailbox implements IMailbox
      */
     public function setEmail($email)
     {
-        $this->email = $email;
+        $this->address = $email;
     }
 
     /**
@@ -111,11 +116,6 @@ class TMailbox implements IMailbox
     /**
      * @var string
      */
-    private $email;
-    /**
-     * @var string
-     */
-    private $description;
 
     /**
      * @param $code
