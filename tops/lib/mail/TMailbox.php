@@ -125,9 +125,7 @@ class TMailbox implements IMailbox
      * @return TMailbox
      */
     public static function Create ($code, $name, $address, $description) {
-        $result = TObjectContainer::HasDefinition('tops.mailbox') ?
-            TObjectContainer::Get('tops.mailbox') :
-            new TMailbox();
+        $result = new TMailbox();
         $result->setMailboxCode($code);
         $result->setEmail($address);
         $result->setDescription($description);
