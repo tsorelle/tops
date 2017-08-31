@@ -20,7 +20,7 @@ namespace Tops\mail;
 
      public function __construct()
      {
-         $repository = EntityRepositoryFactory::Get('mailboxes','Tops\\db\\model\\repository');
+         $this->repository = EntityRepositoryFactory::Get('mailboxes','Tops\\db\\model\\repository');
      }
 
      /**
