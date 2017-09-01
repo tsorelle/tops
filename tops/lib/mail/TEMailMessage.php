@@ -52,8 +52,8 @@ class TEMailMessage {
      */
     private $returnAddress;
     /**
-     * @var int
-     * Use TContentType:: constance
+     * @var string
+     * Use TContentType:: constants
      */
     private $contentType;
     /**
@@ -403,7 +403,7 @@ class TEMailMessage {
             $this->setAlternateBodyText($text);
         }
         else {
-            $this->contentType = TContentType::$Html;
+            $this->contentType = TContentType::Html;
         }
     }  //  setAlternateBodyText
 
@@ -414,7 +414,7 @@ class TEMailMessage {
     public function setAlternateBodyText($text)
     {
         $this->alternateBodyText = strip_tags( $text );
-        $this->contentType = TContentType::$MultiPart;
+        $this->contentType = TContentType::MultiPart;
     }  //  setAlternateBodyText
 
 
@@ -563,12 +563,13 @@ class TEMailMessage {
         return $this->replyTo;
     }
 
+
     /**
-     * @return int
+     * @return int|string
      */
     public function getContentType() {
         if (!isset($this->contentType))
-            $this->contentType = TContentType::$Text;
+            $this->contentType = TContentType::Text;
         return $this->contentType;
     }
 

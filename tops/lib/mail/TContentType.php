@@ -11,8 +11,8 @@ namespace Tops\mail;
 
 class TContentType
 {
-    public static $Text = 'text';
-    public static $Html = 'html';
-    public static $MultiPart = 'multi-part';
+    const Text = 'text';
+    const Html = 'html';
+    const MultiPart = 'multi-part';
 }
 // end TContentType
