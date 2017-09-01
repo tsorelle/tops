@@ -54,7 +54,7 @@ class TPostOffice {
             }
         }
         if ($mailboxes == null ) {
-
+            $mailboxes = new TDbMailboxManager();
         }
         $this->mailboxes = $mailboxes;
         $this->mailer = $mailer;
