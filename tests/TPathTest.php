@@ -11,6 +11,12 @@ use PHPUnit\Framework\TestCase;
 
 class TPathTest extends TestCase
 {
+    public function tearDown() {
+        //  these tests fool with default ini location, set by inittesting.php.
+        //  restore to tests/config.
+        $projectFileRoot =   str_replace('\\','/', realpath(__DIR__.'/..')).'/';
+        \Tops\sys\TPath::Initialize($projectFileRoot,'tests/config');
+    }
     public function testNormalize() {
         $testpath = __DIR__;
         $actual = TPath::normalize($testpath);

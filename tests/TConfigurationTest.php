@@ -11,21 +11,14 @@ use PHPUnit\Framework\TestCase;
 
 class TConfigurationTest extends TestCase
 {
-
-    /*
-    public function testBasicAppSettings()
-    {
-        TConfiguration::clearCache();
-        $expected = 'services';
-        $actual = TConfiguration::getValue('servicesNamespace', 'services');
-        $this->assertNotNull($actual);
-        $this->assertEquals($expected, $actual);
+    public function tearDown() {
+        // restore configuration to original state.
+        TConfiguration::reset();
     }
-    */
 
     public function testGetSection()
     {
-        TConfiguration::clearCache();
+        TConfiguration::reset();
         TConfiguration::loadAppSettings('settings.ini,test.ini');
 
         $expected = 5;
@@ -33,27 +26,36 @@ class TConfigurationTest extends TestCase
         $this->assertNotNull($section);
         $actual = sizeof($section);
         $this->assertEquals($expected, $actual);
+        $this->assertTrue(TConfiguration::isValid());
     }
 
     public function testMultipleAppSettings()
     {
-        TConfiguration::clearCache();
+        TConfiguration::reset();
         TConfiguration::loadAppSettings('settings.ini,test.ini');
-/*
-        $expected = 'services';
-        $actual = TConfiguration::getValue('servicesNamespace', 'services');
-        $this->assertNotNull($actual);
-        $this->assertEquals($expected, $actual);
-*/
+        $this->assertTrue(TConfiguration::isValid());
+
         $expected = 'ok';
         $actual = TConfiguration::getValue('loaded', 'test-values');
         $this->assertNotNull($actual);
         $this->assertEquals($expected, $actual);
 
+        $expected = 'new';
+        $actual = TConfiguration::getValue('replacevalue', 'test');
+        $this->assertNotNull($actual);
+        $this->assertEquals($expected, $actual);
+
+        $expected = '1';
+        $actual = TConfiguration::getBoolean('newvalue','test');
+        $this->assertTrue($actual);
+
+
+
 
     }
     
     public function testBoolSetting() {
+        TConfiguration::reset();
         $actual = TConfiguration::getBoolean('trueValue','test',false);
         $this->assertTrue($actual);
 
@@ -65,6 +67,56 @@ class TConfigurationTest extends TestCase
 
         $actual = TConfiguration::getBoolean('unassignedValue','test',false);
         $this->assertFalse($actual);
+        $this->assertTrue(TConfiguration::isValid());
+
+    }
+
+    public function testEmptyIniFiles() {
+        TConfiguration::reset();
+        TConfiguration::loadAppSettings('nofile,somefile,invalidfile');
+        $actual = TConfiguration::hasErrors();
+        $this->assertTrue($actual,'Should have errors');
+        $actual = TConfiguration::getErrors();
+        $this->assertNotEmpty($actual,'No errors returned');
+        $this->assertEquals(sizeof($actual),3,'Error count wrong');
+        $this->assertTrue(TConfiguration::isValid());
+    }
+
+    public function testInvalidFile() {
+        TConfiguration::reset();
+        TConfiguration::throwExceptions(false);
+        TConfiguration::loadAppSettings('empty.ini,invalid.ini');
+        $this->assertFalse(TConfiguration::isValid());
+        $fatals = TConfiguration::getFatalErrors();
+        self::assertNotEmpty($fatals);
+        $errors = TConfiguration::getErrors();
+        $this->assertNotEmpty($errors);
+        $expected = sizeof($fatals) + 1;
+        $actual = sizeof($errors);
+        $this->assertEquals($expected,$actual);
+
+    }
+
+    public function testExceptions() {
+        TConfiguration::reset();
+        TConfiguration::requireFiles();
+        $exceptionOccured = false;
+        try {
+            TConfiguration::loadAppSettings('empty.ini');
+        }
+        catch (\Exception $ex) {
+            $exceptionOccured = true;
+        }
+        $this->assertTrue($exceptionOccured,'No exception');
+
+        $exceptionOccured = false;
+        try {
+            TConfiguration::loadAppSettings('invalid.ini');
+        }
+        catch (\Exception $ex) {
+            $exceptionOccured = true;
+        }
+        $this->assertTrue($exceptionOccured,'No exception');
 
     }
 }

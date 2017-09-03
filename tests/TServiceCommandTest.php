@@ -53,6 +53,7 @@ class TServiceCommandTest extends TestCase
     }
 
     public function testHelloWorld() {
+        \Tops\sys\TConfiguration::reset();
         FakeInputHandler::setServiceId('HelloWorld');
         $response = ServiceFactory::Execute();
         $this->assertNotNull($response);
@@ -115,6 +116,7 @@ class TServiceCommandTest extends TestCase
     }
 
     function testSubService() {
+        \Tops\sys\TConfiguration::clearCache();
         FakeInputHandler::setServiceId('SubServices.HelloWorld');
         $response = ServiceFactory::Execute();
         $this->assertNotNull($response);

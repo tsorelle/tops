@@ -23,60 +23,135 @@ class TConfiguration
      * @var array
      */
     private static $ini = null;
-    private static $configs = array();
+    private static $isValid = true;
+    private static $requireFiles = false;
+    private static $throwExceptions = true;
+    // private static $configs = array();
 
     public static function clearCache() {
         self::$ini = null;
+        self::$isValid = true;
+        self::$requireFiles = false;
+        self::$throwExceptions = true;
+    }
+    
+    public static function reset() {
+        self::$ini = null;
+        self::$isValid = true;
+        self::$requireFiles = false;
+        self::$throwExceptions = true;
+
+    }
+    
+    public static function requireFiles($value = true) {
+        self::$requireFiles = $value;
+    }
+    
+    public static function throwExceptions($value = true) {
+        self::$throwExceptions = $value;
     }
 
     private static function getIni(array $packages=null)
     {
         if (self::$ini === null) {
+            self::$isValid = true;
             self::$ini = self::loadIni();
         }
-        self::$configs = array();
+        // self::$configs = array();
         return self::$ini;
+    }
+
+    private static function addError(array $ini=array(),$message)
+    {
+        if (!isset($ini['errors'])) {
+            $ini['errors'] = array();
+        }
+
+
     }
 
     private static function loadIni($fileName = 'settings.ini', $iniPath = null)
     {
+
         if ($iniPath === null) {
             $iniPath = TPath::getConfigPath() . $fileName;
         } else {
             $iniPath = TPath::combine($iniPath, $fileName);
         }
-
-        return parse_ini_file($iniPath, true);
+        if (file_exists($iniPath)) {
+            $result = @parse_ini_file($iniPath, true);
+            if ($result === false) {
+                self::$isValid = false;
+                $errMsg = 'Fatal error: '. (isset($php_errormsg) ? trim( $php_errormsg) : 'unknown');
+                if (self::$throwExceptions) {
+                    throw new \Exception($errMsg);
+                }
+                return array('errors' =>  array($fileName => $errMsg));
+            }
+            return $result;
+        }
+        else {
+            $errMsg = "File not found: $iniPath";
+            if (self::$requireFiles) {
+                throw new \Exception("Ini error: $errMsg");
+            }
+            return array('errors' =>  array($fileName => "File not found: $iniPath"));
+        }
     }
 
-    public static function loadAppSettings($files='') {
+    public static function loadAppSettings($files='settings.ini') {
         if (self::$ini == null) {
-            self::getIni();
+            self::$ini = array();
         }
         $files = explode(',',$files);
         foreach ($files as  $fileName) {
-            if ($fileName != 'settings.ini') {
-                self::addSettings($fileName);
-            }
+            self::addSettings($fileName);
         }
     }
 
     public static function addSettings($fileName, $iniPath = null, $replaceExisting = true)
     {
-        $settings = self::loadIni($fileName,$iniPath);
-        if ($settings !== false) {
-            $keys = array_keys($settings);
-            foreach ($keys as $key) {
-                if (array_key_exists($key,$settings)) {
-                    if ($replaceExisting) {
-                        self::$ini[$key] = $settings[$key];
-                    }
+        $ini = self::loadIni($fileName,$iniPath);
+        if ($ini !== false) {
+            $sections = array_keys($ini);
+            foreach ($sections as $section) {
+                if (!array_key_exists($section,self::$ini)) {
+                    self::$ini[$section] = array();
                 }
-                else {
-                    self::$ini[] = $settings[$key];
+                foreach ($ini[$section] as $key => $value) {
+                    if ($replaceExisting || !array_key_exists($key, self::$ini)) {
+                        self::$ini[$section][$key] = $value;
+                    }
                 }
             }
         }
+    }
+
+    public static function getErrors() {
+        if (array_key_exists('errors',self::$ini)) {
+            return self::$ini['errors'];
+        }
+        return array();
+    }
+
+    public static function hasErrors() {
+        return !empty(self::$ini['errors']);
+    }
+
+    public static function getFatalErrors() {
+        $result = array();
+        $errors = self::getErrors();
+
+        foreach ($errors as $key => $error) {
+            if (substr($error,0,12) === 'Fatal error:') {
+                $result[$key] = $error;
+            }
+        }
+        return $result;
+    }
+
+    public static function isValid() {
+        return self::$isValid;
     }
 
 
