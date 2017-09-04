@@ -11,6 +11,10 @@ namespace Tops\sys;
 
 class TPath
 {
+    const dont_normalize = false;
+    const normalize_with_exception = 1;
+    const normalize_no_exception = 2;
+
     private static $fileRoot = null;
     private static $configPath = null;
     public static function getConfigPath() {
@@ -81,26 +85,29 @@ class TPath
         return trim($path);
     }
 
-    public static function normalize($path)
+    public static function normalize($path,$throwException=true)
     {
         $path = self::fixSlashes($path);
 
         $real = realpath($path);
         if ($real === false) {
-            throw new \Exception("Path not found: '$path'");
+            if ($throwException) {
+                throw new \Exception("Path not found: '$path'");
+            }
+            return false;
         }
         return self::stripDriveLetter($real) ;
     }
 
-    public static function combine($path1,$path2,$normalize=true) {
+    public static function combine($path1,$path2,$mode=self::normalize_with_exception) {
         $combined = "$path1/$path2";
-        if ($normalize) {
-            return self::normalize("$path1/$path2");
+        if ($mode===self::dont_normalize) {
+            return self::fixSlashes($combined);
         }
-        return self::fixSlashes($combined);
+        return self::normalize("$path1/$path2");
     }
 
-    public static function fromFileRoot($path,$normalize=true) {
+    public static function fromFileRoot($path,$normalize=false) {
         $root = self::getFileRoot();
         return self::combine($root,$path,$normalize);
     }

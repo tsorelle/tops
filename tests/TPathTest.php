@@ -24,6 +24,26 @@ class TPathTest extends TestCase
         print"normalized current path: $actual\n";
     }
 
+    public function testNormalizeBadPath() {
+        $testpath = '/no/good/file/here.txt';
+        $actual = TPath::normalize($testpath,false);
+        $this->assertTrue($actual===false);
+    }
+
+    public function testNormalizeBadPathWithException() {
+        $testpath = '/no/good/file/here.txt';
+        $actual = false;
+        try {
+            TPath::normalize($testpath);
+        }
+        catch  (\Exception $ex) {
+            $actual = true;
+        }
+        $this->assertTrue($actual);
+    }
+
+
+
     public function testFileRoot() {
         TPath::clearCache();
         $actual = TPath::getFileRoot();
