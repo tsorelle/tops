@@ -71,6 +71,9 @@ class TEMailMessage {
      */
     private $validationWarnings;
 
+    /** @var  array */
+    private $attachments=array();
+
     private $timeStamp;
 
     /**
@@ -217,7 +220,6 @@ class TEMailMessage {
     }
 
 
-
     /**
      * @param $recipient
      * @param string $name
@@ -274,6 +276,8 @@ class TEMailMessage {
         return true;
     }
 
+
+
     /**
      * @param $recipients
      * @param null $name
@@ -311,8 +315,6 @@ class TEMailMessage {
         }
         return false;
     }  //  setFromAddress
-
-
 
     /**
      * @param $address
@@ -607,4 +609,11 @@ class TEMailMessage {
         return $this->timeStamp;
     }
 
+    public function addAttachment($path) {
+        $this->attachments[] = $path;
+    }
+
+    public function getAttachments() {
+        return $this->attachments;
+    }
 } // TMailMessage
