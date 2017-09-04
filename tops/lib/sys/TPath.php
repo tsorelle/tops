@@ -99,4 +99,9 @@ class TPath
         }
         return self::fixSlashes($combined);
     }
+
+    public static function fromFileRoot($path,$normalize=true) {
+        $root = self::getFileRoot();
+        return self::combine($root,$path,$normalize);
+    }
 }

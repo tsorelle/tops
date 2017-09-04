@@ -57,4 +57,12 @@ class TPathTest extends TestCase
         $actual = TPath::combine($p1,$p2);
         $this->assertEquals($expected,$actual,'testCombine normalize failed.');
     }
+
+    public function testFromFileRoot() {
+        $fileRoot =   substr(str_replace('\\','/', realpath(__DIR__.'/..')),2);
+        $path = 'tests/config/settings.ini';
+        $expected = "$fileRoot/$path";
+        $actual = TPath::fromFileRoot($path);
+        $this->assertEquals($expected,$actual);
+    }
 }
