@@ -205,51 +205,30 @@ class TConfiguration
         return false;
     }
 
-
-    public function getIniEmailValues($key, $sectionKey)
+    public static function getMultipleValues($key, $sectionKey,$default=false)
     {
         $result = array();
-        $keys = self::getValue($key, $sectionKey);
+        $keys = TConfiguration::getValue($key, $sectionKey);
         if ($keys !== false) {
             $keys = explode(',', $keys);
             foreach ($keys as $key) {
-                $key = trim($key);
-                if (strstr($key, '@')) {
-                    $email = $key;
-                } else {
-                    $email = self::getValue($key, 'email');
-                }
-                if (!empty($email)) {
-                    $result[] = $email;
-                }
+                $result[] = self::getCrossReferenceValue($key,$default);
             }
         }
         return $result;
     }
 
-    public function getSmtpSettings()
+    public static function getCrossReferenceValue($value, $default= false)
     {
-        $result = new \stdClass();
-        //Enable SMTP debugging
-        // 0 = off (for production use)
-        // 1 = client messages
-        // 2 = client and server messages
-        $result->debug = self::getValue('debug', 'mail', 0);
-
-        //Set the hostname of the mail server
-        $result->host = self::getValue('host', 'mail', 'localhost');
-        //Set the SMTP port number - likely to be 25, 465 or 587
-        $result->port = self::getValue('port', 'mail', 25);
-        //Whether to use SMTP authentication
-        $auth = self::getBoolean('auth', 'mail');
-        if ($auth) {
-            $result->auth = true;
-            //Username to use for SMTP authentication
-            $result->username = self::getValue('username', 'mail', '');
-            //Password to use for SMTP authentication
-            $result->password = self::getValue('password', 'mail', '');
+        $parts = explode(':section:', $value);
+        if (sizeof($parts) == 1) {
+            return $value;
         }
-        return $result;
-
+        $key = $parts[0];
+        $section = $parts[1];
+        if (empty($key)) {
+            return self::getIniSection($section);
+        }
+        return self::getValue($key, $section, $default);
     }
 }

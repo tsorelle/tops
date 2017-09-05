@@ -119,4 +119,38 @@ class TConfigurationTest extends TestCase
         $this->assertTrue($exceptionOccured,'No exception');
 
     }
+
+    public function testMultipleValues() {
+        TConfiguration::reset();
+        TConfiguration::loadAppSettings('multivalue.ini');
+        $this->assertTrue(TConfiguration::isValid());
+
+        $values = TConfiguration::getMultipleValues('test','test-values');
+        $this->assertNotEmpty($values);
+
+        $expected = 'one';
+        $actual = $values[0];
+        $this->assertEquals($expected,$actual);
+
+        $expected = 'Ok';
+        $actual = $values[2];
+        $this->assertEquals($expected,$actual);
+
+        $this->assertTrue(is_array($values[1]));
+        $this->assertEquals(3,sizeof($values[1]));
+
+        $expected = 1;
+        $actual = $values[1]['one'];
+        $this->assertEquals($expected,$actual);
+
+        $expected = 2;
+        $actual = $values[1]['two'];
+        $this->assertEquals($expected,$actual);
+
+        $expected = 3;
+        $actual = $values[1]['three'];
+        $this->assertEquals($expected,$actual);
+
+    }
+
 }
