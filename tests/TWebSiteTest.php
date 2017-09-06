@@ -64,4 +64,25 @@ class TWebSiteTest extends TestCase
         $actual=TWebSite::ExpandUrl($subdir);
         $this->assertEquals($expected,$actual);
     }
+
+    public function testGetDomain() {
+        TWebSite::reset();
+        global $_SERVER;
+        $host = 'www.2quakers.net';
+        $_SERVER['SERVER_NAME'] = $host;
+        $expected = '2quakers.net';
+        $actual = TWebSite::GetDomain();
+        $this->assertEquals($expected,$actual);
+
+    }
+    public function testGetDomainWithSubdomain() {
+        TWebSite::reset();
+        global $_SERVER;
+        $host = 'songs.2quakers.net';
+        $_SERVER['SERVER_NAME'] = $host;
+        $expected = 'songs.2quakers.net';
+        $actual = TWebSite::GetDomain();
+        $this->assertEquals($expected,$actual);
+
+    }
 }

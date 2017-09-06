@@ -21,7 +21,7 @@ class TMailConfiguration
 
         if ($result->sendmail == 'smtp') {
             //Set the hostname of the mail server
-            $result->host = TConfiguration::getValue('host', 'mail', 'localhost');
+            $result->host = TConfiguration::getValue('host', 'mail', '127.0.0.1');
             //Set the SMTP port number - likely to be 25, 465 or 587
             $result->port = TConfiguration::getValue('port', 'mail', 25);
             //Whether to use SMTP authentication

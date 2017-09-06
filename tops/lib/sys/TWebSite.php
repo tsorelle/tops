@@ -13,6 +13,7 @@ class TWebSite
 {
     private static $baseUrl=null;
     public static function GetSiteUrl() {
+        global $_SERVER;
         if (!isset($_SERVER['HTTP_HOST'])) {
             return '';
         }
@@ -46,6 +47,18 @@ class TWebSite
             self::$baseUrl = self::GetSiteUrl();
         }
         return self::$baseUrl;
+    }
+
+    public static function GetDomain() {
+        global $_SERVER;
+        if (!isset($_SERVER['SERVER_NAME'])) {
+            return 'localdomain';
+        }
+        $parts = explode('.',strtolower($_SERVER['SERVER_NAME']));
+        if ($parts[0] == 'www') {
+            array_shift($parts);
+        }
+        return join('.',$parts);
     }
 
     public static function reset() {
