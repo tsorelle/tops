@@ -24,7 +24,7 @@ class TPostOffice {
     public static function getInstance()
     {
         if (!isset(self::$instance)) {
-            self::$instance = TObjectContainer::Get('postOffice');
+            self::$instance = new TPostOffice();
         }
         return self::$instance;
     }
