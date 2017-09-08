@@ -53,8 +53,13 @@ class TPostOffice {
                 $mailer = new TNullMailer(); // todo: maybe use generic php mailer
             }
         }
-        if ($mailboxes == null ) {
-            $mailboxes = new TDbMailboxManager();
+        if ($mailboxes == null) {
+            if (TObjectContainer::HasDefinition('tops.mailboxes')) {
+                $mailer = TObjectContainer::Get('tops.mailboxes');
+            }
+            else {
+                $mailboxes = new TDbMailboxManager();
+            }
         }
         $this->mailboxes = $mailboxes;
         $this->mailer = $mailer;
