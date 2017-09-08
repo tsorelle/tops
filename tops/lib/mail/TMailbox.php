@@ -79,7 +79,7 @@ class TMailbox implements IMailbox
      */
     public function setName($name)
     {
-        $this->displayText = $name;
+        $this->displaytext = $name;
     }
 
     /**

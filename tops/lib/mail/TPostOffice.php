@@ -112,7 +112,7 @@ class TPostOffice {
             return null;
         }
         $result->setFromAddress($mailbox->getEmail(), $mailbox->getName());
-        $result->setReturnAddress($bounce);
+        $result->setReturnAddress($bounce->getEmail());
         if (!empty($subject))
             $result->setSubject($subject);
         if (!empty($body)) {

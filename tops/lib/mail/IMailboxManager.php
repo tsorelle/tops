@@ -28,7 +28,7 @@ interface IMailboxManager {
 
     /**
      * @param $mailboxCode
-     * @return IMailbox
+     * @return bool|IMailbox
      */
     public function findByCode($mailboxCode);
 
@@ -58,7 +58,7 @@ interface IMailboxManager {
      * @param $name
      * @param $address
      * @param $description
-     * @return IMailbox
+     * @return bool|IMailbox
      */
     public function createMailbox($code, $name, $address, $description);
 
