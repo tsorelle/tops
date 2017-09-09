@@ -7,6 +7,7 @@
  */
 
 namespace Tops\mail;
+use Tops\db\TimeStampedEntity;
 use Tops\sys\TObjectContainer;
 
 
@@ -14,7 +15,7 @@ use Tops\sys\TObjectContainer;
  * Class TMailbox
  * @package Tops\sys
  */
-class TMailbox implements IMailbox
+class TMailbox extends TimeStampedEntity implements IMailbox
 {
     /**
      * @var int
