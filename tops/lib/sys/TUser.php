@@ -13,6 +13,9 @@ use Tops\sys\IUserFactory;
 use Tops\sys\TNullUserFactory;
 
 class TUser {
+
+    const AdminRole = 'administrator';
+    const AuthenticatedRole = 'authenticated';
     /**
      * @var IUser
      */
