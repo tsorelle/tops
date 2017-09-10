@@ -29,6 +29,7 @@ abstract class TServiceCommand {
      * @var array
      */
     private $authorizations = array();
+    private $authorizedRoles = array();
     private $errorCount = 0;
 
     abstract protected function run();
@@ -119,7 +120,8 @@ abstract class TServiceCommand {
 
 
     public function isAuthorized() {
-        if (empty($this->authorizations)) {
+
+        if (empty($this->authorizations && empty($this->authorizedRoles))) {
             return true;
         }
         /**
@@ -128,6 +130,11 @@ abstract class TServiceCommand {
         $user = $this->getUser();
         if ($user->isAdmin()) {
             return true;
+        }
+        foreach($this->authorizedRoles as $role) {
+            if ($user->isMemberOf($role)) {
+                return true;
+            }
         }
         foreach($this->authorizations as $auth) {
             if ($user->isAuthorized($auth)) {
@@ -146,10 +153,18 @@ abstract class TServiceCommand {
      *         $this->addAuthorization("administer registrations");
      *     }
      */
-    protected function addAuthorization($authorization) {
+    protected function addAuthorization($authorization)
+    {
         if (!in_array($authorization, $this->authorizations)) {
             array_push($this->authorizations, $authorization);
         }
+    }
+
+    protected function addAuthorizedRole($roleName) {
+        if (!in_array($roleName, $this->authorizedRoles)) {
+            array_push($this->authorizedRoles, $roleName);
+        }
+
     }
 
 
