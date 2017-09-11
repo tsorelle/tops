@@ -28,6 +28,8 @@ interface IEntityRepository
      */
     public function get($id);
 
+    public function getAll($includeInactive=false);
+
     public function updateValues($id, array $fields, $userName = 'admin');
 
     public function update($dto, $userName = 'admin');
@@ -37,10 +39,6 @@ interface IEntityRepository
     public function delete($id);
 
     public function remove($id);
-
-    // public function getAll($where = '', $includeInactive = false);
-
-    // public function getFirst($where = '', $includeInactive = false);
 
     public function getEntity($value, $includeInactive = false, $fieldName = null);
 
