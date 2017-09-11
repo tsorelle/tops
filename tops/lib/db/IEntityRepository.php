@@ -38,10 +38,10 @@ interface IEntityRepository
 
     public function remove($id);
 
-    public function getAll($where = '', $includeInactive = false);
+    // public function getAll($where = '', $includeInactive = false);
 
-    public function getFirst($where = '', $includeInactive = false);
+    // public function getFirst($where = '', $includeInactive = false);
 
-    public function getEntity($fieldName, $value, $includeInactive = false);
+    public function getEntity($value, $includeInactive = false, $fieldName = null);
 
 }

@@ -48,16 +48,11 @@ namespace Tops\mail;
       */
      public function findByCode($mailboxCode)
      {
-         $result = $this->repository->getFirst("mailboxcode='$mailboxCode'");
+         $result = $this->repository->getEntity($mailboxCode);
          if (empty($result)) {
              return false;
          }
          return $result;
-         /*
-         return TMailbox::Create($result->mailboxcode,$result->displayText,$result->address,
-             empty($result->description) ? '' : $result->description,$result->id);
-         */
-
      }
 
      /**
