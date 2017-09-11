@@ -41,4 +41,7 @@ interface IEntityRepository
     public function getAll($where = '', $includeInactive = false);
 
     public function getFirst($where = '', $includeInactive = false);
+
+    public function getEntity($fieldName, $value, $includeInactive = false);
+
 }
