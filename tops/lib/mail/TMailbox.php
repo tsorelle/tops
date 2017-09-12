@@ -20,19 +20,21 @@ class TMailbox extends TimeStampedEntity implements IMailbox
     /**
      * @var int
      */
-    private $id;
+    public $id;
     /**
      * @var string
      */
-    private $mailboxcode;
+    public $mailboxcode;
     /**
      * @var string
      */
-    private $displaytext;
+    public $displaytext;
 
-    private $description;
+    public $description;
 
-    private $address;
+    public $address;
+
+    public $active;
 
 
     /**

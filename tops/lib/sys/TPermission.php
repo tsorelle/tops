@@ -11,9 +11,10 @@ namespace Tops\sys;
 
 class TPermission
 {
-    private $id;
-    private $permissionName;
-    private $description;
+    public $id;
+    public $permissionName;
+    public $description;
+    public $active = 1;
     private $roles = array();
 
     public function getId() { return $this->id;}
