@@ -57,11 +57,11 @@ namespace Tops\mail;
 
      /**
       * @param null $filter
-      * @return IMailbox[]
+      * @return \stdClass[]
       */
      public function getMailboxes($filter = null)
      {
-         // TODO: Implement getMailboxes() method.
+
      }
 
      /**

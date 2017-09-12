@@ -34,7 +34,7 @@ interface IMailboxManager {
 
     /**
      * @param null $filter
-     * @return IMailbox[]
+     * @return \stdClass[]
      */
     public function getMailboxes($filter = null);
 
