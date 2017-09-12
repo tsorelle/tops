@@ -84,4 +84,14 @@ class FakePermissionsManager implements IPermissionsManager
         $this->permissions[$name] = $permission;
         return (true);
     }
+
+    /**
+     * @param string $roleName
+     * @param string $permissionName
+     * @return bool
+     */
+    public function revokePermission($roleName, $permissionName)
+    {
+        // TODO: Implement revokePermission() method.
+    }
 }

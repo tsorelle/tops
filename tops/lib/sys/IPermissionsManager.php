@@ -36,6 +36,13 @@ interface IPermissionsManager
      */
     public function assignPermission($roleName, $permissionName);
 
+    /**
+     * @param string $roleName
+     * @param string $permissionName
+     * @return bool
+     */
+    public function revokePermission($roleName, $permissionName);
+
     public function addPermission($name, $description);
 
 }
