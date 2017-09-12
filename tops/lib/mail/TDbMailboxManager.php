@@ -10,11 +10,12 @@ namespace Tops\mail;
 
  use Tops\db\EntityRepositoryFactory;
  use Tops\db\IEntityRepository;
+ use Tops\db\IMailboxesRepository;
 
  class TDbMailboxManager implements IMailboxManager {
 
      /**
-      * @var IEntityRepository
+      * @var IMailboxesRepository
       */
      private $repository;
 
@@ -59,8 +60,9 @@ namespace Tops\mail;
       * @param null $filter
       * @return \stdClass[]
       */
-     public function getMailboxes($filter = null)
+     public function getMailboxes($showAll = false)
      {
+         return $this->repository->getMailboxList($showAll);
 
      }
 

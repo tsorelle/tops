@@ -53,7 +53,7 @@ class FakeMailboxManager implements IMailboxManager
      * @param null $filter
      * @return IMailbox[]
      */
-    public function getMailboxes($filter = null)
+    public function getMailboxes($showAll=false)
     {
         // TODO: Implement getMailboxes() method.
     }

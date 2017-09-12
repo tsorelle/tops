@@ -11,5 +11,5 @@ namespace Tops\db;
 
 interface IMailboxesRepository extends IEntityRepository
 {
-    public function getMailboxList($publicOnly = true, $includeInactive = false);
+    public function getMailboxList($showAll=false);
 }
