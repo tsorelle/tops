@@ -25,7 +25,7 @@ class FakePermissionsManager implements IPermissionsManager
      * @param string $roleName
      * @return bool
      */
-    public function addRole($roleName)
+    public function addRole($roleName,$roleDescription='')
     {
         $exists = isset($this->roles[$roleName]);
         if (!$exists) {

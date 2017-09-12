@@ -15,7 +15,7 @@ interface IPermissionsManager
      * @param string $roleName
      * @return bool
      */
-    public function addRole($roleName);
+    public function addRole($roleName,$roleDescription=null);
 
     /**
      * @param string $roleName
