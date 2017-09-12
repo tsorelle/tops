@@ -18,6 +18,12 @@ interface IPermissionsManager
     public function addRole($roleName);
 
     /**
+     * @param string $roleName
+     * @return bool
+     */
+    public function removeRole($roleName);
+
+    /**
      * @return string[]
      */
     public function getRoles();
@@ -26,6 +32,8 @@ interface IPermissionsManager
      * @return TPermission[]
      */
     public function getPermissions();
+
+    public function addPermission($name, $description);
 
     public function getPermission($permissionName);
 
@@ -42,7 +50,5 @@ interface IPermissionsManager
      * @return bool
      */
     public function revokePermission($roleName, $permissionName);
-
-    public function addPermission($name, $description);
 
 }
