@@ -9,6 +9,8 @@
 namespace Tops\sys;
 
 
+use DateTime;
+
 class TDates
 {
     public static function reformatDateTime($timeString, $newFormat, $originalFormat=null)
