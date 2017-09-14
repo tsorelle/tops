@@ -13,7 +13,17 @@ use DateTime;
 
 class TDates
 {
+
     public static function reformatDateTime($timeString, $newFormat, $originalFormat=null)
+    {
+        $time = self::stringToTimestamp($timeString,$originalFormat);
+        if ($time === false) {
+            return $timeString;
+        }
+        return date($newFormat, $time);
+    }
+
+    public static function stringToTimestamp($timeString, $originalFormat=null)
     {
         if (empty($originalFormat)) {
             // assume mysql format
@@ -24,10 +34,7 @@ class TDates
             $timeString = $dateobj->format(Datetime::ATOM);
         }
         $time = @strtotime($timeString);
-        if ($time === false) {
-            return $timeString;
-        }
-        return date($newFormat, $time);
+        return $time;
     }
 
     public static function formatDate($timestamp=null, $format='Y-m-d') {
