@@ -13,6 +13,8 @@ use DateTime;
 
 class TDates
 {
+    const MySqlDateFormat = 'Y-m-d';
+    const MySqlDateTimeFormat = 'Y-m-d H:i:s';
 
     public static function reformatDateTime($timeString, $newFormat, $originalFormat=null)
     {
@@ -27,7 +29,7 @@ class TDates
     {
         if (empty($originalFormat)) {
             // assume mysql format
-            $originalFormat = 'Y-m-d H:i:s';
+            $originalFormat = self::MySqlDateTimeFormat;
         }
         $dateobj = @DateTime::createFromFormat($originalFormat, $timeString);
         if (!empty($dateobj)) {
@@ -37,19 +39,19 @@ class TDates
         return $time;
     }
 
-    public static function formatDate($timestamp=null, $format='Y-m-d') {
+    public static function formatDate($timestamp=null, $format=self::MySqlDateFormat) {
         return date($format,$timestamp);
     }
 
-    public static function formatDateTime($timestamp=null, $format='Y-m-d H:i:s') {
+    public static function formatDateTime($timestamp=null, $format=self::MySqlDateTimeFormat) {
         return date($format,$timestamp);
     }
 
-    public static function today($format='Y-m-d') {
+    public static function today($format=self::MySqlDateFormat) {
         return date($format);
     }
 
-    public static function now($format='Y-m-d H:i:s') {
+    public static function now($format=self::MySqlDateTimeFormat) {
         return date($format);
     }
 
