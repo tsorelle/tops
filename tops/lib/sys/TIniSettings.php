@@ -67,4 +67,15 @@ class TIniSettings {
         return false;
     }
 
+    public function getList($sectionKey) {
+        $section = $this->getSection($sectionKey);
+        $result = array();
+        foreach ($section as $item => $enabled) {
+            if ($enabled) {
+                $result[] = $item;
+            }
+        }
+        return $result;
+    }
+
 }
