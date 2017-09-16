@@ -35,6 +35,9 @@ interface IPermissionsManager
 
     public function addPermission($name, $description);
 
+    /**
+     * @return TPermission
+     */
     public function getPermission($permissionName);
 
     /**

@@ -20,8 +20,16 @@ class TPermission
     public function getId() { return $this->id;}
     public function getPermissionName() { return $this->permissionName;}
     public function getDescription() { return $this->description;}
+
+    /**
+     * @return string[]
+     */
     public function getRoles() { return $this->roles;}
 
+    /**
+     * @param $roleName
+     * @return bool
+     */
     public function check($roleName) {
         return in_array($roleName,$this->roles);
     }

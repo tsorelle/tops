@@ -67,7 +67,32 @@ abstract class TAbstractUser implements IUser
      * @param string $value
      * @return bool
      */
-    public abstract function isAuthorized($value = '');
+    public function isAuthorized($value = '') {
+        if ($this->isAdmin()) {
+            return true;
+        }
+        if ($value == 'authenticated' && $this->isAuthenticated()) {
+            return true;
+        }
+
+        // if value is a member role, ok
+        // assumes that role names never match permission names!
+        if ($this->isMemberOf($value)) {
+            return true;
+        }
+
+        // assume value is a permission name
+        $permission = TUser::getPermissionManager()->getPermission($value);
+        if (!empty($permission)) {
+            $roles = $this->getRoles();
+            foreach ($roles as $roleName) {
+                if ($permission->check($roleName)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     /**
      * @return bool

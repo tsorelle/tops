@@ -8,7 +8,12 @@
 
 namespace Tops\sys;
 
-// Use for testing
+/**
+ * Class NullPermissionsManager
+ * @package Tops\sys
+ *
+ * Use if no permission manager available.  No permissions are defined.  Exceptions raised for any managment functions.
+ */
 
 class NullPermissionsManager implements IPermissionsManager
 {
@@ -19,7 +24,7 @@ class NullPermissionsManager implements IPermissionsManager
      */
     public function addRole($roleName, $roleDescription = null)
     {
-        return true;
+        throw new \Exception('Role management not supported.');
     }
 
     /**
@@ -28,7 +33,7 @@ class NullPermissionsManager implements IPermissionsManager
      */
     public function removeRole($roleName)
     {
-        return true;
+        throw new \Exception('Role management not supported.');
     }
 
     /**
@@ -49,7 +54,7 @@ class NullPermissionsManager implements IPermissionsManager
 
     public function addPermission($name, $description)
     {
-        return true;
+        throw new \Exception('Role management not supported.');
     }
 
     public function getPermission($permissionName)
@@ -64,7 +69,7 @@ class NullPermissionsManager implements IPermissionsManager
      */
     public function assignPermission($roleName, $permissionName)
     {
-        return true;
+        throw new \Exception('Role management not supported.');
     }
 
     /**
@@ -74,6 +79,6 @@ class NullPermissionsManager implements IPermissionsManager
      */
     public function revokePermission($roleName, $permissionName)
     {
-        return true;
+        throw new \Exception('Role management not supported.');
     }
 }

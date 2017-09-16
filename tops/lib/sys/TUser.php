@@ -16,6 +16,8 @@ class TUser {
 
     const AdminRole = 'administrator';
     const AuthenticatedRole = 'authenticated';
+    const PermissionsClassKey = 'tops.permissions';
+
     /**
      * @var IUser
      */
@@ -98,5 +100,20 @@ class TUser {
 
     }
 
-
+    /**
+     * @var IPermissionsManager
+     */
+    private static $permissionManger;
+    public static  function getPermissionManager()
+    {
+        if (!isset(self::$permissionManger)) {
+            if (TObjectContainer::HasDefinition(self::PermissionsClassKey)) {
+                self::$permissionManger = TObjectContainer::Get(self::PermissionsClassKey);
+            }
+            else {
+                self::$permissionManger = new NullPermissionsManager();
+            }
+        }
+        return self::$permissionManger;
+    }
 }
