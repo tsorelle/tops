@@ -34,7 +34,7 @@ class TUser {
         return self::$currentUser;
     }
 
-    /**
+    /**T
      * @param IUser $user
      */
     public static function setCurrentUser(IUser $user) {
