@@ -80,8 +80,18 @@ abstract class TAbstractUser implements IUser
         if ($this->isMemberOf($value)) {
             return true;
         }
-
         // assume value is a permission name
+        return $this->checkPermission($value);
+
+
+    }
+
+    /**
+     * @param $value
+     * @return bool
+     */
+    protected function checkPermission($value): bool
+    {
         $permission = TUser::getPermissionManager()->getPermission($value);
         if (!empty($permission)) {
             $roles = $this->getRoles();
@@ -93,6 +103,8 @@ abstract class TAbstractUser implements IUser
         }
         return false;
     }
+
+
 
     /**
      * @return bool
