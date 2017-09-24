@@ -103,4 +103,9 @@ class FakePermissionsManager implements IPermissionsManager
     {
         // TODO: Implement removeRole() method.
     }
+
+    public function removePermission($name)
+    {
+        // TODO: Implement removePermission() method.
+    }
 }
