@@ -81,4 +81,23 @@ class NullPermissionsManager implements IPermissionsManager
     {
         throw new \Exception('Role management not supported.');
     }
+
+    public function removePermission($name)
+    {
+        // not implemented
+    }
+
+    /**
+     * @return \stdClass[]
+     *
+     * {
+     *    permissionName : string;
+     *    description: string;
+     *    roles: string[];
+     * }
+     */
+    public function getPermissionsList()
+    {
+        return [];
+    }
 }

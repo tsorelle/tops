@@ -108,4 +108,18 @@ class FakePermissionsManager implements IPermissionsManager
     {
         // TODO: Implement removePermission() method.
     }
+
+    /**
+     * @return \stdClass[]
+     *
+     * {
+     *    permissionName : string;
+     *    description: string;
+     *    roles: string[];
+     * }
+     */
+    public function getPermissionsList()
+    {
+        // TODO: Implement getPermissionsList() method.
+    }
 }
