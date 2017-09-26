@@ -56,15 +56,4 @@ interface IPermissionsManager
      */
     public function revokePermission($roleName, $permissionName);
 
-    /**
-     * @return \stdClass[]
-     *
-     * {
-     *    permissionName : string;
-     *    description: string;
-     *    roles: string[];
-     * }
-     */
-    public function getPermissionsList();
-
 }
