@@ -174,4 +174,5 @@ class TestUser extends TAbstractUser
     {
         throw new Exception("Unsupported method 'loadByEmail");
     }
+
 }

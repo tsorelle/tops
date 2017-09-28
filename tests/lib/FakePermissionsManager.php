@@ -122,4 +122,9 @@ class FakePermissionsManager implements IPermissionsManager
     {
         // TODO: Implement getPermissionsList() method.
     }
+
+    public function verifyPermission($permissionName)
+    {
+        // TODO: Implement verifyPermission() method.
+    }
 }

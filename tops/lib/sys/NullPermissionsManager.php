@@ -100,4 +100,9 @@ class NullPermissionsManager implements IPermissionsManager
     {
         return [];
     }
+
+    public function verifyPermission($permissionName)
+    {
+        return false;
+    }
 }

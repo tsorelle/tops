@@ -11,8 +11,6 @@ namespace Tops\sys;
 
 abstract class TAbstractUser implements IUser
 {
-
-
     protected $id = 0;
     protected $userName = '';
     protected $isCurrentUser = false;
@@ -75,36 +73,8 @@ abstract class TAbstractUser implements IUser
             return true;
         }
 
-        // if value is a member role, ok
-        // assumes that role names never match permission names!
-        if ($this->isMemberOf($value)) {
-            return true;
-        }
-        // assume value is a permission name
-        return $this->checkPermission($value);
-
-
+        return TUser::getPermissionManager()->verifyPermission($value);
     }
-
-    /**
-     * @param $value
-     * @return bool
-     */
-    protected function checkPermission($value): bool
-    {
-        $permission = TUser::getPermissionManager()->getPermission($value);
-        if (!empty($permission)) {
-            $roles = $this->getRoles();
-            foreach ($roles as $roleName) {
-                if ($permission->check($roleName)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-
 
     /**
      * @return bool
@@ -173,8 +143,6 @@ abstract class TAbstractUser implements IUser
      */
     public function getUserShortName($defaultToUsername = true)
     {
-
-        TTracer::Trace("Get short name for $this->userName");
         $name = $this->getProfileValue('shortName');
         if (empty($name)) {
             return $this->getFullName($defaultToUsername);
@@ -203,7 +171,6 @@ abstract class TAbstractUser implements IUser
     }
 
     public function getProfileValue($key) {
-        TTracer::Trace("getProfileValue($key) for $this->userName");
         if (!isset($this->profile)) {
             $userName = $this->getUserName();
             if (empty($userName)) {
@@ -214,7 +181,6 @@ abstract class TAbstractUser implements IUser
         }
 
         if (array_key_exists($key,$this->profile)) {
-            TTracer::Trace("getProfileValue($key) key exists for $this->userName");
             return $this->profile[$key];
         }
         return '';

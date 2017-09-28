@@ -171,4 +171,13 @@ class TNullUser implements IUser {
     {
         // ignore
     }
+
+    /**
+     * @param string $value
+     * @return bool
+     */
+    public function checkPermission($value)
+    {
+        return false;
+    }
 }
