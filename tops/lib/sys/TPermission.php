@@ -9,17 +9,9 @@
 namespace Tops\sys;
 
 
-class TPermission
+class TPermission extends TBasicPermission
 {
-    public $id;
-    public $permissionName;
-    public $description;
-    public $active = 1;
     private $roles = array();
-
-    public function getId() { return $this->id;}
-    public function getPermissionName() { return $this->permissionName;}
-    public function getDescription() { return $this->description;}
 
     /**
      * @return string[]
@@ -33,9 +25,6 @@ class TPermission
     public function check($roleName) {
         return in_array($roleName,$this->roles);
     }
-    public function setId($value) {$this->id = $value;}
-    public function setPermissionName($value) {$this->permissionName = $value;}
-    public function setDescription($value) {$this->description = $value;}
     public function addRole($value) {
         if (!in_array($value,$this->roles)) {
             $this->roles[] = $value;
