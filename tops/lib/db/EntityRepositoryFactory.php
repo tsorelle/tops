@@ -10,6 +10,7 @@ namespace Tops\db;
 
 
 use Tops\sys\TConfiguration;
+use Tops\sys\TStrings;
 
 class EntityRepositoryFactory
 {
@@ -29,7 +30,10 @@ class EntityRepositoryFactory
                 throw new \Exception('Namespace for repositories not configured.');
             }
         }
-        $className = $namespace.'\\'.strtoupper(substr($name,0,1)).substr($name,1).'Repository';
+
+        $name = TStrings::toCamelCase($name);
+
+        $className = $namespace.'\\'.$name.'Repository';
         return new $className();
     }
 }
