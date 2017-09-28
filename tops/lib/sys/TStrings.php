@@ -12,18 +12,33 @@ namespace Tops\sys;
 class TStrings
 {
 
+    const initialCapFormat = 1;
+    const wordCapsFormat = 2;
+    const keyFormat = 3;
 
-    public static function toCamelCase($s) {
-        $parts = explode('-',$s);
+    public static function convertNameFormat($name,$format) {
+        switch ($format) {
+            case self::keyFormat :
+                return strtolower(str_replace(' ','_',trim($name)));
+            case self::initialCapFormat :
+                return ucfirst(str_replace('_',' ',strtolower(trim($name))));
+            case self::wordCapsFormat :
+                $result = '';
+                $words = explode(' ',str_replace('_',' ',strtolower($name)));
+                foreach ($words as $word) {
+                    $result .= ucfirst($word).' ';
+                }
+                return trim($result);
+            default:
+                throw new \Exception('Invalid format constant '.$format);
+        }
+    }
+
+    public static function toCamelCase($s,$delimiter='-') {
+        $parts = explode($delimiter,$s);
         $len = sizeof($parts);
         for ($i = 0; $i<$len;$i++) {
-            $part = $parts[$i];
-            $initial = substr($part,0,1);
-            if ($initial) {
-                $initial = strtoupper($initial);
-                $remainder = substr($part,1);
-                $parts[$i] = strtoupper($initial).($remainder ? $remainder : '');
-            }
+            $parts[$i] =  ucfirst($parts[$i]);
         }
         return join('',$parts);
     }
@@ -39,12 +54,7 @@ class TStrings
             if ($i > 0 && ($part == 'the' || $part == 'a' || $part == 'of' || $part == 'an' || $part == 'in')) {
                 continue;
             }
-            $initial = substr($part,0,1);
-            if ($initial) {
-                $initial = strtoupper($initial);
-                $remainder = substr($part,1);
-                $parts[$i] = strtoupper($initial).($remainder ? $remainder : '');
-            }
+            $parts[$i] = ucfirst($part);
         }
         return join(' ',$parts);
     }
