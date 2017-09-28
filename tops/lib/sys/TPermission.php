@@ -23,9 +23,11 @@ class TPermission extends TBasicPermission
      * @return bool
      */
     public function check($roleName) {
+        $roleName = TStrings::convertNameFormat($roleName,TStrings::wordCapsFormat);
         return in_array($roleName,$this->roles);
     }
     public function addRole($value) {
+        $value = TStrings::convertNameFormat($value,TStrings::wordCapsFormat);
         if (!in_array($value,$this->roles)) {
             $this->roles[] = $value;
         }
