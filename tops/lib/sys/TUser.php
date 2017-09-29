@@ -15,8 +15,16 @@ use Tops\sys\TNullUserFactory;
 class TUser {
 
     const AdminRole = 'administrator';
+    const DefaultUserName = 'guest';
     const AuthenticatedRole = 'authenticated';
     const PermissionsClassKey = 'tops.permissions';
+    const UserFactoryClassKey = 'tops.userfactory';
+    const profileKeyFirstName ='firstName';
+    const profileKeyLastName  ='lastName';
+    const profileKeyFullName  ='fullName';
+    const profileKeyShortName ='shortName';
+    const profileKeyEmail     ='email';
+
 
     /**
      * @var IUser

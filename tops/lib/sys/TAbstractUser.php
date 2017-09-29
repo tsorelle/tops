@@ -113,7 +113,10 @@ abstract class TAbstractUser implements IUser
      */
     public function getUserName()
     {
-        return $this->userName;
+        if (isset($this->userName)) {
+            return $this->userName;
+        }
+        return TUser::DefaultUserName;
     }  //  getUserName
 
     /**
@@ -122,12 +125,13 @@ abstract class TAbstractUser implements IUser
      */
     public function getFullName($defaultToUsername = true)
     {
+        if (!isset($this->userName)) {
+            return '';
+        }
         if ($this->userName == 'admin') {
             return "The administrator";
         }
-
-        $name = $this->getProfileValue('fullName');
-
+        $name = $this->getProfileValue(TUser::profileKeyFullName);
         if (empty($name)) {
             if ($defaultToUsername) {
                 return $this->userName;
@@ -143,7 +147,7 @@ abstract class TAbstractUser implements IUser
      */
     public function getUserShortName($defaultToUsername = true)
     {
-        $name = $this->getProfileValue('shortName');
+        $name = $this->getProfileValue(TUser::profileKeyShortName);
         if (empty($name)) {
             return $this->getFullName($defaultToUsername);
         }
@@ -171,22 +175,18 @@ abstract class TAbstractUser implements IUser
     }
 
     public function getProfileValue($key) {
-        if (!isset($this->profile)) {
-            $userName = $this->getUserName();
-            if (empty($userName)) {
-                return null;
+        if ($this->isAuthenticated()) {
+            if (!isset($this->profile)) {
+                $this->loadProfile();
             }
 
-            $this->loadProfile();
-        }
-
-        if (array_key_exists($key,$this->profile)) {
-            return $this->profile[$key];
+            if (array_key_exists($key, $this->profile)) {
+                return $this->profile[$key];
+            }
+            return false;
         }
         return '';
     }
-
-
 
     public function setProfileValue($key,$value) {
         if (!isset($this->profile)) {
