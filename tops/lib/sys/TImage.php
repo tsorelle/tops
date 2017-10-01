@@ -11,8 +11,9 @@ namespace Tops\sys;
 
 class TImage
 {
-    const sizeResponsive = 0;
+    const sizeOriginal = 0;
     const sizeThumbnail = 1;
     const sizeCameo = 2;
     const sizeLarge = 3;
+    const sizeResponsive = 4;
 }
