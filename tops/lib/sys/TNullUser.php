@@ -180,4 +180,9 @@ class TNullUser implements IUser {
     {
         return false;
     }
+
+    public function getUserPicture($size = 0, array $classes = [], array $attributes = [])
+    {
+        return '';
+    }
 }
