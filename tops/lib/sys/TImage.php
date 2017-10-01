@@ -13,7 +13,7 @@ class TImage
 {
     const sizeOriginal = 0;
     const sizeThumbnail = 96;
-    const sizeCameo = 206;
+    const sizeCameo = 128;
     const sizeLarge = 512;
     const sizeResponsive = 4;
     const sizeCustom = 512;
