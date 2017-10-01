@@ -101,6 +101,7 @@ interface IUser
 
     public function setProfileValue($key,$value);
 
+    public function getUserPicture($size=0, array $classes = [], array $attributes = []);
    // public function updateProfile($key=null);
 
    //  public function getContentTypes();

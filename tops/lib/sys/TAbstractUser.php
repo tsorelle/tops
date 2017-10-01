@@ -208,5 +208,9 @@ abstract class TAbstractUser implements IUser
         return array();
     }
 
+    public function getUserPicture($size=0, array $classes = [], array $attributes = []) {
+        return ''; // override in subclasses as deisire.
+    }
+
 
 }
