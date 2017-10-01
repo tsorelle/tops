@@ -12,8 +12,8 @@ namespace Tops\sys;
 abstract class TAbstractUser implements IUser
 {
     protected $id = 0;
-    protected $userName = '';
-    protected $isCurrentUser = false;
+    protected $userName;
+    protected $isCurrentUser;
 
     /**
      * @var array
@@ -96,7 +96,7 @@ abstract class TAbstractUser implements IUser
      */
     public function getFirstName()
     {
-        return $this->getProfileValue('firstName');
+        return $this->getProfileValue(TUser::profileKeyFirstName);
     }  //  getFirstName
 
     /**
@@ -104,7 +104,7 @@ abstract class TAbstractUser implements IUser
      */
     public function getLastName()
     {
-        return $this->getProfileValue('lastName');
+        return $this->getProfileValue(TUser::profileKeyLastName);
 
     }  //  getLastName
 
@@ -161,12 +161,12 @@ abstract class TAbstractUser implements IUser
      */
     public function getEmail()
     {
-        return $this->getProfileValue('email');
+        return $this->getProfileValue(TUser::profileKeyEmail);
     }  //  getEmail
 
     public function isCurrent()
     {
-        return $this->isCurrentUser;
+        return  !empty($this->isCurrentUser);
     }
 
     protected function setCurrent()
