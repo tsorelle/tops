@@ -9,6 +9,10 @@
 namespace Tops\sys;
 
 
+use Tops\cache\ITopsCache;
+use Tops\cache\TSessionCache;
+use Tops\sys\TConfiguration;
+
 abstract class TAbstractUser implements IUser
 {
     protected $id = 0;
@@ -20,7 +24,18 @@ abstract class TAbstractUser implements IUser
      */
     protected   $profile = null;
 
-    protected abstract function test();
+    private function getCachedProfile() {
+        $cache = TUser::getProfileCache();
+        $result = $cache->Get('users.'.$this->userName);
+        return $result;
+    }
+
+    private function cacheProfile() {
+        $cache = TUser::getProfileCache();
+        $result = $cache->Set('users.'.$this->userName,$this->profile,20);
+        return $result;
+    }
+
 
     /**
      * @param $id
@@ -80,6 +95,16 @@ abstract class TAbstractUser implements IUser
      * @return bool
      */
     public abstract function isAuthenticated();
+
+    protected function loadProfileValues()
+    {
+        $this->profile = $this->getCachedProfile();
+        if ($this->profile === null) {
+            $this->profile = array();
+            $this->loadProfile();
+            $this->cacheProfile();
+        }
+    }
 
     protected abstract function loadProfile();
 
@@ -163,7 +188,7 @@ abstract class TAbstractUser implements IUser
     public function getProfileValue($key) {
         if ($this->isAuthenticated()) {
             if (!isset($this->profile)) {
-                $this->loadProfile();
+                $this->loadProfileValues();
             }
 
             if (array_key_exists($key, $this->profile)) {
@@ -176,7 +201,7 @@ abstract class TAbstractUser implements IUser
 
     public function setProfileValue($key,$value) {
         if (!isset($this->profile)) {
-            $this->loadProfile();
+            $this->loadProfileValues();
         }
         $isUpdate = array_key_exists($key,$this->profile) ;
         $this->profile[$key] = $value;
@@ -198,5 +223,8 @@ abstract class TAbstractUser implements IUser
         return ''; // override in subclasses as deisired.
     }
 
-
+    protected function getProfileFieldKey($key) {
+        $default = str_replace('-','_',$key);
+        return TConfiguration::getValue($key,'user-attributes',$default);
+    }
 }

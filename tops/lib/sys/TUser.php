@@ -9,6 +9,8 @@
 namespace Tops\sys;
 
 
+use Tops\cache\ITopsCache;
+use Tops\cache\TSessionCache;
 use Tops\sys\IUserFactory;
 use Tops\sys\TNullUserFactory;
 
@@ -19,10 +21,8 @@ class TUser {
     const AuthenticatedRole = 'authenticated';
     const PermissionsClassKey = 'tops.permissions';
     const UserFactoryClassKey = 'tops.userfactory';
-    const profileKeyFirstName ='firstName';
-    const profileKeyLastName  ='lastName';
-    const profileKeyFullName  ='fullName';
-    const profileKeyShortName ='shortName';
+    const profileKeyFullName  ='full-name';
+    const profileKeyShortName ='short-name';
     const profileKeyEmail     ='email';
 
 
@@ -124,4 +124,25 @@ class TUser {
         }
         return self::$permissionManger;
     }
+
+    /**
+     * @var ITopsCache
+     */
+    private static $profileCache;
+
+    public static function clearProfiles() {
+        self::getProfileCache()->Flush('users');
+    }
+
+    /**
+     * @return ITopsCache
+     */
+    public static function getProfileCache()
+    {
+        if (!isset(self::$profileCache)) {
+            self::$profileCache = new TSessionCache();
+        }
+        return self::$profileCache;
+    }
+
 }
