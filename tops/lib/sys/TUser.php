@@ -24,6 +24,8 @@ class TUser {
     const profileKeyFullName  ='full-name';
     const profileKeyShortName ='short-name';
     const profileKeyEmail     ='email';
+    const appAdminRoleName = 'Peanut Administrator';
+    const mailAdminRoleName = 'Mail Administrator';
 
 
     /**
