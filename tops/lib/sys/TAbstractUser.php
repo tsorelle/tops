@@ -223,8 +223,4 @@ abstract class TAbstractUser implements IUser
         return ''; // override in subclasses as deisired.
     }
 
-    public static function getProfileFieldKey($key) {
-        $default = str_replace('-','_',$key);
-        return TConfiguration::getValue($key,'user-attributes',$default);
-    }
 }

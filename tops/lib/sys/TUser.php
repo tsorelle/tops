@@ -145,4 +145,13 @@ class TUser {
         return self::$profileCache;
     }
 
+    /**
+     * @param $key
+     * @return string
+     */
+    public static function getProfileFieldKey($key) {
+        $default = str_replace('-','_',$key);
+        return TConfiguration::getValue($key,'user-attributes',$default);
+    }
+
 }
