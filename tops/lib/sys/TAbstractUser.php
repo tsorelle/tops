@@ -94,23 +94,6 @@ abstract class TAbstractUser implements IUser
     /**
      * @return string
      */
-    public function getFirstName()
-    {
-        return $this->getProfileValue(TUser::profileKeyFirstName);
-    }  //  getFirstName
-
-    /**
-     * @return string
-     */
-    public function getLastName()
-    {
-        return $this->getProfileValue(TUser::profileKeyLastName);
-
-    }  //  getLastName
-
-    /**
-     * @return string
-     */
     public function getUserName()
     {
         if (isset($this->userName)) {
@@ -133,7 +116,8 @@ abstract class TAbstractUser implements IUser
         }
         $name = $this->getProfileValue(TUser::profileKeyFullName);
         if (empty($name)) {
-            if ($defaultToUsername) {
+            $name = $this->$this->getProfileValue(TUser::profileKeyShortName);
+            if (empty($name) && $defaultToUsername) {
                 return $this->userName;
             }
             return '';
@@ -149,10 +133,12 @@ abstract class TAbstractUser implements IUser
     {
         $name = $this->getProfileValue(TUser::profileKeyShortName);
         if (empty($name)) {
-            return $this->getFullName($defaultToUsername);
+            $name = $this->getProfileValue(TUser::profileKeyFullName);
+            if (empty($name)) {
+                return $this->getUserName();
+            }
         }
         return $name;
-
     }  //  getfullName
 
 
