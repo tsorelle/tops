@@ -152,9 +152,10 @@ class TUser {
      * @param $key
      * @return string
      */
-    public static function getProfileFieldKey($key) {
-        $default = TStrings::convertNameFormat($key,TStrings::keyFormat);
-        return TConfiguration::getValue($key,'user-attributes',$default);
+    public static function getProfileFieldKey($key,$format=TStrings::keyFormat) {
+        $configKey = TStrings::convertNameFormat($key,TStrings::dashedFormat);
+        $default = TStrings::convertNameFormat($key,$format);
+        return TConfiguration::getValue($configKey,'user-attributes',$default);
     }
 
 }
