@@ -214,6 +214,7 @@ abstract class TAbstractUser implements IUser
     }
 
     public function getProfileValue($key) {
+        $key = TStrings::convertNameFormat($key,TStrings::dashedFormat);
         if ($this->isAuthenticated()) {
             if (!isset($this->profile)) {
                 $this->loadProfileValues();
@@ -228,6 +229,7 @@ abstract class TAbstractUser implements IUser
     }
 
     public function setProfileValue($key,$value) {
+        $key = TStrings::convertNameFormat($key,TStrings::dashedFormat);
         if (!isset($this->profile)) {
             $this->loadProfileValues();
         }
