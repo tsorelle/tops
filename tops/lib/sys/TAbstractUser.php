@@ -9,10 +9,6 @@
 namespace Tops\sys;
 
 
-use Tops\cache\ITopsCache;
-use Tops\cache\TSessionCache;
-use Tops\sys\TConfiguration;
-
 abstract class TAbstractUser implements IUser
 {
     protected $id = 0;
@@ -127,25 +123,34 @@ abstract class TAbstractUser implements IUser
         return TUser::DefaultUserName;
     }  //  getUserName
 
+    private function getDefaultUserName() {
+        if (!$this->isAuthenticated()) {
+            return TUser::anonymousDisplayName;
+        }
+        if ($this->userName == 'admin') {
+            return "The administrator";
+        }
+        return false;
+    }
+
     /**
      * @param bool $defaultToUsername
      * @return string
      */
     public function getFullName($defaultToUsername = true)
     {
-        if (!isset($this->userName)) {
-            return '';
-        }
-        if ($this->userName == 'admin') {
-            return "The administrator";
-        }
-        $name = $this->getProfileValue(TUser::profileKeyFullName);
+        $name = $this->getDefaultUserName();
         if (empty($name)) {
-            $name = $this->$this->getProfileValue(TUser::profileKeyShortName);
-            if (empty($name) && $defaultToUsername) {
-                return $this->userName;
+            $name = $this->getProfileValue(TUser::profileKeyFullName);
+            if (empty($name)) {
+                $name = $this->getProfileValue(TUser::profileKeyDisplayName);
+                if (empty($name)) {
+                    $name = $this->getProfileValue(TUser::profileKeyShortName);
+                    if (empty($name)) {
+                        $name = $defaultToUsername ? $this->getUserName() : '';
+                    }
+                }
             }
-            return '';
         }
         return $name;
     }  //  getfullName
@@ -154,18 +159,41 @@ abstract class TAbstractUser implements IUser
      * @param bool $defaultToUsername
      * @return string
      */
-    public function getUserShortName($defaultToUsername = true)
+    public function getShortName($defaultToUsername = true)
     {
-        $name = $this->getProfileValue(TUser::profileKeyShortName);
-        if (empty($name)) {
-            $name = $this->getProfileValue(TUser::profileKeyFullName);
+        $name = $this->getDefaultUserName();
+        if (!empty($name)) {
+            $name = $this->getProfileValue(TUser::profileKeyShortName);
             if (empty($name)) {
-                return $this->getUserName();
+                $name = $this->getProfileValue(TUser::profileKeyDisplayName);
+                if (empty($name)) {
+                    $name = $this->getProfileValue(TUser::profileKeyFullName);
+                    if (empty($name)) {
+                        $name = $defaultToUsername ? $this->getUserName() : '';
+                    }
+                }
             }
         }
         return $name;
-    }  //  getfullName
+    }  //  getShortName
 
+    public function getDisplayName($defaultToUsername = true)
+    {
+        $name = $this->getDefaultUserName();
+        if (!empty($name)) {
+            $name = $this->getProfileValue(TUser::profileKeyDisplayName);
+            if (empty($name)) {
+                $name = $this->getProfileValue(TUser::profileKeyFullName);
+                if (empty($name)) {
+                    $name = $this->getProfileValue(TUser::profileKeyShortName);
+                    if (empty($name)) {
+                        $name = $defaultToUsername ? $this->getUserName() : '';
+                    }
+                }
+            }
+        }
+        return $name;
+    }
 
     /**
      * @return string
@@ -212,11 +240,6 @@ abstract class TAbstractUser implements IUser
 
     public function updateProfile($key=null) {
         // override in sub-class as needed
-    }
-
-    public function getContentTypes() {
-        // overide in subclass as needed
-        return array();
     }
 
     public function getUserPicture($size=0, array $classes = [], array $attributes = []) {

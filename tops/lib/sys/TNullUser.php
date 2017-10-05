@@ -114,9 +114,9 @@ class TNullUser implements IUser {
      * @param bool $defaultToUsername
      * @return string
      */
-    public function getUserShortName($defaultToUsername = true)
+    public function getShortName($defaultToUsername = true)
     {
-        return '';
+        return 'system';
     }
 
     /**
@@ -169,7 +169,8 @@ class TNullUser implements IUser {
      */
     public function loadByEmail($email)
     {
-        // ignore
+        throw new \Exception('User type not defined. Set IUserFactory in DI container.');
+
     }
 
     /**
@@ -184,5 +185,10 @@ class TNullUser implements IUser {
     public function getUserPicture($size = 0, array $classes = [], array $attributes = [])
     {
         return '';
+    }
+
+    public function getDisplayName($defaultToUsername = true)
+    {
+         return 'system';
     }
 }

@@ -11,24 +11,23 @@ namespace Tops\sys;
 
 use Tops\cache\ITopsCache;
 use Tops\cache\TSessionCache;
-use Tops\sys\IUserFactory;
-use Tops\sys\TNullUserFactory;
 
 class TUser {
 
     const AdminRole = 'administrator';
     const DefaultUserName = 'guest';
+    const anonymousDisplayName = 'Guest';
     const AuthenticatedRole = 'authenticated';
     const PermissionsClassKey = 'tops.permissions';
     const UserFactoryClassKey = 'tops.userfactory';
     const profileKeyFullName  ='full-name';
     const profileKeyShortName ='short-name';
+    const profileKeyDisplayName ='display-name';
     const profileKeyEmail     ='email';
     const appAdminRoleName = 'Peanut Administrator';
     const appAdminPermissionName = 'Can administer peanut features';
     const mailAdminRoleName = 'Mail Administrator';
     const mailAdminPermissionName = 'Can administer mailboxes';
-
 
     /**
      * @var IUser

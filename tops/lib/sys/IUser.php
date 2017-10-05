@@ -69,7 +69,9 @@ interface IUser
      * @param bool $defaultToUsername
      * @return string
      */
-    public function getUserShortName($defaultToUsername = true);
+    public function getShortName($defaultToUsername = true);
+
+    public function getDisplayName($defaultToUsername = true);
 
     /**
      * @return string
@@ -92,7 +94,5 @@ interface IUser
     public function setProfileValue($key,$value);
 
     public function getUserPicture($size=0, array $classes = [], array $attributes = []);
-   // public function updateProfile($key=null);
 
-   //  public function getContentTypes();
 }
