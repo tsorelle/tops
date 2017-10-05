@@ -162,7 +162,7 @@ abstract class TAbstractUser implements IUser
     public function getShortName($defaultToUsername = true)
     {
         $name = $this->getDefaultUserName();
-        if (!empty($name)) {
+        if (empty($name)) {
             $name = $this->getProfileValue(TUser::profileKeyShortName);
             if (empty($name)) {
                 $name = $this->getProfileValue(TUser::profileKeyDisplayName);
@@ -180,7 +180,7 @@ abstract class TAbstractUser implements IUser
     public function getDisplayName($defaultToUsername = true)
     {
         $name = $this->getDefaultUserName();
-        if (!empty($name)) {
+        if (empty($name)) {
             $name = $this->getProfileValue(TUser::profileKeyDisplayName);
             if (empty($name)) {
                 $name = $this->getProfileValue(TUser::profileKeyFullName);

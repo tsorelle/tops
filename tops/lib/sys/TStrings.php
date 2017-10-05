@@ -15,20 +15,34 @@ class TStrings
     const initialCapFormat = 1;
     const wordCapsFormat = 2;
     const keyFormat = 3;
+    const dashedFormat = 4;
 
     public static function convertNameFormat($name,$format) {
         switch ($format) {
             case self::keyFormat :
-                return strtolower(str_replace(' ','_',trim($name)));
+                $name = trim(strtolower($name));
+                $name = str_replace(' ','_',$name);
+                return str_replace('-','_',$name);
             case self::initialCapFormat :
-                return ucfirst(str_replace('_',' ',strtolower(trim($name))));
+                $name = trim(strtolower($name));
+                $name = str_replace('_',' ',$name);
+                $name = str_replace('-',' ',$name);
+                return ucfirst($name);
             case self::wordCapsFormat :
+                $name = trim(strtolower($name));
+                $name = str_replace('_',' ',$name);
+                $name = str_replace('-',' ',$name);
                 $result = '';
-                $words = explode(' ',str_replace('_',' ',strtolower($name)));
+                $words = explode(' ',str_replace('_',' ',$name));
                 foreach ($words as $word) {
                     $result .= ucfirst($word).' ';
                 }
                 return trim($result);
+            case self::dashedFormat :
+                $name = trim(strtolower($name));
+                $name = str_replace('_','-',$name);
+                return str_replace(' ','-',$name);
+
             default:
                 throw new \Exception('Invalid format constant '.$format);
         }

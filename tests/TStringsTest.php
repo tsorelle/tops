@@ -15,6 +15,7 @@ class TStringsTest extends TestCase
         $key = 'peanut_administrator';
         $wordcap = 'Peanut Administrator';
         $initialcap = 'Peanut administrator';
+        $dashed = 'peanut-administrator';
 
         $actual = TStrings::convertNameFormat($key,TStrings::initialCapFormat);
         $expected = $initialcap;
@@ -28,6 +29,11 @@ class TStringsTest extends TestCase
         $expected = $key;
         $this->assertEquals($expected,$actual);
 
+        $actual = TStrings::convertNameFormat($wordcap,TStrings::dashedFormat);
+        $expected = $dashed;
+        $this->assertEquals($expected,$actual);
+
+
         $actual = TStrings::convertNameFormat($wordcap,TStrings::initialCapFormat);
         $expected = $initialcap;
         $this->assertEquals($expected,$actual);
@@ -40,6 +46,11 @@ class TStringsTest extends TestCase
         $expected = $wordcap;
         $this->assertEquals($expected,$actual);
 
+        $actual = TStrings::convertNameFormat($initialcap,TStrings::dashedFormat);
+        $expected = $dashed;
+        $this->assertEquals($expected,$actual);
+
+
         $actual = TStrings::convertNameFormat($initialcap,TStrings::initialCapFormat);
         $expected = $initialcap;
         $this->assertEquals($expected,$actual);
@@ -50,12 +61,17 @@ class TStringsTest extends TestCase
 
         $actual = TStrings::convertNameFormat($key,TStrings::keyFormat);
         $expected = $key;
+        $this->assertEquals($expected,$actual);
+
+        $actual = TStrings::convertNameFormat($key,TStrings::dashedFormat);
+        $expected = $dashed;
         $this->assertEquals($expected,$actual);
 
 
         $key = 'my_favorite_year';
         $wordcap = 'My Favorite Year';
         $initialcap = 'My favorite year';
+        $dashed = 'my-favorite-year';
 
         $actual = TStrings::convertNameFormat($key,TStrings::initialCapFormat);
         $expected = $initialcap;
@@ -69,6 +85,11 @@ class TStringsTest extends TestCase
         $expected = $key;
         $this->assertEquals($expected,$actual);
 
+        $actual = TStrings::convertNameFormat($wordcap,TStrings::dashedFormat);
+        $expected = $dashed;
+        $this->assertEquals($expected,$actual);
+
+
         $actual = TStrings::convertNameFormat($wordcap,TStrings::initialCapFormat);
         $expected = $initialcap;
         $this->assertEquals($expected,$actual);
@@ -80,6 +101,11 @@ class TStringsTest extends TestCase
         $actual = TStrings::convertNameFormat($initialcap,TStrings::wordCapsFormat);
         $expected = $wordcap;
         $this->assertEquals($expected,$actual);
+
+        $actual = TStrings::convertNameFormat($initialcap,TStrings::dashedFormat);
+        $expected = $dashed;
+        $this->assertEquals($expected,$actual);
+
 
         $actual = TStrings::convertNameFormat($initialcap,TStrings::initialCapFormat);
         $expected = $initialcap;
@@ -93,7 +119,25 @@ class TStringsTest extends TestCase
         $expected = $key;
         $this->assertEquals($expected,$actual);
 
+        $actual = TStrings::convertNameFormat($key,TStrings::dashedFormat);
+        $expected = $dashed;
+        $this->assertEquals($expected,$actual);
+
+
+
         $actual = TStrings::convertNameFormat($initialcap,TStrings::wordCapsFormat);
+        $expected = $wordcap;
+        $this->assertEquals($expected,$actual);
+
+        $actual = TStrings::convertNameFormat($dashed,TStrings::wordCapsFormat);
+        $expected = $wordcap;
+        $this->assertEquals($expected,$actual);
+
+        $actual = TStrings::convertNameFormat($dashed,TStrings::initialCapFormat);
+        $expected = $initialcap;
+        $this->assertEquals($expected,$actual);
+
+        $actual = TStrings::convertNameFormat($dashed,TStrings::wordCapsFormat);
         $expected = $wordcap;
         $this->assertEquals($expected,$actual);
 
