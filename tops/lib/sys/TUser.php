@@ -153,7 +153,7 @@ class TUser {
      * @return string
      */
     public static function getProfileFieldKey($key) {
-        $default = str_replace('-','_',$key);
+        $default = TStrings::convertNameFormat($key,TStrings::keyFormat);
         return TConfiguration::getValue($key,'user-attributes',$default);
     }
 
