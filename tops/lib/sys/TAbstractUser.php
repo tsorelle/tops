@@ -84,7 +84,8 @@ abstract class TAbstractUser implements IUser
             return true;
         }
 
-        return TUser::getPermissionManager()->verifyPermission($value);
+        // override to implement cms specific routines
+        return false;
     }
 
     /**
