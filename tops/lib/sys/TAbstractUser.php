@@ -214,7 +214,7 @@ abstract class TAbstractUser implements IUser
     }
 
     public function getProfileValue($key) {
-        $key = TStrings::convertNameFormat($key,TStrings::dashedFormat);
+        $key = $this->formatProfileKey($key);
         if ($this->isAuthenticated()) {
             if (!isset($this->profile)) {
                 $this->loadProfileValues();
@@ -229,7 +229,7 @@ abstract class TAbstractUser implements IUser
     }
 
     public function setProfileValue($key,$value) {
-        $key = TStrings::convertNameFormat($key,TStrings::dashedFormat);
+        $key = $this->formatProfileKey($value);
         if (!isset($this->profile)) {
             $this->loadProfileValues();
         }
@@ -246,6 +246,10 @@ abstract class TAbstractUser implements IUser
 
     public function getUserPicture($size=0, array $classes = [], array $attributes = []) {
         return ''; // override in subclasses as deisired.
+    }
+
+    protected function formatProfileKey($key) {
+        return TStrings::convertNameFormat($key,TStrings::dashedFormat);
     }
 
 }
