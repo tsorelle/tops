@@ -16,36 +16,98 @@ class TStrings
     const wordCapsFormat = 2;
     const keyFormat = 3;
     const dashedFormat = 4;
+    const camelCaseFormat = 5;
+    const pascalCaseFormat = 6;
 
-    public static function convertNameFormat($name,$format) {
-        switch ($format) {
-            case self::keyFormat :
-                $name = trim(strtolower($name));
-                $name = str_replace(' ','_',$name);
-                return str_replace('-','_',$name);
-            case self::initialCapFormat :
-                $name = trim(strtolower($name));
-                $name = str_replace('_',' ',$name);
-                $name = str_replace('-',' ',$name);
-                return ucfirst($name);
-            case self::wordCapsFormat :
-                $name = trim(strtolower($name));
-                $name = str_replace('_',' ',$name);
-                $name = str_replace('-',' ',$name);
-                $result = '';
-                $words = explode(' ',str_replace('_',' ',$name));
-                foreach ($words as $word) {
-                    $result .= ucfirst($word).' ';
-                }
-                return trim($result);
-            case self::dashedFormat :
-                $name = trim(strtolower($name));
-                $name = str_replace('_','-',$name);
-                return str_replace(' ','-',$name);
-
-            default:
-                throw new \Exception('Invalid format constant '.$format);
+    public static function ConvertNameFormat($name,$format,$uppercase = false) {
+        $parts = [];
+        if ($name == null) {
+            return false;
         }
+        $name = trim($name);
+        if ($name == '') {
+            return '';
+        }
+        $singleWord = false;
+        if (strpos($name,'-') !== false) {
+            $parts = explode('-',strtolower($name));
+        }
+        else if (strpos($name,'_') !== false) {
+            $parts = explode('_',strtolower($name));
+        }
+        else if (strpos($name,' ') !== false) {
+            $parts = explode(' ',strtolower($name));
+        }
+        else {
+            $singleWord = (lcfirst($name) == strtolower($name));
+            if (!$singleWord) {
+                $parts = self::camelCaseExplode($name);
+            }
+        }
+
+        $glue = '';
+        switch($format) {
+            case self::initialCapFormat :
+                if ($singleWord) {
+                    return  $uppercase ? strtoupper($name) : ucfirst(strtolower($name));
+                }
+                $glue = ' ';
+                if (!$uppercase) {
+                    $parts[0] = ucfirst($parts[0]);
+                }
+                break;
+            case self::wordCapsFormat :
+                if ($singleWord) {
+                    return  $uppercase ? strtoupper($name) : ucfirst(strtolower($name));
+                }
+                $glue = ' ';
+                if (!$uppercase) {
+                    $len = sizeof($parts);
+                    for ($i = 0; $i<$len;$i++) {
+                        $parts[$i] = ucfirst($parts[$i]);
+                    }
+                }
+                break;
+            case self::keyFormat :
+                if ($singleWord) {
+                    return  $uppercase ? strtoupper($name) : strtolower($name);
+                }
+                $glue = '_';
+                break;
+            case self::dashedFormat :
+                if ($singleWord) {
+                    return  $uppercase ? strtoupper($name) : strtolower($name);
+                }
+                $glue = '-';
+                break;
+            case self::camelCaseFormat :
+                if ($singleWord) {
+                    return  $uppercase ? strtoupper($name) : strtolower($name);
+                }
+                $len = sizeof($parts);
+                if ($len > 1 && !$uppercase) {
+                    for ($i = 1; $i<$len;$i++) {
+                        $parts[$i] = ucfirst($parts[$i]);
+                    }
+                }
+                break;
+            case self::pascalCaseFormat :
+                if ($singleWord) {
+                    return  $uppercase ? strtoupper($name) : ucfirst(strtolower($name));
+                }
+                if (!$uppercase) {
+                    $len = sizeof($parts);
+                    for ($i = 0; $i<$len;$i++) {
+                        $parts[$i] = ucfirst($parts[$i]);
+                    }
+                }
+                break;
+        }
+        $result = join($glue,$parts);
+        if ($uppercase) {
+            $result = strtoupper($result);
+        }
+        return $result;
     }
 
     public static function toCamelCase($s,$delimiter='-') {
@@ -91,16 +153,66 @@ class TStrings
         if (empty($nscode)) {
             return false;
         }
-        $parts = explode('.',$nscode);
+        $parts = explode('.', $nscode);
 
         $count = sizeof($parts);
-        for ($i=0;$i<$count;$i++) {
+        for ($i = 0; $i < $count; $i++) {
             $part = $parts[$i];
-            if ($i==0 || strpos($part,'-') !== false) {
+            if ($i == 0 || strpos($part, '-') !== false) {
                 $parts[$i] = self::toCamelCase($part);
             }
         }
-        return join('\\',$parts);
+        return join('\\', $parts);
+    }
+
+    /**
+     * thanks a lot Charl van Niekerk, http:/ /blog.charlvn.za.net/2007/11/php-camelcase-explode-20.html
+     *
+     * @param $string :string
+     * The original string, that we want to explode.
+     *
+     * @param $lowercase :boolean
+     * should the result be lowercased?
+     *
+     * @param $example_string :string
+     *		 Example to specify how to deal with multiple uppercase characters.
+     * Can be something like "AA Bc" or "A A Bc" or "AABc".
+     *
+     * @param $glue :boolean
+     * Allows to implode the fragments with sth like "_" or "." or " ".
+     *	 If $glue is FALSE, it will just return an array.
+     *
+     * @return :array[int => string] or just string, depending on $glue.
+     */
+    public static function camelCaseExplode($string, $lowercase = true, $example_string = 'AA Bc', $glue = false){
+        static $regexp_available = array(
+            '/([A-Z][^A-Z]+)/',
+            '/([A-Z]+[^A-Z]*)/',
+            '/([A-Z][^A-Z]*)/',
+        );
+        static $regexp_by_example = array();
+        if (!isset($regexp_by_example[$example_string])) {
+            $example_array = explode(' ', $example_string);
+            foreach ($regexp_available as $regexp) {
+                if (implode(' ', preg_split(
+                        $regexp,
+                        str_replace(' ', '', $example_string),
+                        -1,
+                        PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE
+                    )) == $example_string) {
+                    break;
+                }
+            }
+            $regexp_by_example[$example_string] = $regexp;
+        }
+        $array = preg_split(
+            $regexp_by_example[$example_string],
+            $string,
+            -1,
+            PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE
+        );
+        if ($lowercase) $array = array_map('strtolower', $array);
+        return is_string($glue) ? implode($glue, $array) : $array;
     }
 
 }
