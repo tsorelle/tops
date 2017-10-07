@@ -56,6 +56,6 @@ interface IPermissionsManager
      */
     public function revokePermission($roleName, $permissionName);
 
-    public function verifyPermission($permissionName);
+    // public function verifyPermission($permissionName);
 
 }
