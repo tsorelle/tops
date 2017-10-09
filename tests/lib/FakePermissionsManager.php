@@ -36,14 +36,22 @@ class FakePermissionsManager implements IPermissionsManager
     }
 
     /**
-     * @return
+     * @return [];
+     *
+     * return array of stdClass
+     *  interface ILookupItem {
+     *     Key: any;
+     *     Text: string;
+     *     Description: string;
+     *   }
      */
     public function getRoles()
     {
         $result = [];
         foreach ($this->roles as $role) {
             $item = new \stdClass();
-            $item ->Name = TStrings::ConvertNameFormat($role,IPermissionsManager::roleNameFormat);
+            $item ->Key = TStrings::ConvertNameFormat($role,IPermissionsManager::roleKeyFormat);
+            $item ->Text = TStrings::ConvertNameFormat($role,IPermissionsManager::roleNameFormat);
             $item ->Description = TStrings::ConvertNameFormat($role,IPermissionsManager::roleDescriptionFormat);
             $result[] = $item;
         }

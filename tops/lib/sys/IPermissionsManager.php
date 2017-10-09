@@ -11,7 +11,8 @@ namespace Tops\sys;
 
 interface IPermissionsManager
 {
-    const roleNameFormat = TStrings::dashedFormat;
+    const roleKeyFormat = TStrings::dashedFormat;
+    const roleNameFormat = TStrings::wordCapsFormat;
     const roleDescriptionFormat = TStrings::wordCapsFormat;
     const permisssionNameFormat = TStrings::dashedFormat;
     const permissionDescriptionFormat = TStrings::initialCapFormat;
@@ -30,7 +31,12 @@ interface IPermissionsManager
     /**
      * @return [];
      *
-     * return array of stdClass {Name, Description}
+     * return array of stdClass
+     *  interface ILookupItem {
+     *     Key: any;
+     *     Text: string;
+     *     Description: string;
+     *   }
      */
     public function getRoles();
 
