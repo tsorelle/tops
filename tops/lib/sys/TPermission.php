@@ -23,16 +23,15 @@ class TPermission extends TBasicPermission
      * @return bool
      */
     public function check($roleName) {
-        $roleName = TStrings::convertNameFormat($roleName,TStrings::wordCapsFormat);
+        $roleName = TStrings::convertNameFormat($roleName,IPermissionsManager::roleNameFormat);
         return in_array($roleName,$this->roles);
     }
-    public function addRole($value) {
-        $value = TStrings::convertNameFormat($value,TStrings::wordCapsFormat);
-        if (!in_array($value,$this->roles)) {
-            $this->roles[] = $value;
+    public function addRole($roleName) {
+        $roleName = TStrings::convertNameFormat($roleName,IPermissionsManager::roleNameFormat);
+        if (!in_array($roleName,$this->roles)) {
+            $this->roles[] = $roleName;
         }
     }
-    public function setRoles($value) {$this->roles[] = $value;}
 
     public static function Create($name,$description) {
         $result = new TPermission();
