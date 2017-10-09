@@ -11,6 +11,10 @@ namespace Tops\sys;
 
 interface IPermissionsManager
 {
+    const roleNameFormat = TStrings::dashedFormat;
+    const roleDescriptionFormation = TStrings::wordCapsFormat;
+    const permisssionNameFormat = TStrings::dashedFormat;
+    const permissionDescriptionFormat = TStrings::initialCapFormat;
     /**
      * @param string $roleName
      * @return bool
@@ -24,7 +28,9 @@ interface IPermissionsManager
     public function removeRole($roleName);
 
     /**
-     * @return string[]
+     * @return [];
+     *
+     * return array of stdClass {Name, Description}
      */
     public function getRoles();
 
