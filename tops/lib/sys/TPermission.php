@@ -33,6 +33,11 @@ class TPermission extends TBasicPermission
         }
     }
 
+    public function removeRole($roleName)
+    {
+        $this->roles = array_diff($this->roles, [$roleName]);
+    }
+
     public static function Create($name,$description) {
         $result = new TPermission();
         $result->permissionName = $name;
