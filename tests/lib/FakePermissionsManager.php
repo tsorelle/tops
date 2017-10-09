@@ -43,8 +43,8 @@ class FakePermissionsManager implements IPermissionsManager
         $result = [];
         foreach ($this->roles as $role) {
             $item = new \stdClass();
-            $item ->Name = TStrings::ConvertNameFormat(IPermissionsManager::roleNameFormat);
-            $item ->Description = TStrings::ConvertNameFormat(IPermissionsManager::roleDescriptionFormation);
+            $item ->Name = TStrings::ConvertNameFormat($role,IPermissionsManager::roleNameFormat);
+            $item ->Description = TStrings::ConvertNameFormat($role,IPermissionsManager::roleDescriptionFormat);
             $result[] = $item;
         }
         return $result;

@@ -12,7 +12,7 @@ namespace Tops\sys;
 interface IPermissionsManager
 {
     const roleNameFormat = TStrings::dashedFormat;
-    const roleDescriptionFormation = TStrings::wordCapsFormat;
+    const roleDescriptionFormat = TStrings::wordCapsFormat;
     const permisssionNameFormat = TStrings::dashedFormat;
     const permissionDescriptionFormat = TStrings::initialCapFormat;
     /**
