@@ -28,6 +28,10 @@ class TUser {
     const appAdminPermissionName = 'Can administer peanut features';
     const mailAdminRoleName = 'Mail Administrator';
     const mailAdminPermissionName = 'Can administer mailboxes';
+    const directoryAdminRoleName = 'Directory Administrator';
+    const directoryAdminPermissionName = 'Can administer directory';
+    const viewDirectoryPermissionName = 'Can view directory';
+    const updateDirectoryPermissionName = 'Can update directory';
 
     /**
      * @var IUser
