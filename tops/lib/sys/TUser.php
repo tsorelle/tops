@@ -25,13 +25,13 @@ class TUser {
     const profileKeyDisplayName ='display-name';
     const profileKeyEmail     ='email';
     const appAdminRoleName = 'Peanut Administrator';
-    const appAdminPermissionName = 'Can administer peanut features';
+    const appAdminPermissionName = 'Administer peanut features';
     const mailAdminRoleName = 'Mail Administrator';
-    const mailAdminPermissionName = 'Can administer mailboxes';
+    const mailAdminPermissionName = 'Administer mailboxes';
     const directoryAdminRoleName = 'Directory Administrator';
-    const directoryAdminPermissionName = 'Can administer directory';
-    const viewDirectoryPermissionName = 'Can view directory';
-    const updateDirectoryPermissionName = 'Can update directory';
+    const directoryAdminPermissionName = 'Administer directory';
+    const viewDirectoryPermissionName = 'View directory';
+    const updateDirectoryPermissionName = 'Update directory';
 
     /**
      * @var IUser
