@@ -18,6 +18,7 @@ class TUser {
     const DefaultUserName = 'guest';
     const anonymousDisplayName = 'Guest';
     const AuthenticatedRole = 'authenticated';
+    const GuestRole = 'guest';
     const PermissionsClassKey = 'tops.permissions';
     const UserFactoryClassKey = 'tops.userfactory';
     const profileKeyFullName  ='full-name';
@@ -32,6 +33,42 @@ class TUser {
     const directoryAdminPermissionName = 'Administer directory';
     const viewDirectoryPermissionName = 'View directory';
     const updateDirectoryPermissionName = 'Update directory';
+
+    private static $virtualRoles;
+    public static function getVirtualRoles() {
+        if (!isset(self::$virtualRoles)) {
+            self::$virtualRoles = [];
+            self::$virtualRoles[self::AuthenticatedRole] =
+                self::createRoleObject(
+                    self::AuthenticatedRole,
+                    'Authenticated user',
+                    'Current logged in user'
+                );
+
+            self::$virtualRoles[self::GuestRole] =
+                self::createRoleObject(
+                    self::GuestRole,
+                    'Guest',
+                    'Anonymouse user'
+                );
+        }
+        return self::$virtualRoles;
+    }
+
+    public static function createRoleObject($key,$name=null,$description=null)
+    {
+        if ($name === null) {
+            $name = $key;
+        }
+        if ($description == null) {
+            $description = $key;
+        }
+        $role = new \stdClass();
+        $role ->Key = TStrings::ConvertNameFormat($key,IPermissionsManager::roleKeyFormat);
+        $role ->Name = TStrings::ConvertNameFormat($name,IPermissionsManager::roleNameFormat);
+        $role ->Description = TStrings::ConvertNameFormat($description,IPermissionsManager::roleDescriptionFormat);
+        return $role;
+    }
 
     /**
      * @var IUser
