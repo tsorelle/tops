@@ -124,7 +124,7 @@ abstract class TAbstractUser implements IUser
         return TUser::DefaultUserName;
     }  //  getUserName
 
-    private function getDefaultUserName() {
+    protected function getDefaultUserName() {
         if (!$this->isAuthenticated()) {
             return TUser::anonymousDisplayName;
         }
