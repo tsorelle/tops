@@ -49,7 +49,7 @@ class TUser {
                 self::createRoleObject(
                     self::GuestRole,
                     'Guest',
-                    'Anonymouse user'
+                    'Anonymous user'
                 );
         }
         return self::$virtualRoles;
