@@ -93,6 +93,18 @@ abstract class TAbstractUser implements IUser
      */
     public abstract function isAuthenticated();
 
+    protected function getAuthenticatedRole() {
+        return TUser::AuthenticatedRole;
+    }
+
+    protected function getAdminRole() {
+        return TUser::AdminRole;
+    }
+
+    protected function getGuestRole() {
+        return TUser::GuestRole;
+    }
+
     protected function loadProfileValues()
     {
         $this->profile = $this->getCachedProfile();
