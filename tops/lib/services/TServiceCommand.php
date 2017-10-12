@@ -131,7 +131,7 @@ abstract class TServiceCommand {
         if ($user->isAdmin()) {
             return true;
         }
-        if (in_array(TUser::AuthenticatedRole,$this->authorizedRoles) && $user->isAuthenticated()) {
+        if (in_array(TPermissionsManager::authenticatedRole,$this->authorizedRoles) && $user->isAuthenticated()) {
             return true;
         }
         foreach($this->authorizedRoles as $role) {

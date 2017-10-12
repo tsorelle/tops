@@ -9,11 +9,11 @@
 namespace TwoQuakers\testing;
 
 
-use Tops\sys\IPermissionsManager;
 use Tops\sys\TPermission;
+use Tops\sys\TPermissionsManager;
 use Tops\sys\TStrings;
 
-class FakePermissionsManager implements IPermissionsManager
+class FakePermissionsManager extends TPermissionsManager
 {
 
     private $roles = array('admin','member','reader','guest');
@@ -49,11 +49,7 @@ class FakePermissionsManager implements IPermissionsManager
     {
         $result = [];
         foreach ($this->roles as $role) {
-            $item = new \stdClass();
-            $item ->Key = TStrings::ConvertNameFormat($role,IPermissionsManager::roleKeyFormat);
-            $item ->Text = TStrings::ConvertNameFormat($role,IPermissionsManager::roleNameFormat);
-            $item ->Description = TStrings::ConvertNameFormat($role,IPermissionsManager::roleDescriptionFormat);
-            $result[] = $item;
+            $result[] = $this->createRoleObject($role);
         }
         return $result;
     }
@@ -139,9 +135,9 @@ class FakePermissionsManager implements IPermissionsManager
         // TODO: Implement getPermissionsList() method.
     }
 
-    public function verifyPermission($permissionName)
+    public function test()
     {
-        // TODO: Implement verifyPermission() method.
+        return $this->getRoleNameFormat();
     }
 
 }

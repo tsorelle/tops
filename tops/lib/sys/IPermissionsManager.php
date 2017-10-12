@@ -8,7 +8,11 @@
 
 namespace Tops\sys;
 
-
+/**
+ * Interface IPermissionsManager
+ * @package Tops\sys
+ * @deprecated use TPermissionsManager
+ */
 interface IPermissionsManager
 {
     const roleKeyFormat = TStrings::dashedFormat;
@@ -16,6 +20,21 @@ interface IPermissionsManager
     const roleDescriptionFormat = TStrings::wordCapsFormat;
     const permisssionNameFormat = TStrings::dashedFormat;
     const permissionDescriptionFormat = TStrings::initialCapFormat;
+
+    const adminRole = 'administrator';
+    const authenticatedRole = 'authenticated';
+    const guestRole = 'guest';
+    const permissionsClassKey = 'tops.permissions';
+    const appAdminRoleName = 'Peanut Administrator';
+    const appAdminPermissionName = 'Administer peanut features';
+    const mailAdminRoleName = 'Mail Administrator';
+    const mailAdminPermissionName = 'Administer mailboxes';
+    const directoryAdminRoleName = 'Directory Administrator';
+    const directoryAdminPermissionName = 'Administer directory';
+    const viewDirectoryPermissionName = 'View directory';
+    const updateDirectoryPermissionName = 'Update directory';
+
+
     /**
      * @param string $roleName
      * @return bool

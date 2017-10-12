@@ -14,17 +14,13 @@ use Tops\cache\TSessionCache;
 
 class TUser {
 
+    /*
+     * moved to TPermisionsManager
+     *
     const AdminRole = 'administrator';
-    const DefaultUserName = 'guest';
-    const anonymousDisplayName = 'Guest';
     const AuthenticatedRole = 'authenticated';
     const GuestRole = 'guest';
     const PermissionsClassKey = 'tops.permissions';
-    const UserFactoryClassKey = 'tops.userfactory';
-    const profileKeyFullName  ='full-name';
-    const profileKeyShortName ='short-name';
-    const profileKeyDisplayName ='display-name';
-    const profileKeyEmail     ='email';
     const appAdminRoleName = 'Peanut Administrator';
     const appAdminPermissionName = 'Administer peanut features';
     const mailAdminRoleName = 'Mail Administrator';
@@ -33,42 +29,17 @@ class TUser {
     const directoryAdminPermissionName = 'Administer directory';
     const viewDirectoryPermissionName = 'View directory';
     const updateDirectoryPermissionName = 'Update directory';
+     */
 
-    private static $virtualRoles;
-    public static function getVirtualRoles() {
-        if (!isset(self::$virtualRoles)) {
-            self::$virtualRoles = [];
-            self::$virtualRoles[self::AuthenticatedRole] =
-                self::createRoleObject(
-                    self::AuthenticatedRole,
-                    'Authenticated user',
-                    'Current logged in user'
-                );
 
-            self::$virtualRoles[self::GuestRole] =
-                self::createRoleObject(
-                    self::GuestRole,
-                    'Guest',
-                    'Anonymous user'
-                );
-        }
-        return self::$virtualRoles;
-    }
+    const DefaultUserName = 'guest';
+    const anonymousDisplayName = 'Guest';
+    const UserFactoryClassKey = 'tops.userfactory';
+    const profileKeyFullName  ='full-name';
+    const profileKeyShortName ='short-name';
+    const profileKeyDisplayName ='display-name';
+    const profileKeyEmail     ='email';
 
-    public static function createRoleObject($key,$name=null,$description=null)
-    {
-        if ($name === null) {
-            $name = $key;
-        }
-        if ($description == null) {
-            $description = $key;
-        }
-        $role = new \stdClass();
-        $role ->Key = TStrings::ConvertNameFormat($key,IPermissionsManager::roleKeyFormat);
-        $role ->Name = TStrings::ConvertNameFormat($name,IPermissionsManager::roleNameFormat);
-        $role ->Description = TStrings::ConvertNameFormat($description,IPermissionsManager::roleDescriptionFormat);
-        return $role;
-    }
 
     /**
      * @var IUser
@@ -150,23 +121,6 @@ class TUser {
 
         return self::getUserFactory()->createUser();
 
-    }
-
-    /**
-     * @var IPermissionsManager
-     */
-    private static $permissionManger;
-    public static  function getPermissionManager()
-    {
-        if (!isset(self::$permissionManger)) {
-            if (TObjectContainer::HasDefinition(self::PermissionsClassKey)) {
-                self::$permissionManger = TObjectContainer::Get(self::PermissionsClassKey);
-            }
-            else {
-                self::$permissionManger = new NullPermissionsManager();
-            }
-        }
-        return self::$permissionManger;
     }
 
     /**

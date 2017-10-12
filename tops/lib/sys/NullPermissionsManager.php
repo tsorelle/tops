@@ -15,7 +15,7 @@ namespace Tops\sys;
  * Use if no permission manager available.  No permissions are defined.  Exceptions raised for any managment functions.
  */
 
-class NullPermissionsManager implements IPermissionsManager
+class NullPermissionsManager extends TPermissionsManager
 {
 
     /**

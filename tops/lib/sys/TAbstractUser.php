@@ -76,10 +76,11 @@ abstract class TAbstractUser implements IUser
         if ($this->isAdmin()) {
             return true;
         }
-        if ($roleName ==  TUser::GuestRole || $roleName == $this->getGuestRole()) {
+        $permissionsManager = TPermissionsManager::getPermissionManager();
+        if ($roleName ==  TPermissionsManager::guestRole || $roleName == $permissionsManager->getGuestRole()) {
             return true;
         }
-        if ($roleName == TUser::AuthenticatedRole ||  $roleName == $this->getAuthenticatedRole()) {
+        if ($roleName == TPermissionsManager::authenticatedRole ||  $roleName == $permissionsManager->getAuthenticatedRole()) {
             return $this->isAuthenticated();
         }
         return false;
@@ -101,18 +102,6 @@ abstract class TAbstractUser implements IUser
      * @return bool
      */
     public abstract function isAuthenticated();
-
-    protected function getAuthenticatedRole() {
-        return TUser::AuthenticatedRole;
-    }
-
-    protected function getAdminRole() {
-        return TUser::AdminRole;
-    }
-
-    protected function getGuestRole() {
-        return TUser::GuestRole;
-    }
 
     protected function loadProfileValues()
     {
@@ -272,20 +261,6 @@ abstract class TAbstractUser implements IUser
 
     protected function formatProfileKey($key) {
         return TStrings::convertNameFormat($key,TStrings::dashedFormat);
-    }
-
-    protected function getRoleNameFormat() {
-        return IPermissionsManager::roleNameFormat;
-    }
-
-    protected function formatRoleName($roleName) {
-        if ($roleName == TUser::AuthenticatedRole) {
-            $roleName = $this->getAuthenticatedRole();
-        }
-        else if ($roleName == TUser::GuestRole) {
-            $roleName = $this->getGuestRole();
-        }
-        return TStrings::ConvertNameFormat($roleName,$this->getRoleNameFormat());
     }
 
 }

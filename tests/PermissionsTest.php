@@ -13,6 +13,7 @@ class PermissionsTest extends TestCase
 {
     public function testTPermission() {
         $manager = new FakePermissionsManager();
+
         $manager->addPermission('edit','Can change text');
 
         $manager->assignPermission('admin','edit');
