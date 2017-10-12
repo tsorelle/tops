@@ -70,21 +70,28 @@ abstract class TAbstractUser implements IUser
      * @param $roleName
      * @return bool
      */
-    public abstract function isMemberOf($roleName);
+    public function isMemberOf($roleName) {
+        // override to implement cms specific routines
+
+        if ($this->isAdmin()) {
+            return true;
+        }
+        if ($roleName ==  TUser::GuestRole || $roleName == $this->getGuestRole()) {
+            return true;
+        }
+        if ($roleName == TUser::AuthenticatedRole ||  $roleName == $this->getAuthenticatedRole()) {
+            return $this->isAuthenticated();
+        }
+        return false;
+    }
 
     /**
      * @param string $value
      * @return bool
      */
-    public function isAuthorized($value = '') {
+    public function isAuthorized($permissionName = '') {
         // override to implement cms specific routines
         if ($this->isAdmin()) {
-            return true;
-        }
-        if ($value ==  TUser::GuestRole || $value == $this->getGuestRole()) {
-            return true;
-        }
-        if (($value == TUser::AuthenticatedRole ||  $value == $this->getAuthenticatedRole()) && $this->isAuthenticated()) {
             return true;
         }
         return false;

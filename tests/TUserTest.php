@@ -20,9 +20,9 @@ class TUserTest extends TestCase
         $expected = 'tester';
         $actual = $user->getUserName();
         $this->assertEquals($expected,$actual);
-        $actual = $user->isAuthorized('donations.view');
+        $actual = $user->isAuthorized('donations-view');
         $this->assertTrue($actual);
-        $actual = $user->isAuthorized('donations.edit');
+        $actual = $user->isAuthorized('donations-edit');
         $this->assertTrue($actual);
         $actual = $user->isAuthorized('testpermission');
         $this->assertFalse($actual);
@@ -34,9 +34,9 @@ class TUserTest extends TestCase
         $expected = 'admin';
         $actual = $user->getUserName();
         $this->assertEquals($expected,$actual);
-        $actual = $user->isAuthorized('donations.view');
+        $actual = $user->isAuthorized('donations-view');
         $this->assertTrue($actual);
-        $actual = $user->isAuthorized('donations.edit');
+        $actual = $user->isAuthorized('donations-edit');
         $this->assertTrue($actual);
         $actual = $user->isAuthorized('testpermission');
         $this->assertTrue($actual);

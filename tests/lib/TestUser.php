@@ -13,6 +13,7 @@ use PHPUnit\Runner\Exception;
 use Tops\sys\TAbstractUser;
 use Tops\sys\TConfiguration;
 use Tops\sys\TPath;
+use Tops\sys\TStrings;
 
 class TestUser extends TAbstractUser
 {
@@ -91,6 +92,10 @@ class TestUser extends TAbstractUser
         return true;
     }
 
+    protected function getRoleNameFormat()
+    {
+        return TStrings::dashedFormat;
+    }
 
     /**
      * @param string $value
