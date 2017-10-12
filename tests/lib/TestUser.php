@@ -98,10 +98,9 @@ class TestUser extends TAbstractUser
      */
     public function isAuthorized($value = '')
     {
-        if ($this->isAdmin()) {
+        if (parent::isAuthorized($value)) {
             return true;
         }
-
 
         if (empty(self::$permissionsConfig[$value]) ) {
             return false;

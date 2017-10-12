@@ -77,14 +77,16 @@ abstract class TAbstractUser implements IUser
      * @return bool
      */
     public function isAuthorized($value = '') {
+        // override to implement cms specific routines
         if ($this->isAdmin()) {
             return true;
         }
-        if ($value == 'authenticated' && $this->isAuthenticated()) {
+        if ($value ==  TUser::GuestRole || $value == $this->getGuestRole()) {
             return true;
         }
-
-        // override to implement cms specific routines
+        if (($value == TUser::AuthenticatedRole ||  $value == $this->getAuthenticatedRole()) && $this->isAuthenticated()) {
+            return true;
+        }
         return false;
     }
 
@@ -263,6 +265,20 @@ abstract class TAbstractUser implements IUser
 
     protected function formatProfileKey($key) {
         return TStrings::convertNameFormat($key,TStrings::dashedFormat);
+    }
+
+    protected function getRoleNameFormat() {
+        return IPermissionsManager::roleNameFormat;
+    }
+
+    protected function formatRoleName($roleName) {
+        if ($roleName == TUser::AuthenticatedRole) {
+            $roleName = $this->getAuthenticatedRole();
+        }
+        else if ($roleName == TUser::GuestRole) {
+            $roleName = $this->getGuestRole();
+        }
+        return TStrings::ConvertNameFormat($roleName,$this->getRoleNameFormat());
     }
 
 }
