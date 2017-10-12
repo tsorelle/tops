@@ -60,9 +60,9 @@ abstract class TPermissionsManager
                     'Current logged in user'
                 );
 
-            $this->virtualRoles[self::authenticatedRole] =
+            $this->virtualRoles[self::guestRole] =
                 $this->createRoleObject(
-                    TPermissionsManager::authenticatedRole,
+                    TPermissionsManager::guestRole,
                     'Guest',
                     'Anonymous user'
                 );
