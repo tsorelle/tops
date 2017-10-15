@@ -22,20 +22,21 @@ class TPermission extends TBasicPermission
      * @param $roleName
      * @return bool
      */
-    public function check($roleName) {
-        $roleName = TStrings::convertNameFormat($roleName,TPermissionsManager::roleKeyFormat);
-        return in_array($roleName,$this->roles);
+    public function check($roleKey) {
+        $roleKey = TStrings::convertNameFormat($roleKey,TStrings::dashedFormat);
+        return in_array($roleKey,$this->roles);
     }
-    public function addRole($roleName) {
-        $roleName = TStrings::convertNameFormat($roleName,TPermissionsManager::roleKeyFormat);
-        if (!in_array($roleName,$this->roles)) {
-            $this->roles[] = $roleName;
+    public function addRole($roleKey) {
+        $roleKey = TStrings::convertNameFormat($roleKey,TStrings::dashedFormat);
+        if (!in_array($roleKey,$this->roles)) {
+            $this->roles[] = $roleKey;
         }
     }
 
-    public function removeRole($roleName)
+    public function removeRole($roleKey)
     {
-        $this->roles = array_diff($this->roles, [$roleName]);
+        $roleKey = TStrings::convertNameFormat($roleKey,TStrings::dashedFormat);
+        $this->roles = array_diff($this->roles, [$roleKey]);
     }
 
     public static function Create($name,$description) {

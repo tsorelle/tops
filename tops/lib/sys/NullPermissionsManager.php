@@ -17,7 +17,6 @@ namespace Tops\sys;
 
 class NullPermissionsManager extends TPermissionsManager
 {
-
     /**
      * @param string $roleName
      * @return bool
@@ -37,11 +36,18 @@ class NullPermissionsManager extends TPermissionsManager
     }
 
     /**
-     * @return string[]
+     * @return [];
+     *
+     * return array of stdClass
+     *  interface ILookupItem {
+     *     Key: any;
+     *     Text: string;
+     *     Description: string;
+     *   }
      */
     public function getRoles()
     {
-        return array();
+        return [];
     }
 
     /**
@@ -49,7 +55,7 @@ class NullPermissionsManager extends TPermissionsManager
      */
     public function getPermissions()
     {
-        return array();
+        return [];
     }
 
     public function addPermission($name, $description)
@@ -57,17 +63,25 @@ class NullPermissionsManager extends TPermissionsManager
         throw new \Exception('Role management not supported.');
     }
 
-    public function getPermission($permissionName)
+    public function removePermission($pemissionHandle)
     {
         return false;
     }
 
     /**
-     * @param string $roleName
-     * @param string $permissionName
+     * @return TPermission
+     */
+    public function getPermission($permissionHandle)
+    {
+       return false;
+    }
+
+    /**
+     * @param string $role
+     * @param string $permission
      * @return bool
      */
-    public function assignPermission($roleName, $permissionName)
+    public function assignPermission($roleHandle, $permissionHandle)
     {
         throw new \Exception('Role management not supported.');
     }
@@ -77,32 +91,8 @@ class NullPermissionsManager extends TPermissionsManager
      * @param string $permissionName
      * @return bool
      */
-    public function revokePermission($roleName, $permissionName)
+    public function revokePermission($roleHandle, $permissionHandle)
     {
         throw new \Exception('Role management not supported.');
-    }
-
-    public function removePermission($name)
-    {
-        // not implemented
-    }
-
-    /**
-     * @return \stdClass[]
-     *
-     * {
-     *    permissionName : string;
-     *    description: string;
-     *    roles: string[];
-     * }
-     */
-    public function getPermissionsList()
-    {
-        return [];
-    }
-
-    public function verifyPermission($permissionName)
-    {
-        return false;
     }
 }

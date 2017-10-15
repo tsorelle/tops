@@ -10,12 +10,6 @@ namespace Tops\sys;
 
 abstract class TPermissionsManager
 {
-    const roleKeyFormat = TStrings::dashedFormat;
-    const roleNameFormat = TStrings::wordCapsFormat;
-    const roleDescriptionFormat = TStrings::wordCapsFormat;
-    const permisssionNameFormat = TStrings::dashedFormat;
-    const permissionDescriptionFormat = TStrings::initialCapFormat;
-
     const adminRole = 'administrator';
     const authenticatedRole = 'authenticated';
     const guestRole = 'guest';
@@ -48,6 +42,74 @@ abstract class TPermissionsManager
         }
         return self::$permissionManger;
     }
+
+    public function getAuthenticatedRole() {
+        return self::authenticatedRole;
+    }
+
+    public function getAdminRole() {
+        return self::adminRole;
+    }
+
+    public function getGuestRole() {
+        return self::guestRole;
+    }
+
+    public function getRoleHandleFormat() {
+        // native identifier
+        return TStrings::keyFormat;
+    }
+
+    public function getRoleKeyFormat() {
+        // generic identifier
+        return TStrings::dashedFormat;
+    }
+
+    public function getPermissionHandleFormat() {
+        // native identifier
+        return TStrings::initialCapFormat;
+    }
+
+    public function getPermissioKeyFormat() {
+        // generic identifier
+        return TStrings::dashedFormat;
+    }
+
+    public function formatRoleName($name) {
+        return TStrings::ConvertNameFormat($name,TStrings::wordCapsFormat);
+    }
+
+    public function formatRoleDescription($name) {
+        return TStrings::ConvertNameFormat($name,TStrings::initialCapFormat);
+    }
+
+    public function formatPermissionName($name) {
+        return TStrings::ConvertNameFormat($name,TStrings::wordCapsFormat);
+    }
+
+    public function formatPermissionDescription($name) {
+        return TStrings::ConvertNameFormat($name,TStrings::initialCapFormat);
+    }
+
+    public function formatRole($name,$format) {
+        if ($name == self::authenticatedRole) {
+            $name = $this->getAuthenticatedRole();
+        }
+        else if ($name == self::guestRole) {
+            $name = $this->getGuestRole();
+        }
+        return TStrings::ConvertNameFormat($name,$format);
+    }
+
+    public function formatRoleKey($roleKey) {
+        return $this->formatRole($roleKey,$this->getRoleKeyFormat());
+    }
+
+    public function formatRoleHandle($roleId) {
+        return $this->formatRole($roleId,$this->getRoleHandleFormat());
+    }
+
+
 
     private $virtualRoles;
     protected function getVirtualRoles() {
@@ -89,30 +151,10 @@ abstract class TPermissionsManager
             $description = $key;
         }
         $role = new \stdClass();
-        $role ->Key = TStrings::ConvertNameFormat($key,$this->getRoleKeyFormat());
-        $role ->Name = TStrings::ConvertNameFormat($name,$this->getRoleNameFormat());
-        $role ->Description = TStrings::ConvertNameFormat($description,$this->getRoleDescriptionFormat());
+        $role ->Key = $this->formatRoleKey($key);
+        $role ->Name = $this->formatRoleName($name);
+        $role ->Description = $this->formatRoleDescription($description);
         return $role;
-    }
-
-
-    public function getRoleNameFormat() {
-        return self::roleNameFormat;
-    }
-
-    public function getRoleKeyFormat() {
-        return self::roleKeyFormat;
-    }
-
-    public function getRoleDescriptionFormat() {
-        return self::roleDescriptionFormat;
-    }
-
-    /*
-     * Used to match format returnd by user roles routines. This may vary for cms
-     */
-    public function getRoleIdFormat() {
-        return $this->getRoleNameFormat();
     }
 
     /**
@@ -146,48 +188,27 @@ abstract class TPermissionsManager
 
     public abstract function addPermission($name, $description);
 
-    public abstract function removePermission($name);
+    public abstract function removePermission($pemissionHandle);
 
     /**
      * @return TPermission
      */
-    public abstract function getPermission($permissionName);
+    public abstract function getPermission($permissionHandle);
+
+    /**
+     * @param string $role
+     * @param string $permission
+     * @return bool
+     */
+    public abstract function assignPermission($roleHandle, $permissionHandle);
 
     /**
      * @param string $roleName
      * @param string $permissionName
      * @return bool
      */
-    public abstract function assignPermission($roleName, $permissionName);
+    public abstract function revokePermission($roleHandle, $permissionHandle);
 
-    /**
-     * @param string $roleName
-     * @param string $permissionName
-     * @return bool
-     */
-    public abstract function revokePermission($roleName, $permissionName);
-
-    public function getAuthenticatedRole() {
-        return self::authenticatedRole;
-    }
-
-    public function getAdminRole() {
-        return self::adminRole;
-    }
-
-    public function getGuestRole() {
-        return self::guestRole;
-    }
-
-    public function formatRoleName($roleName) {
-        if ($roleName == self::authenticatedRole) {
-            $roleName = $this->getAuthenticatedRole();
-        }
-        else if ($roleName == self::guestRole) {
-            $roleName = $this->getGuestRole();
-        }
-        return TStrings::ConvertNameFormat($roleName,$this->getRoleIdFormat());
-    }
 
 
 }

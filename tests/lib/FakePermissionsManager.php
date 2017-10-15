@@ -62,12 +62,12 @@ class FakePermissionsManager extends TPermissionsManager
         return $this->permissions;
     }
 
-    public function getPermission($permissionName)
+    public function getPermission($permissionHandle)
     {
-        if (!array_key_exists($permissionName,$this->permissions)) {
+        if (!array_key_exists($permissionHandle,$this->permissions)) {
             return false;
         }
-        return $this->permissions[$permissionName];
+        return $this->permissions[$permissionHandle];
     }
 
     /**
@@ -75,14 +75,15 @@ class FakePermissionsManager extends TPermissionsManager
      * @param string $permissionName
      * @return bool
      */
-    public function assignPermission($roleName, $permissionName)
+    public function assignPermission($roleHandle, $permissionHandle)
     {
-        $result = false;
-        $permission = $this->getPermission($permissionName);
-        if ($permission !== false) {
-            $permission->addRole($roleName);
-            $this->permissions[$permissionName] = $permission;
+        $permissionObject = $this->getPermission($permissionHandle);
+        if ($permissionObject === false) {
+            return false;
         }
+        $permissionObject->addRole($roleHandle);
+        $this->permissions[$permissionHandle] = $permissionObject;
+        return true;
     }
 
     public function addPermission($name,$description='')
@@ -97,15 +98,6 @@ class FakePermissionsManager extends TPermissionsManager
         return (true);
     }
 
-    /**
-     * @param string $roleName
-     * @param string $permissionName
-     * @return bool
-     */
-    public function revokePermission($roleName, $permissionName)
-    {
-        // TODO: Implement revokePermission() method.
-    }
 
     /**
      * @param string $roleName
@@ -114,30 +106,22 @@ class FakePermissionsManager extends TPermissionsManager
     public function removeRole($roleName)
     {
         // TODO: Implement removeRole() method.
+        return true;
     }
 
-    public function removePermission($name)
+    public function removePermission($pemissionHandle)
     {
         // TODO: Implement removePermission() method.
     }
 
     /**
-     * @return \stdClass[]
-     *
-     * {
-     *    permissionName : string;
-     *    description: string;
-     *    roles: string[];
-     * }
+     * @param string $roleName
+     * @param string $permissionName
+     * @return bool
      */
-    public function getPermissionsList()
+    public function revokePermission($roleHandle, $permissionHandle)
     {
-        // TODO: Implement getPermissionsList() method.
+        // TODO: Implement revokePermission() method.
+        return true;
     }
-
-    public function test()
-    {
-        return $this->getRoleNameFormat();
-    }
-
 }
