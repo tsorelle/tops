@@ -51,6 +51,17 @@ abstract class TAbstractUser implements IUser
         return $manager->getRoleHandleFormat();
     }
 
+    protected function getPermissionHandleFormat() {
+        // native identifier
+        $manager = TPermissionsManager::getPermissionManager();
+        return $manager->getPermissionHandleFormat();
+    }
+
+    public function formatPermissionHandle($name) {
+        $manager = TPermissionsManager::getPermissionManager();
+        return TStrings::ConvertNameFormat($name,$manager->getPermissionHandleFormat());
+    }
+
     /**
      * @var array
      */
