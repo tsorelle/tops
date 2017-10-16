@@ -110,7 +110,9 @@ abstract class TPermissionsManager
         return $this->formatRole($roleHandle,$this->getRoleHandleFormat());
     }
 
-
+    public function formatPermissionHandle($name) {
+        return TStrings::ConvertNameFormat($name,$this->getPermissionHandleFormat());
+    }
 
     private $virtualRoles;
     protected function getVirtualRoles() {
