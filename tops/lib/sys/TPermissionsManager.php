@@ -22,6 +22,8 @@ abstract class TPermissionsManager
     const directoryAdminPermissionName = 'Administer directory';
     const viewDirectoryPermissionName = 'View directory';
     const updateDirectoryPermissionName = 'Update directory';
+
+    const keyFormat = TStrings::dashedFormat;
     /**
      * @var TPermissionsManager
      */
@@ -60,19 +62,9 @@ abstract class TPermissionsManager
         return TStrings::keyFormat;
     }
 
-    public function getRoleKeyFormat() {
-        // generic identifier
-        return TStrings::dashedFormat;
-    }
-
     public function getPermissionHandleFormat() {
         // native identifier
         return TStrings::initialCapFormat;
-    }
-
-    public function getPermissioKeyFormat() {
-        // generic identifier
-        return TStrings::dashedFormat;
     }
 
     public function formatRoleName($name) {
@@ -101,12 +93,12 @@ abstract class TPermissionsManager
         return TStrings::ConvertNameFormat($name,$format);
     }
 
-    public function formatRoleKey($roleKey) {
-        return $this->formatRole($roleKey,$this->getRoleKeyFormat());
+    public function formatKey($roleKey) {
+        return $this->formatRole($roleKey,self::keyFormat);
     }
 
-    public function formatRoleHandle($roleId) {
-        return $this->formatRole($roleId,$this->getRoleHandleFormat());
+    public function formatRoleHandle($roleHandle) {
+        return $this->formatRole($roleHandle,$this->getRoleHandleFormat());
     }
 
 
@@ -151,7 +143,7 @@ abstract class TPermissionsManager
             $description = $key;
         }
         $role = new \stdClass();
-        $role ->Key = $this->formatRoleKey($key);
+        $role ->Key = $this->formatKey($key);
         $role ->Name = $this->formatRoleName($name);
         $role ->Description = $this->formatRoleDescription($description);
         return $role;
