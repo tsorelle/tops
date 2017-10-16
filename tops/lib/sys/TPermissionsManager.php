@@ -29,6 +29,15 @@ abstract class TPermissionsManager
      */
     private static $permissionManger;
 
+    public static function toKeyArray(array $arr,$format=self::keyFormat) {
+        $count = sizeof($arr);
+        for ($i=0;$i<$count;$i++) {
+            $formatted = TStrings::ConvertNameFormat($arr[$i],$format);
+            $arr[$i] = $formatted;
+        }
+        return $arr;
+    }
+
     /**
      * @return TPermissionsManager
      */

@@ -41,4 +41,13 @@ class PermissionsTest extends TestCase
 
     }
 
+    public function testKeyArray() {
+        $a = ['One two','Three four'];
+        $expected = ['one-two','three-four'];
+        $actual = \Tops\sys\TPermissionsManager::toKeyArray($a);
+        for ($i=0;$i<2;$i++) {
+            $this->assertEquals($expected[$i],$actual[$i]);
+        }
+    }
+
 }
