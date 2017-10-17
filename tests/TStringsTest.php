@@ -18,11 +18,12 @@ class TStringsTest extends TestCase
             'keyFormat',
             'dashedFormat',
             'camelCaseFormat',
-            'pascalCaseFormat'
+            'pascalCaseFormat',
+            'wordFormat'
         ];
 
-        for ($i = 0;$i<6; $i++) {
-            for ($f = 0; $f<6; $f++) {
+        for ($i = 0;$i<7; $i++) {
+            for ($f = 0; $f<7; $f++) {
                 $format = $f+1;
                 $subject = $examples[$i];
                 $expected = $examples[$f];
@@ -44,7 +45,8 @@ class TStringsTest extends TestCase
             'terry',    // keyFormat
             'terry',    // dashedFormat
             'terry',    // camelCaseFormat
-            'Terry'    // pascalCaseFormat
+            'Terry',    // pascalCaseFormat
+            'terry'    // wordFormat
         ];
 
         $examples = [
@@ -53,7 +55,8 @@ class TStringsTest extends TestCase
             'my_favorite_year',    // 	keyFormat
             'my-favorite-year',    // 	dashedFormat
             'myFavoriteYear',     // 	camelCaseFormat
-            'MyFavoriteYear'      // 	pascalCaseFormat
+            'MyFavoriteYear',      // 	pascalCaseFormat
+            'my favorite year'		// 	wordFormat
         ];
 
         $this->runNameFormatTest($examples);

@@ -18,6 +18,7 @@ class TStrings
     const dashedFormat = 4;
     const camelCaseFormat = 5;
     const pascalCaseFormat = 6;
+    const wordFormat = 7;
 
     public static function ConvertNameFormat($name,$format,$uppercase = false) {
         $parts = [];
@@ -67,6 +68,12 @@ class TStrings
                         $parts[$i] = ucfirst($parts[$i]);
                     }
                 }
+                break;
+            case self::wordFormat :
+                if ($singleWord) {
+                    return  $uppercase ? strtoupper($name) : strtolower($name);
+                }
+                $glue = ' ';
                 break;
             case self::keyFormat :
                 if ($singleWord) {
