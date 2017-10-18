@@ -36,6 +36,8 @@ class TMailbox extends TimeStampedEntity implements IMailbox
 
     public $active;
 
+    public $public;
+
 
     /**
      * @return int
@@ -125,8 +127,12 @@ class TMailbox extends TimeStampedEntity implements IMailbox
     }
 
     /**
-     * @var string
+     * @param bool $value
      */
+    public  function setPublic($value=true) {
+        $this->public = $value;
+    }
+
 
     /**
      * @param $code
@@ -143,6 +149,7 @@ class TMailbox extends TimeStampedEntity implements IMailbox
         $result->setName($name);
         $result->setMailboxId($id);
         $result->setActive();
+        $result->setPublic();
         return $result;
     }
 }
