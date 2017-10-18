@@ -27,6 +27,7 @@ class FakeMailboxManager implements IMailboxManager
     {
 
         // TODO: Implement find() method.
+        return null;
     }
 
     /**
@@ -78,7 +79,7 @@ class FakeMailboxManager implements IMailboxManager
 
     /**
      * @param IMailbox $mailbox
-     * @return int
+     * @return bool
      */
     public function updateMailbox(IMailbox $mailbox)
     {
@@ -94,11 +95,25 @@ class FakeMailboxManager implements IMailboxManager
      */
     public function createMailbox($code, $name, $address, $description)
     {
-        // TODO: Implement createMailbox() method.
+        // implement later
+        return null;
     }
 
     public function saveChanges()
     {
-        // TODO: Implement saveChanges() method.
+    }
+
+    /**
+     * @param $mailboxCode string
+     */
+    public function remove($mailboxCode)
+    {
+    }
+
+    /**
+     * @param $mailboxCode string
+     */
+    public function restore($mailboxCode)
+    {
     }
 }

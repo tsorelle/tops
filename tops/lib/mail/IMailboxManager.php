@@ -27,7 +27,18 @@ interface IMailboxManager {
     public function drop($id);
 
     /**
-     * @param $mailboxCode
+     * @param $id
+     */
+    public function remove($mailboxCode);
+
+    /**
+     * @param $mailboxCode string
+     */
+    public function restore($mailboxCode);
+
+
+    /**
+     * @param $mailboxCode string
      * @return bool|IMailbox
      */
     public function findByCode($mailboxCode);
@@ -49,7 +60,7 @@ interface IMailboxManager {
 
     /**
      * @param IMailbox $mailbox
-     * @return int
+     * @return bool
      */
     public function updateMailbox(IMailbox $mailbox);
 
