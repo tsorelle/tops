@@ -86,9 +86,9 @@ class TDbMailboxManager implements IMailboxManager {
      */
     public function updateMailbox(IMailbox $mailbox)
     {
-        $mailbox = $this->findByCode($mailbox->getMailboxCode());
-        if (empty($mailbox)) {
-            return 0;
+        $existing = $this->findByCode($mailbox->getMailboxCode());
+        if (empty($existing)) {
+            return false;
         }
         $user = TUser::getCurrent();
         return $this->repository->update($mailbox,$user->getUserName());
@@ -103,13 +103,10 @@ class TDbMailboxManager implements IMailboxManager {
      */
     public function createMailbox($code, $name, $address, $description)
     {
-        $result = new TMailbox();
-        $result->setMailboxCode($code);
-        $result->setName($name);
-        $result->setEmail($address);
-        $result->setDescription($description);
+        $user = TUser::getCurrent();
+        $result = TMailbox::Create($code,$name,$address,$description);
+        $result->setCreateTime($user->getUserName());
         return $result;
-
     }
 
     public function saveChanges()

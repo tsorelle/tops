@@ -40,6 +40,8 @@ interface IEntityRepository
 
     public function remove($id);
 
+    public function restore($id);
+
     public function getEntity($value, $includeInactive = false, $fieldName = null);
 
 }
