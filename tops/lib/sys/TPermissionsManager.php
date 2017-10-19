@@ -189,7 +189,7 @@ abstract class TPermissionsManager
      */
     public abstract function getPermissions();
 
-    public abstract function addPermission($name, $description);
+    public abstract function addPermission($name, $description=null);
 
     public abstract function removePermission($pemissionHandle);
 
