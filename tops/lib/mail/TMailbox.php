@@ -123,14 +123,14 @@ class TMailbox extends TimeStampedEntity implements IMailbox
      * @param bool $value
      */
     public  function setActive($value=true) {
-        $this->active = $value;
+        $this->active = empty($value) ? 0 : 1;
     }
 
     /**
      * @param bool $value
      */
     public  function setPublic($value=true) {
-        $this->public = $value;
+        $this->public = empty($value) ? 0 : 1;
     }
 
 
