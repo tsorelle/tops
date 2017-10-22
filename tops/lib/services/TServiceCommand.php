@@ -8,6 +8,7 @@
 
 namespace Tops\services;
 use Tops\sys\IUser;
+use Tops\sys\TPermissionsManager;
 use Tops\sys\TSession;
 // use Tops\sys\IUser;
 //  use Tops\sys\TTracer;

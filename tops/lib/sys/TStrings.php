@@ -20,6 +20,14 @@ class TStrings
     const pascalCaseFormat = 6;
     const wordFormat = 7;
 
+    public static function ListToArray($value,$seperator=',') {
+        if (empty($value)) {
+            return array();
+        }
+        $parts = explode($seperator,$value);
+        return array_map('trim',$parts);
+    }
+
     public static function ConvertNameFormat($name,$format,$uppercase = false) {
         $parts = [];
         if ($name == null) {
