@@ -22,6 +22,8 @@ abstract class TPermissionsManager
     const directoryAdminPermissionName = 'Administer directory';
     const viewDirectoryPermissionName = 'View directory';
     const updateDirectoryPermissionName = 'Update directory';
+    const managePermissionsPermissionName = 'Manage permissions';
+
 
     const keyFormat = TStrings::dashedFormat;
     /**
