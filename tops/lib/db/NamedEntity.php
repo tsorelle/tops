@@ -9,7 +9,7 @@
 namespace Tops\db;
 
 
-class NamedEntity extends TimeStampedEntity
+class NamedEntity extends TEntity
 {
     public $name = '';
     public $code = '';
@@ -51,6 +51,19 @@ class NamedEntity extends TimeStampedEntity
         $this->setName($name);
         $this->setCode($code);
         $this->setDescription($description);
+    }
+
+    public function assignFromObject($dto) {
+        parent::assignFromObject($dto);
+        if (isset($dto->name)) {
+            $this->setName($dto->name);
+        }
+        if (isset($dto->code)) {
+            $this->setCreateTime($dto->code);
+        }
+        if (isset($dto->description)) {
+            $this->setDescription($dto->description);
+        }
     }
 
 }

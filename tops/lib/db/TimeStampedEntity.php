@@ -32,4 +32,13 @@ class TimeStampedEntity
         $this->changedby = $userName;
         $this->changedon = $date;
     }
+
+    public function assignFromObject($dto) {
+        if (!empty($dto->createdby)) {
+            $this->changedby = $dto->createdby;
+        }
+        if (!empty($dto->createdon)) {
+            $this->createdon = $dto->createdon;
+        }
+    }
 }
