@@ -98,7 +98,7 @@ class TLanguage
         }
         $text = $this->lookup($resourceCode,$defaultText);
         if ($text === false) {
-            return $defaultText === null ? $resourceCode : $defaultText;
+            return empty($defaultText) ? $resourceCode : $defaultText;
         }
         return $text;
     }

@@ -32,7 +32,14 @@ class TServiceContext implements IMessageContainer {
     public function AddMessage($messageType,$text,$translated=false) {
         $message = new TServiceMessage();
         $message->MessageType = $messageType;
-        $message->Text = $translated ? $text : TLanguage::text($text);
+        if ($translated === true) {
+            $message->Text = $text;
+        }
+        else  {
+            // if not boolean, $translated is default text
+            $message->Text = TLanguage::text($text,$translated);
+        }
+
         array_push($this->response->Messages, $message);
     }
 
