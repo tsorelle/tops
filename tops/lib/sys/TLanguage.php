@@ -16,6 +16,13 @@ class TLanguage
      */
     private static $instance;
 
+    /**
+     * Translate text or resource code
+     *
+     * @param $resourceCode
+     * @param null $defaultText
+     * @return bool|string
+     */
     public static function text($resourceCode,$defaultText=null) {
         try {
             if (!isset(self::$instance)) {
@@ -30,6 +37,21 @@ class TLanguage
         catch (\Exception $ex) {
             return $defaultText === null ? $resourceCode : $defaultText;
         }
+    }
+
+    /**
+     * Translate an array of resourceCode => defaultText
+     *
+     * @param $items  array
+     * @return array
+     */
+    public static function getTranslations($items) {
+        $result = array();
+        foreach ($items as $code => $default) {
+            $result[$code] = self::text($code,$default);
+        }
+
+        return $result;
     }
 
     protected $languageCode;
@@ -47,6 +69,11 @@ class TLanguage
         }
     }
 
+    /**
+     * @param $resourceCode
+     * @param null $defaultText
+     * @return bool|string
+     */
     public function getText($resourceCode,$defaultText=null) {
         if (!$this->initialized) {
             $this->initialize();
@@ -58,6 +85,10 @@ class TLanguage
         return $text;
     }
 
+    /**
+     * @param $resourceCode
+     * @return bool|string
+     */
     protected function lookup($resourceCode) {
         // override in subclass for language translation implementation
         return false;
