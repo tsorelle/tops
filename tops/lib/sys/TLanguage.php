@@ -81,7 +81,7 @@ class TLanguage
         if (!$this->initialized) {
             $this->initialize();
         }
-        $text = $this->lookup($resourceCode);
+        $text = $this->lookup($resourceCode,$defaultText);
         if ($text === false) {
             return $defaultText === null ? $resourceCode : $defaultText;
         }
@@ -92,7 +92,7 @@ class TLanguage
      * @param $resourceCode
      * @return bool|string
      */
-    protected function lookup($resourceCode) {
+    protected function lookup($resourceCode, $defaultText=null) {
         // override in subclass for language translation implementation
         return false;
     }
