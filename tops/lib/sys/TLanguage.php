@@ -16,6 +16,19 @@ class TLanguage
      */
     private static $instance;
 
+    private static function getInstance()
+    {
+        if (!isset(self::$instance)) {
+            if (TObjectContainer::HasDefinition('tops.language')) {
+                self::$instance = TObjectContainer::Get('tops.language');
+            } else {
+                self::$instance = new TLanguage();
+            }
+        }
+        return self::$instance;
+
+    }
+
     /**
      * Translate text or resource code
      *
@@ -28,17 +41,19 @@ class TLanguage
      */
     public static function text($resourceCode,$defaultText=null) {
         try {
-            if (!isset(self::$instance)) {
-                if (TObjectContainer::HasDefinition('tops.language')) {
-                    self::$instance = TObjectContainer::Get('tops.language');
-                } else {
-                    self::$instance = new TLanguage();
-                }
-            }
-            return self::$instance->getText($resourceCode, $defaultText);
+            return self::getInstance()->getText($resourceCode, $defaultText);
         }
         catch (\Exception $ex) {
             return $defaultText === null ? $resourceCode : $defaultText;
+        }
+    }
+
+    public static function getLanguageCode() {
+        try {
+            return self::getInstance()->languageCode;
+        }
+        catch (\Exception $ex) {
+            return 'en-us';
         }
     }
 

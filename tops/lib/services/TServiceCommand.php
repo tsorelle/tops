@@ -39,17 +39,17 @@ abstract class TServiceCommand {
         return ($this->errorCount > 0);
     }
 
-    protected function addErrorMessage($text) {
-        $this->context->AddErrorMessage($text);
+    protected function addErrorMessage($text,$translated = false) {
+        $this->context->AddErrorMessage($text,$translated);
         $this->errorCount++;
     }
 
-    public function addInfoMessage($text) {
-        $this->context->AddInfoMessage($text);
+    public function addInfoMessage($text,$translated = false) {
+        $this->context->AddInfoMessage($text,$translated);
     }
 
-    public function addWarningMessage($text) {
-        $this->context->AddWarningMessage($text);
+    public function addWarningMessage($text,$translated = false) {
+        $this->context->AddWarningMessage($text,$translated);
     }
 
     public function setReturnValue($value) {

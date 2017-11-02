@@ -29,26 +29,26 @@ class TServiceContext implements IMessageContainer {
         $this->response->Messages = array();
         $this->response->Result = ResultType::Success;
     }
-    public function AddMessage($messageType,$text) {
+    public function AddMessage($messageType,$text,$translated=false) {
         $message = new TServiceMessage();
         $message->MessageType = $messageType;
-        $message->Text = TLanguage::text($text);
+        $message->Text = $translated ? $text : TLanguage::text($text);
         array_push($this->response->Messages, $message);
     }
 
-    public function AddInfoMessage($text) {
-        $this->AddMessage(MessageType::Info,$text);
+    public function AddInfoMessage($text,$translated=false) {
+        $this->AddMessage(MessageType::Info,$text,$translated);
     }
 
-    public function AddWarningMessage($text) {
-        $this->AddMessage(MessageType::Error,$text);
+    public function AddWarningMessage($text,$translated=false) {
+        $this->AddMessage(MessageType::Error,$text,$translated);
         if ($this->response->Result < ResultType::Warnings)
             $this->response->Result = ResultType::Warnings;
     }
 
 
-    public function AddErrorMessage($text) {
-        $this->AddMessage(MessageType::Error,$text);
+    public function AddErrorMessage($text,$translated=false) {
+        $this->AddMessage(MessageType::Error,$text,$translated);
         if ($this->response->Result < ResultType::Errors)
             $this->response->Result = ResultType::Errors;
     }
