@@ -22,6 +22,9 @@ class TLanguage
      * @param $resourceCode
      * @param null $defaultText
      * @return bool|string
+     *
+     * Note: as a practice, translations are only user for 'user readable text'
+     * exception messages and log entries should be in literal us english
      */
     public static function text($resourceCode,$defaultText=null) {
         try {
