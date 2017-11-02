@@ -23,12 +23,12 @@ class EntityRepositoryFactory
      */
     public static function Get($name,$namespace=null) {
         if (empty($name)) {
-            throw new \Exception(TLanguage::text('no repository name provided.'));
+            throw new \Exception('no repository name provided.');
         }
         if (empty($namespace)) {
             $namespace = TConfiguration::getValue('repositoryNamespace','services');
             if (empty($namespace)) {
-                throw new \Exception(TLanguage::text('Namespace for repositories not configured.'));
+                throw new \Exception('Namespace for repositories not configured.');
             }
         }
 

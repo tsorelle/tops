@@ -32,7 +32,7 @@ class TTemplateManager
     public function getContent($templateName, $templateLocation='') {
         if (empty($templateLocation)) {
             if (empty($this->templateLocation)) {
-                throw new \Exception(TLanguage::text('No template location found.'));
+                throw new \Exception('No template location found.');
             }
             $templateLocation = $this->templateLocation;
         }

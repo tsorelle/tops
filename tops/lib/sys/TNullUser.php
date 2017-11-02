@@ -23,8 +23,7 @@ class TNullUser implements IUser {
      */
     public function loadById($id)
     {
-        $message = TLanguage::text('User type not defined. Set IUserFactory in DI container.');
-        throw new \Exception($message);
+        throw new \Exception('User type not defined. Set IUserFactory in DI container.');
     }
 
     /**
@@ -33,9 +32,7 @@ class TNullUser implements IUser {
      */
     public function loadByUserName($userName)
     {
-        $message = TLanguage::text('User type not defined. Set IUserFactory in DI container.');
-        throw new \Exception($message);
-
+        throw new \Exception('User type not defined. Set IUserFactory in DI container.');
     }
 
     /**
@@ -172,8 +169,8 @@ class TNullUser implements IUser {
      */
     public function loadByEmail($email)
     {
-        $message = TLanguage::text('User type not defined. Set IUserFactory in DI container.');
-        throw new \Exception($message);
+        throw new \Exception('User type not defined. Set IUserFactory in DI container.');
+
     }
 
     /**

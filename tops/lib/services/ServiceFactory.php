@@ -85,8 +85,7 @@ class ServiceFactory
             $className = $namespace . "\\" . $serviceId . 'Command';
 
             if (!class_exists($className)) {
-                $message = sys\TLanguage::text('Cannot instatiate service');
-                throw new \Exception("$message '$className'.");
+                throw new \Exception("Cannot instatiate service '$className'.");
             }
 
             /**
@@ -103,10 +102,10 @@ class ServiceFactory
                 try {
                     $logger = sys\TObjectContainer::Get('tops.errorLogger');
                     $logReference = $logger->log($ex);
-                    $debugInfo->message = sys\TLanguage::text('See errorlog').": $logReference";
+                    $debugInfo->message = "See errorlog: $logReference";
                 }
                 catch (\Exception $logEx) {
-                    $debugInfo->message = sys\TLanguage::text('Logging error').': '.$ex->getMessage();
+                    $debugInfo->message = 'Logging error: '.$ex->getMessage();
                 }
             }
             else {

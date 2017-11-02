@@ -86,7 +86,7 @@ class TPostOffice {
             }
         }
         if ($count == 0) {
-            throw new \Exception(TLanguage::text('No mailboxes found.'));
+            throw new \Exception('No mailboxes found.');
         }
         return $result;
     }
