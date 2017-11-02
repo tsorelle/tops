@@ -8,6 +8,8 @@
  */
 
 namespace Tops\services;
+use Tops\sys\TL;
+use Tops\sys\TLanguage;
 
 /**
  * Class TServiceContext
@@ -30,7 +32,7 @@ class TServiceContext implements IMessageContainer {
     public function AddMessage($messageType,$text) {
         $message = new TServiceMessage();
         $message->MessageType = $messageType;
-        $message->Text = $text;
+        $message->Text = TLanguage::text($text);
         array_push($this->response->Messages, $message);
     }
 

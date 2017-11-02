@@ -95,11 +95,12 @@ class TConfiguration
             }
             return $result;
         } else {
-            $errMsg = "File not found: $iniPath";
+            $fileNotFound = TLanguage::text(('File not found'));
+            $errMsg = "$fileNotFound: $iniPath";
             if (self::$requireFiles) {
                 throw new \Exception("Ini error: $errMsg");
             }
-            return array('errors' => array($fileName => "File not found: $iniPath"));
+            return array('errors' => array($fileName => "$fileNotFound: $iniPath"));
         }
     }
 

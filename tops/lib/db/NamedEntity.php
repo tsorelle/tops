@@ -9,6 +9,9 @@
 namespace Tops\db;
 
 
+use Tops\sys\TL;
+use Tops\sys\TLanguage;
+
 class NamedEntity extends TEntity
 {
     public $name = '';
@@ -18,7 +21,7 @@ class NamedEntity extends TEntity
     public function setName($value)
     {
         if (empty($value)) {
-            throw new \Exception('The name field cannot be blank.');
+            throw new \Exception(TLanguage::text('The name field cannot be blank.'));
         }
         $this->name = $value;
     }
@@ -38,7 +41,7 @@ class NamedEntity extends TEntity
     public function setCode($value)
     {
         if (empty($value)) {
-            throw new \Exception('The code field cannot be blank.');
+            throw new \Exception(TLanguage::text('The code field cannot be blank.'));
         }
         $this->code = $value;
     }

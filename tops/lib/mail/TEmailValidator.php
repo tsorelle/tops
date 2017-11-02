@@ -9,6 +9,7 @@
 namespace Tops\mail;
 
 
+use Tops\sys\TLanguage;
 use Tops\sys\TObjectContainer;
 
 // from
@@ -78,7 +79,7 @@ class TEmailValidator
             return true;
 		}
         if ($this->result < TSayersEmailValidator::ISEMAIL_RFC5321) {
-            $message = 'Address is valid for SMTP but has unusual elements';
+            $message = TLanguage::text('Address is valid for SMTP but has unusual elements');
             if ($strict) {
                 $this->error = $message;
                 return false;
@@ -89,7 +90,7 @@ class TEmailValidator
             return true;
 		}
         if ($this->result < TSayersEmailValidator::ISEMAIL_CFWS) {
-            $message = 'Address is valid within the message but cannot be used unmodified for the envelope';
+            $message = TLanguage::text('Address is valid within the message but cannot be used unmodified for the envelope');
             if ($strict) {
                 $this->error = $message;
                 return false;
@@ -100,7 +101,7 @@ class TEmailValidator
             return true;
 		}
         if ($this->result < TSayersEmailValidator::ISEMAIL_DEPREC) {
-            $message = 'Address contains deprecated elements but may still be valid in restricted contexts';
+            $message = TLanguage::text('Address contains deprecated elements but may still be valid in restricted contexts');
             if ($strict) {
                 $this->error = $message;
                 return false;
@@ -111,7 +112,7 @@ class TEmailValidator
             return true;
 		}
         if ($this->result < TSayersEmailValidator::ISEMAIL_RFC5322) {
-            $message = 'The address is only valid according to the broad definition of RFC 5322. It is otherwise invalid.';
+            $message = TLanguage::text('The address is only valid according to the broad definition of RFC 5322. It is otherwise invalid.');
             if ($strict) {
                 $this->error = $message;
                 return false;
@@ -122,7 +123,7 @@ class TEmailValidator
             return true;
 		}
 		
-        $this->error = 'Invalid email';
+        $this->error = TLanguage::text('Invalid email');
         return false;
     }
 

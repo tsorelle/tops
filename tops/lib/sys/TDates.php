@@ -62,6 +62,7 @@ class TDates
     const returnTypeDateObject = 2;
     const returnTypeCorrectedDate = 3;
     const returnTypeTimeStamp = 4;
+    const returnTypeObject = 5;
     const returnTypeInterval = 1;
     const returnTypeInterSpec = 2;
 

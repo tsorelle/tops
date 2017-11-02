@@ -8,6 +8,8 @@
 
 namespace Tops\mail;
 
+use Tops\sys\TL;
+use Tops\sys\TLanguage;
 use Tops\sys\TObjectContainer;
 
 /**
@@ -84,7 +86,7 @@ class TPostOffice {
             }
         }
         if ($count == 0) {
-            throw new \Exception('No mailboxes found.');
+            throw new \Exception(TLanguage::text('No mailboxes found.'));
         }
         return $result;
     }

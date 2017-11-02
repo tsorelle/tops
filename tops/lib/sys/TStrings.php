@@ -140,9 +140,10 @@ class TStrings
         }
         $parts = explode(' ',$s);
         $len = sizeof($parts);
+        $keywords = explode(',',TLanguage::text('title-key-words','the,a,of,an,in'));
         for ($i = 0; $i<$len;$i++) {
             $part = $parts[$i];
-            if ($i > 0 && ($part == 'the' || $part == 'a' || $part == 'of' || $part == 'an' || $part == 'in')) {
+            if ($i>0 && in_array($part,$keywords)) {
                 continue;
             }
             $parts[$i] = ucfirst($part);
