@@ -24,6 +24,11 @@ class TPath
         return self::$configPath;
     }
 
+    public static function inConfigPath($filename) {
+        $root = self::getConfigPath();
+        return self::combine($root,$filename);
+    }
+
     public static function Initialize($projectRoot,$configLocation = 'application/config') {
         self::$fileRoot = self::normalize($projectRoot).'/';
         self::$configPath = self::$fileRoot.self::fixSlashes($configLocation).'/';

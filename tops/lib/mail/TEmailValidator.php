@@ -61,7 +61,7 @@ class TEmailValidator
         return $result;
     }
 
-    private function translateResult($resultCode,$failDns,$strict)
+    private function translateResult($resultCode,$failDns,$strict,$emailAddress)
     {
         $this->result = $resultCode;
         if ($this->result < TSayersEmailValidator::ISEMAIL_VALID_CATEGORY) {
@@ -79,7 +79,7 @@ class TEmailValidator
             return true;
 		}
         if ($this->result < TSayersEmailValidator::ISEMAIL_RFC5321) {
-            $message = TLanguage::text('Address is valid for SMTP but has unusual elements');
+            $message = TLanguage::text('smtp-odd-address');
             if ($strict) {
                 $this->error = $message;
                 return false;
@@ -90,7 +90,7 @@ class TEmailValidator
             return true;
 		}
         if ($this->result < TSayersEmailValidator::ISEMAIL_CFWS) {
-            $message = TLanguage::text('Address is valid within the message but cannot be used unmodified for the envelope');
+            $message = TLanguage::text('smtp-warning-2');
             if ($strict) {
                 $this->error = $message;
                 return false;
@@ -101,7 +101,7 @@ class TEmailValidator
             return true;
 		}
         if ($this->result < TSayersEmailValidator::ISEMAIL_DEPREC) {
-            $message = TLanguage::text('Address contains deprecated elements but may still be valid in restricted contexts');
+            $message = TLanguage::text('smtp-warning-3');
             if ($strict) {
                 $this->error = $message;
                 return false;
@@ -112,7 +112,7 @@ class TEmailValidator
             return true;
 		}
         if ($this->result < TSayersEmailValidator::ISEMAIL_RFC5322) {
-            $message = TLanguage::text('The address is only valid according to the broad definition of RFC 5322. It is otherwise invalid.');
+            $message = TLanguage::text('smtp-warning-4');
             if ($strict) {
                 $this->error = $message;
                 return false;
@@ -122,8 +122,9 @@ class TEmailValidator
             }
             return true;
 		}
-		
-        $this->error = TLanguage::text('Invalid email');
+
+		$errMessage = TLanguage::text('validation-invalid-email');
+        $this->error = sprintf($errMessage,$emailAddress);
         return false;
     }
 
@@ -134,7 +135,7 @@ class TEmailValidator
         $this->warnings = array();
         $parsed = $this->parseEmailAddress($emailAddress);
         $resultCode = TSayersEmailValidator::is_email($parsed->address,$dnsCheck, true);
-        $isValid = $this->translateResult($resultCode,$failDns,$strict);
+        $isValid = $this->translateResult($resultCode,$failDns,$strict,$emailAddress);
         if ($isValid) {
             $this->emailAddress = $parsed;
         }

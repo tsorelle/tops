@@ -131,7 +131,7 @@ class ServiceFactory
             $this->failureResponse->Result = ResultType::ServiceFailure;
             $message = new TServiceMessage();
             $message->MessageType = MessageType::Error;
-            $message->Text = sys\TLanguage::text('Service failed. If the problem persists contact the site administrator.');
+            $message->Text = sys\TLanguage::text('service-failed');
             $this->failureResponse->Messages = array($message);
             $this->failureResponse->debugInfo = $debugInfo;
         }

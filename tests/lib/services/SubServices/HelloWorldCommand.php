@@ -12,7 +12,7 @@ class HelloWorldCommand extends \Tops\services\TServiceCommand
 {
     protected function run()
     {
-        $this->addInfoMessage('Hello from the sub World');
+        $this->addInfoMessage('Hello from the sub World',true);
         $responseValue = new \stdClass();
         $responseValue->message = "Greatings earthlings.";
         $this->setReturnValue($responseValue);

@@ -9,8 +9,19 @@
 namespace Tops\sys;
 
 
-class TLanguage
+abstract class TLanguage
 {
+    const default = 'en-US';
+
+    public abstract function getSupportedLanguages();
+    public abstract function importTranslations($iniFilePath);
+    /**
+     * @param $resourceCode
+     * @param null $defaultText
+     * @return bool|string
+     */
+    public abstract function getText($resourceCode,$defaultText=null);
+
     /**
      * @var TLanguage
      */
@@ -22,7 +33,7 @@ class TLanguage
             if (TObjectContainer::HasDefinition('tops.language')) {
                 self::$instance = TObjectContainer::Get('tops.language');
             } else {
-                self::$instance = new TLanguage();
+                self::$instance = new TIniTranslator();
             }
         }
         return self::$instance;
@@ -48,12 +59,12 @@ class TLanguage
         }
     }
 
-    public static function getLanguageCode() {
+    public static function getLanguage() {
         try {
-            return self::getInstance()->languageCode;
+            return self::getInstance()->getLanguageCode();
         }
         catch (\Exception $ex) {
-            return 'en-us';
+            return self::default;
         }
     }
 
@@ -72,48 +83,67 @@ class TLanguage
         return $result;
     }
 
-    protected $languageCode;
-    protected $initialized = false;
+    protected function getSiteLanguages() {
+        $siteLanguage = TConfiguration::getValue('language','site');
+        return $this->parseLanguageCode($siteLanguage);
+    }
 
-    public function __construct()
+    private $languages;
+    public function getLanguages() {
+        if (!isset($this->languages)) {
+            $languages = $this->getUserLanguages();
+            $languages = array_merge($languages,$this->getSiteLanguages());
+            $languages = array_merge($languages,$this->parseLanguageCode(self::default));
+            $languages = array_unique($languages);
+            $this->languages = $this->filterLanguages($languages);
+        }
+        return $this->languages;
+    }
+
+    public function filterLanguages($languages) {
+        $result = array();
+        if (!empty($languages)) {
+            $count = sizeof($languages);
+            $supported = $this->getSupportedLanguages();
+            foreach($languages as $language) {
+                if (in_array($language, $supported)) {
+                    $result[] = $language;
+                }
+            }
+        }
+        return $result;
+    }
+
+    public function setLanguageCode($code=null) {
+        if (!isset($this->languages)) {
+            $this->languages = $this->parseLanguageCode(self::default);
+        }
+        $languages = $this->parseLanguageCode($code);
+        if (!empty($languages)) {
+            $languages = array_unique(array_merge($languages,$this->languages));
+            $this->languages = $this->filterLanguages($languages);
+        }
+    }
+
+    protected function getUserLanguages()
     {
-        $this->setLanguageCode(TConfiguration::getValue('language','site','en-us'));
+        $accept = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ?
+            $_SERVER['HTTP_ACCEPT_LANGUAGE'] : self::default;
+        return explode(',', explode(';', $accept)[0]);
     }
 
-    public function setLanguageCode($code)
-    {
-        if ($this->languageCode != $code) {
-            $this->initialized = false;
+
+    protected function parseLanguageCode($code=self::default) {
+        if (empty($code)) {
+            return array();
         }
-    }
-
-    /**
-     * @param $resourceCode
-     * @param null $defaultText
-     * @return bool|string
-     */
-    public function getText($resourceCode,$defaultText=null) {
-        if (!$this->initialized) {
-            $this->initialize();
+        $result = array($code);
+        $parts = explode('-',$code);
+        if (sizeof($parts)>1) {
+            $result[] = $parts[0];
         }
-        $text = $this->lookup($resourceCode,$defaultText);
-        if ($text === false) {
-            return empty($defaultText) ? $resourceCode : $defaultText;
-        }
-        return $text;
+        return $result;
     }
 
-    /**
-     * @param $resourceCode
-     * @return bool|string
-     */
-    protected function lookup($resourceCode, $defaultText=null) {
-        // override in subclass for language translation implementation
-        return false;
-    }
 
-    protected function initialize() {
-        // override in subclass as needed
-        $this->initialized = true;
-    }
 }

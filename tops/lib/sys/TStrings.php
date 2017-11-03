@@ -140,7 +140,7 @@ class TStrings
         }
         $parts = explode(' ',$s);
         $len = sizeof($parts);
-        $keywords = explode(',',TLanguage::text('title-key-words','the,a,of,an,in'));
+        $keywords = explode(',',TLanguage::text('title-key-words','the,a,of,an,in,and'));
         for ($i = 0; $i<$len;$i++) {
             $part = $parts[$i];
             if ($i>0 && in_array($part,$keywords)) {

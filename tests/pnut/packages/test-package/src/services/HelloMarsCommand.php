@@ -13,7 +13,7 @@ class HelloMarsCommand extends \Tops\services\TServiceCommand
 {
     protected function run()
     {
-        $this->addInfoMessage('Hello Mars');
+        $this->addInfoMessage('Hello Mars',true);
         $responseValue = new \stdClass();
         $responseValue->message = "Greatings earthlings from the Big Giant Head.";
         $this->setReturnValue($responseValue);

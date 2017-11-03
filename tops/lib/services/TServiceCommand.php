@@ -227,14 +227,14 @@ abstract class TServiceCommand {
                 if ($this->isAuthorized())
                     $this->run();
                 else
-                    $this->addErrorMessage("Sorry, you are not authorized to use this service.");
+                    $this->addErrorMessage('service-no-auth');
             }
             else {
-                $this->addErrorMessage("Your request contains potentially insecure content. HTML tags are not allowed.");
+                $this->addErrorMessage("service-insecure");
             }
         }
         else {
-            $this->addErrorMessage("Sorry, your session has expired or is not valid. Please return to home page.");
+            $this->addErrorMessage("session-expired");
         }
 
         return $this->context->GetResponse();

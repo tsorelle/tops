@@ -21,7 +21,7 @@ class NamedEntity extends TEntity
     public function setName($value)
     {
         if (empty($value)) {
-            throw new \Exception(TLanguage::text('The name field cannot be blank.'));
+            throw new \Exception(TLanguage::text('validation-code-blank'));
         }
         $this->name = $value;
     }
@@ -41,7 +41,7 @@ class NamedEntity extends TEntity
     public function setCode($value)
     {
         if (empty($value)) {
-            throw new \Exception(TLanguage::text('The code field cannot be blank.'));
+            throw new \Exception(TLanguage::text('entity-no-code'));
         }
         $this->code = $value;
     }
