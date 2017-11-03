@@ -60,17 +60,10 @@ class TIniTranslator extends TLanguage
 
     private $cached = array();
 
-    /**
-     * @param $resourceCode
-     * @param bool $defaultText
-     * @return bool|mixed
-     */
-    public function getText($resourceCode, $defaultText = false)
-    {
-        $result = @$this->cached[$resourceCode];
+    protected function getTranslation($resourceCode, $defaultText = false) {
         $data = $this->getData();
+        $result = false;
         $languages = $this->getLanguages();
-        $count = sizeof($languages);
         foreach($languages as $language) {
             $section = @$data[$language];
             if (empty($section)) {
@@ -86,11 +79,31 @@ class TIniTranslator extends TLanguage
                 break;
             }
         }
+        return $result;
+    }
+
+    /**
+     * @param $resourceCode
+     * @param bool $defaultText
+     * @return bool|mixed
+     */
+    public function getText($resourceCode, $defaultText = false)
+    {
+        $result = @$this->cached[$resourceCode];
+        if (empty($result)) {
+            $result = $this->getTranslation($resourceCode,$defaultText);
+        }
         if (empty($result)) {
             // return default text or resource code
             $result = empty($defaultText) ? $resourceCode : $defaultText;
         }
         $this->cached[$resourceCode] = $result;
         return $result;
+    }
+
+    public function setLanguageCode($code = null)
+    {
+        parent::setLanguageCode($code);
+        $this->cached = array();
     }
 }
