@@ -16,13 +16,14 @@ class TIniTranslator extends TLanguage
     {
         if (!isset($this->ini)) {
             $this->ini = $this->getCoreTranslations();
-            $configFile = TPath::inConfigPath('translations.ini');
-            if ($configFile !== false) {
-                $this->importTranslations($configFile);
-            }
-
+            $this->importIniTranslations();
         }
         return $this->ini;
+    }
+
+    protected function importIniTranslations() {
+        // override in subclass to add additional translations
+        TIniFileMerge::Import(TPath::inConfigPath('translations.ini'),$this->ini);
     }
 
     private $supportedLanguages;

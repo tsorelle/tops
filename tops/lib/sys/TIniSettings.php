@@ -16,6 +16,14 @@ class TIniSettings {
         $this->ini = $ini;
     }
 
+    public static function Open($path,$returnEmpty=true) {
+        $result = @parse_ini_file($path,true);
+        if (empty($result)) {
+            return $returnEmpty ? array() : false;
+        }
+        return $result;
+    }
+
     public static function Create($fileName = 'settings.ini', $iniPath = null, $sections = true)
     {
         if ($iniPath === null) {
