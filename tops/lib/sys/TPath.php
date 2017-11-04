@@ -24,9 +24,9 @@ class TPath
         return self::$configPath;
     }
 
-    public static function inConfigPath($filename) {
+    public static function inConfigPath($filename,$mode=self::normalize_no_exception) {
         $root = self::getConfigPath();
-        return self::combine($root,$filename);
+        return self::combine($root,$filename,$mode);
     }
 
     public static function Initialize($projectRoot,$configLocation = 'application/config') {
@@ -109,7 +109,7 @@ class TPath
         if ($mode===self::dont_normalize) {
             return self::fixSlashes($combined);
         }
-        return self::normalize("$path1/$path2");
+        return self::normalize("$path1/$path2",($mode === self::normalize_with_exception));
     }
 
     public static function fromFileRoot($path,$normalize=false) {

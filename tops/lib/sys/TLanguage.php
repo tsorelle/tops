@@ -67,9 +67,9 @@ abstract class TLanguage
         }
     }
 
-    public static function getLanguage() {
+    public static function getLanguageCodes() {
         try {
-            return self::getInstance()->getLanguageCode();
+            return self::getInstance()->getLanguages();
         }
         catch (\Exception $ex) {
             return self::default;
@@ -83,11 +83,21 @@ abstract class TLanguage
      * @return array
      */
     public static function getTranslations($items) {
-        $result = array();
-        foreach ($items as $code => $default) {
-            $result[$code] = self::text($code,$default);
+        if (empty($items)) {
+            return array();
         }
+        $result = array();
+        if (is_array($items[0])) {
+            foreach ($items as $code => $default) {
+                $result[$code] = self::text($code,$default);
+            }
+        }
+        else {
+            foreach ($items as $code) {
+                $result[$code] = self::text($code);
+            }
 
+        }
         return $result;
     }
 
