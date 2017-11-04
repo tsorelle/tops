@@ -15,15 +15,15 @@ class TIniTranslator extends TLanguage
     protected function getData()
     {
         if (!isset($this->ini)) {
-            $this->importIniTranslations();
+            $this->ini = $this->getCoreTranslations();
+            TIniFileMerge::Import(TPath::inConfigPath('translations.ini'),$this->ini);
+            $this->importIniTranslations($this->ini);
         }
         return $this->ini;
     }
 
-    protected function importIniTranslations() {
+    protected function importIniTranslations(&$ini) {
         // override in subclass to add additional translations
-        $this->ini = $this->getCoreTranslations();
-        TIniFileMerge::Import(TPath::inConfigPath('translations.ini'),$this->ini);
     }
 
     private $supportedLanguages;
