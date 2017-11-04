@@ -37,7 +37,7 @@ class TIniTranslator extends TLanguage
 
     public function importTranslations($iniFilePath,$username=null)
     {
-        TIniFileMerge::MergeData($iniFilePath,$this->ini);
+        TIniFileMerge::Import($iniFilePath,$this->ini);
         return 1;
     }
 

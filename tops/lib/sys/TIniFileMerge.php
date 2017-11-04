@@ -16,7 +16,7 @@ class TIniFileMerge
         $instance->mergeIni($source,$target);
     }
 
-    public static function MergeData($inipath,&$ini=array()) {
+    public static function Import($inipath,&$ini=array()) {
         $secondIni = @parse_ini_file($inipath,true);
         if ($secondIni === false) {
             return $ini;
