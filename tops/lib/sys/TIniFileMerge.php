@@ -16,6 +16,33 @@ class TIniFileMerge
         $instance->mergeIni($source,$target);
     }
 
+    public static function MergeData($inipath,&$ini=array()) {
+        $secondIni = @parse_ini_file($inipath,true);
+        if ($secondIni === false) {
+            return $ini;
+        }
+        if (empty($ini)) {
+            return $secondIni;
+        }
+        if (!empty($secondIni)) {
+            foreach (array_keys($secondIni) as $sectionKey) {
+                $items = $secondIni[$sectionKey];
+                if (!empty($items)) {
+                    if (!isset($ini[$sectionKey])) {
+                        $ini[$sectionKey] = $items;
+                    }
+                    else {
+                        foreach ($items as $key => $value) {
+                            $ini[$sectionKey][$key] = $value;
+                        }
+                    }
+                }
+            }
+        }
+        return $ini;
+    }
+
+
     private $sourceIni;
     private $targetIni;
     private $missing;

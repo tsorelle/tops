@@ -37,16 +37,8 @@ class TIniTranslator extends TLanguage
 
     public function importTranslations($iniFilePath,$username=null)
     {
-        $import = @parse_ini_file($iniFilePath,true);
-        if (!empty($import)) {
-            if (empty($this->ini)) {
-                $this->ini = $import;
-            } else {
-                $this->ini = array_merge_recursive($import,$this->ini);
-            }
-            return count($import,COUNT_RECURSIVE);
-        }
-        return 0;
+        TIniFileMerge::MergeData($iniFilePath,$this->ini);
+        return 1;
     }
 
     private function findTranslation($section,$key) {
