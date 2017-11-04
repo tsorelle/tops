@@ -13,6 +13,8 @@ abstract class TLanguage
 {
     const default = 'en-US';
 
+    private $cached = array();
+
     public abstract function getSupportedLanguages();
     public abstract function importTranslations($iniFilePath);
     /**
@@ -20,7 +22,7 @@ abstract class TLanguage
      * @param null $defaultText
      * @return bool|string
      */
-    public abstract function getText($resourceCode,$defaultText=null);
+    protected abstract function getTranslation($resourceCode, $defaultText = false);
 
     /**
      * @var TLanguage
@@ -83,6 +85,35 @@ abstract class TLanguage
         return $result;
     }
 
+    /**
+     * @param $resourceCode
+     * @param bool $defaultText
+     * @return bool|mixed
+     */
+    public function getText($resourceCode, $defaultText = false)
+    {
+        $result = @$this->cached[$resourceCode];
+        if (empty($result)) {
+            $result = $this->getTranslation($resourceCode,$defaultText);
+            if (empty($result)) {
+                // return default text or resource code
+                $result = empty($defaultText) ? $resourceCode : $defaultText;
+            }
+            $this->cached[$resourceCode] = $result;
+        }
+        return $result;
+    }
+
+
+
+    /**
+     * @param mixed $languages
+     */
+    public function setLanguages($languages)
+    {
+        $this->languages = $languages;
+    }
+
     protected function getSiteLanguages() {
         $siteLanguage = TConfiguration::getValue('language','site');
         return $this->parseLanguageCode($siteLanguage);
@@ -115,6 +146,7 @@ abstract class TLanguage
     }
 
     public function setLanguageCode($code=null) {
+        $this->cached = array();
         if (!isset($this->languages)) {
             $this->languages = $this->parseLanguageCode(self::default);
         }
