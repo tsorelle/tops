@@ -16,7 +16,13 @@ abstract class TLanguage
     private $cached = array();
 
     public abstract function getSupportedLanguages();
-    public abstract function importTranslations($iniFilePath);
+
+    /**
+     * @param $iniFilePath
+     * @param string $username
+     * @return int number imported
+     */
+    public abstract function importTranslations($iniFilePath,$username='admin');
     /**
      * @param $resourceCode
      * @param null $defaultText
@@ -117,6 +123,11 @@ abstract class TLanguage
     protected function getSiteLanguages() {
         $siteLanguage = TConfiguration::getValue('language','site');
         return $this->parseLanguageCode($siteLanguage);
+    }
+
+    protected function getCoreTranslations() {
+        $result =  @parse_ini_file( __DIR__.'/translations.ini',true);
+        return $result === false? array() : $result;
     }
 
     private $languages;

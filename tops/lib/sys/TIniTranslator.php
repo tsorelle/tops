@@ -15,10 +15,7 @@ class TIniTranslator extends TLanguage
     protected function getData()
     {
         if (!isset($this->ini)) {
-            $this->ini = @parse_ini_file( __DIR__.'/translations.ini',true);
-            if ($this->ini === false) {
-                $this->ini = array();
-            }
+            $this->ini = $this->getCoreTranslations();
             $configFile = TPath::inConfigPath('translations.ini');
             if ($configFile !== false) {
                 $this->importTranslations($configFile);
@@ -38,7 +35,7 @@ class TIniTranslator extends TLanguage
         return $this->supportedLanguages;
     }
 
-    public function importTranslations($iniFilePath)
+    public function importTranslations($iniFilePath,$username=null)
     {
         $import = @parse_ini_file($iniFilePath,true);
         if (!empty($import)) {
@@ -47,7 +44,9 @@ class TIniTranslator extends TLanguage
             } else {
                 $this->ini = array_merge_recursive($import,$this->ini);
             }
+            return count($import,COUNT_RECURSIVE);
         }
+        return 0;
     }
 
     private function findTranslation($section,$key) {
