@@ -25,13 +25,17 @@ class TKeyValuePair
         return $result;
     }
 
-    public static function CreateArray(array $a, $replacements = null) {
+    public static function CreateArray(array $a, $encodeJson=false, $replacements = null) {
         $result = array();
         foreach ($a as $key => $value) {
             foreach ($replacements as $search => $replace) {
                 $value = str_replace($search,$replace,$value);
             }
-            $result[] = self::Create($key,$value);
+            $kv = self::Create($key,$value);
+            if ($encodeJson) {
+                $kv = json_encode($kv);
+            }
+            $result[] = $kv;
         }
         return $result;
     }
@@ -42,5 +46,11 @@ class TKeyValuePair
             $result[$kv->Key] = $kv->Value;
         }
         return $result;
+    }
+
+    public static function CreateCookie(array $a,$cookieName) {
+        $encoded = self::CreateArray($a,true,array('+' => '[plus]'));
+        $cookie =  '['. join(',',$encoded).']';
+        setcookie($cookieName,$cookie);
     }
 }
