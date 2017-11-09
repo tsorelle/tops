@@ -315,7 +315,7 @@ abstract class TAbstractUser implements IUser
         $isUpdate = array_key_exists($key,$this->profile) ;
         $this->profile[$key] = $value;
         if ($isUpdate) {
-            if ($key = TUser::profileKeyLanguage) {
+            if ($key == $this->getLanguageProfileKey()) {
                 TLanguage::setUserLanguages($value);
             }
             $this->updateProfile($key);
