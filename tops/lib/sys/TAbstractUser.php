@@ -157,10 +157,25 @@ abstract class TAbstractUser implements IUser
             $this->profile = array();
             $this->loadProfile();
             $this->cacheProfile();
-            if (array_key_exists(TUser::profileKeyLanguage,$this->profile)) {
-                TLanguage::setUserLanguages($this->profile[TUser::profileKeyLanguage]);
+            $languageKey = $this->getLanguageProfileKey();
+            if (array_key_exists($languageKey,$this->profile)) {
+                TLanguage::setUserLanguages($this->profile[$languageKey]);
+            }
+            else {
+                $language = $this->getCmsProfileValue($languageKey);
+                if (!empty($language)) {
+                    TLanguage::setUserLanguages($language);
+                }
             }
         }
+    }
+
+    protected function getCmsProfileValue($key) {
+        return false; // override in sub-class as needed.
+    }
+
+    protected function getLanguageProfileKey() {
+        return TUser::profileKeyLanguage;  // override in sub-class as needed.
     }
 
     protected abstract function loadProfile();
@@ -284,7 +299,9 @@ abstract class TAbstractUser implements IUser
             if (array_key_exists($key, $this->profile)) {
                 return $this->profile[$key];
             }
-            return false;
+            else {
+                return $this->getCmsProfileValue($key);
+            }
         }
         return '';
     }
