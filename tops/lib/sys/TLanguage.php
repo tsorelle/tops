@@ -76,6 +76,10 @@ abstract class TLanguage
         }
     }
 
+    public static function setUserLanguages($languages) {
+        self::getInstance()->setLanguages($languages);
+    }
+
     /**
      * Translate an array of resourceCode => defaultText
      *
