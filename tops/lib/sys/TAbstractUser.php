@@ -155,6 +155,7 @@ abstract class TAbstractUser implements IUser
         $this->profile = $this->getCachedProfile();
         if ($this->profile === null) {
             $this->profile = array();
+            $this->language = null;
             $this->loadProfile();
             $this->cacheProfile();
         }
@@ -291,6 +292,12 @@ abstract class TAbstractUser implements IUser
         if (!isset($this->profile)) {
             $this->loadProfileValues();
         }
+        if ($key = TUser::profileKeyLanguage) {
+            if (!empty($value)) {
+
+            }
+            $this->language=$value;
+        }
         $isUpdate = array_key_exists($key,$this->profile) ;
         $this->profile[$key] = $value;
         if ($isUpdate) {
@@ -308,6 +315,12 @@ abstract class TAbstractUser implements IUser
 
     protected function formatProfileKey($key) {
         return TStrings::convertNameFormat($key,TStrings::dashedFormat);
+    }
+
+    public function setLanguage($languageCode) {
+        if (!is_array($languageCode)) {
+
+        }
     }
 
 }

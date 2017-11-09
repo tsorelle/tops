@@ -39,6 +39,7 @@ class TUser {
     const profileKeyShortName ='short-name';
     const profileKeyDisplayName ='display-name';
     const profileKeyEmail     ='email';
+    const profileKeyLanguage  ='language';
 
 
     /**

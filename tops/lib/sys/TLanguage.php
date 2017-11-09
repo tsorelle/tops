@@ -122,14 +122,6 @@ abstract class TLanguage
 
 
 
-    /**
-     * @param mixed $languages
-     */
-    public function setLanguages($languages)
-    {
-        $this->languages = $languages;
-    }
-
     protected function getSiteLanguages() {
         $siteLanguage = TConfiguration::getValue('language','site');
         return $this->parseLanguageCode($siteLanguage);
@@ -164,6 +156,21 @@ abstract class TLanguage
             }
         }
         return $result;
+    }
+
+    /**
+     * @param string | string[] $languages   Language codes in order of user preference
+     */
+    public function setLanguages($languages)
+    {
+        if (!is_array($languages)) {
+            $languages = explode(',',$languages);
+        }
+
+        while(sizeof($languages) > 0) {
+            $code = array_pop($languages);
+            $this->setLanguageCode($code);
+        }
     }
 
     public function setLanguageCode($code=null) {
