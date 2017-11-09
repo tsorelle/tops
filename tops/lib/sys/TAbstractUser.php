@@ -15,6 +15,8 @@ abstract class TAbstractUser implements IUser
     protected $userName;
     protected $isCurrentUser;
 
+    private $languageKey = TUser::profileKeyLanguage;
+
     protected function formatRoleName($name) {
         $manager = TPermissionsManager::getPermissionManager();
         return $manager->formatRoleName($name);
@@ -157,25 +159,15 @@ abstract class TAbstractUser implements IUser
             $this->profile = array();
             $this->loadProfile();
             $this->cacheProfile();
-            $languageKey = $this->getLanguageProfileKey();
-            if (array_key_exists($languageKey,$this->profile)) {
-                TLanguage::setUserLanguages($this->profile[$languageKey]);
-            }
-            else {
-                $language = $this->getCmsProfileValue($languageKey);
-                if (!empty($language)) {
-                    TLanguage::setUserLanguages($language);
-                }
-            }
         }
     }
 
-    protected function getCmsProfileValue($key) {
-        return false; // override in sub-class as needed.
-    }
-
-    protected function getLanguageProfileKey() {
-        return TUser::profileKeyLanguage;  // override in sub-class as needed.
+    protected function updateLanguage($languageKey=TUser::profileKeyLanguage) {
+        $this->languageKey = $languageKey;
+        $language = $this->getProfileValue($languageKey);
+        if (!empty($language)) {
+            TLanguage::setUserLanguages($language);
+        }
     }
 
     protected abstract function loadProfile();
@@ -299,9 +291,7 @@ abstract class TAbstractUser implements IUser
             if (array_key_exists($key, $this->profile)) {
                 return $this->profile[$key];
             }
-            else {
-                return $this->getCmsProfileValue($key);
-            }
+            return false;
         }
         return '';
     }
@@ -315,12 +305,13 @@ abstract class TAbstractUser implements IUser
         $isUpdate = array_key_exists($key,$this->profile) ;
         $this->profile[$key] = $value;
         if ($isUpdate) {
-            if ($key == $this->getLanguageProfileKey()) {
+            if ($key == $this->languageKey) {
                 TLanguage::setUserLanguages($value);
             }
             $this->updateProfile($key);
         }
     }
+
 
     public function updateProfile($key=null) {
         // override in sub-class as needed
