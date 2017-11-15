@@ -13,14 +13,20 @@ namespace Tops\sys;
  *
  * Create DTO objects to match Typscript definition: IKameValuePair
  *
+ *    export interface INameValuePair {
+ *        Name: string;
+ *        Value: any;
+ *    }
  *
  * @package Tops\sys
  */
 class TNameValuePair
 {
+    public $Name = '';
+    public $Value = null;
     public static function Create($name,$value)
     {
-        $result = new \stdClass();
+        $result = new TNameValuePair();
         $result->Name = $name;
         $result->Value = $value;
         return $result;
@@ -45,4 +51,23 @@ class TNameValuePair
         return $result;
     }
 
+    public function getName()
+    {
+        return $this->Name;
+    }
+
+    public function getValue()
+    {
+        return $this->Value;
+    }
+
+    public function setName($name)
+    {
+        $this->Name = $name;
+    }
+
+    public function setValue($value)
+    {
+        $this->Value = $value;
+    }
 }

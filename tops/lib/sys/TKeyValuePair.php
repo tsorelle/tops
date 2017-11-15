@@ -13,13 +13,20 @@ namespace Tops\sys;
  *
  * Create DTO objects to match Typscript definition: IKeyValuePair
  *
+ *    export interface IKeyValuePair {
+ *        Key: any;
+ *        Value: any;
+ *    }
+ *
  * @package Tops\sys
  */
 class TKeyValuePair
 {
+    public $Key = '';
+    public $Value = null;
     public static function Create($key,$value)
     {
-        $result = new \stdClass();
+        $result = new TKeyValuePair();
         $result->Key = $key;
         $result->Value = $value;
         return $result;
@@ -53,4 +60,25 @@ class TKeyValuePair
         $cookie =  '['. join(',',$encoded).']';
         setcookie($cookieName,$cookie);
     }
+
+    public function getKey()
+    {
+        return $this->Key;
+    }
+
+    public function getValue()
+    {
+        return $this->Value;
+    }
+
+    public function setKey($key)
+    {
+        $this->Key = $key;
+    }
+
+    public function setValue($value)
+    {
+        $this->Value = $value;
+    }
+
 }
