@@ -10,9 +10,10 @@ namespace Tops\services;
 
 
 interface IMessageContainer {
-    public function AddMessage($messageType,$text,$translated=false);
-    public function AddInfoMessage($text,$translated=false);
-    public function AddWarningMessage($text,$translated=false);
-    public function AddErrorMessage($text,$translated=false);
+    const translated = true;
+    public function AddMessage($messageType,$text,$arg1=null, $arg2=null);
+    public function AddInfoMessage($text,$arg1=null, $arg2=null);
+    public function AddWarningMessage($text,$arg1=null, $arg2=null);
+    public function AddErrorMessage($text,$arg1=null, $arg2=null);
     public function GetResult();
 }

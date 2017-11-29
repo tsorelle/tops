@@ -29,33 +29,36 @@ class TServiceContext implements IMessageContainer {
         $this->response->Messages = array();
         $this->response->Result = ResultType::Success;
     }
-    public function AddMessage($messageType,$text,$translated=false) {
+    public function AddMessage($messageType,$text,$arg1=null, $arg2=null)
+    {
+        // $arg1=null, $arg2=null) {
         $message = new TServiceMessage();
         $message->MessageType = $messageType;
-        if ($translated === true) {
+        if ($arg1 === true) { // pre-translated
             $message->Text = $text;
-        }
-        else  {
+        } else if (is_array($arg1)) {
+            $message->Text = TLanguage::formatText($text, $arg1, $arg2);
+        } else {
             // if not boolean, $translated is default text
-            $message->Text = TLanguage::text($text,$translated);
+            $message->Text = TLanguage::text($text, $arg1);
         }
 
         array_push($this->response->Messages, $message);
     }
 
-    public function AddInfoMessage($text,$translated=false) {
-        $this->AddMessage(MessageType::Info,$text,$translated);
+    public function AddInfoMessage($text,$arg1=null, $arg2=null) {
+        $this->AddMessage(MessageType::Info,$text,$arg1, $arg2);
     }
 
-    public function AddWarningMessage($text,$translated=false) {
-        $this->AddMessage(MessageType::Error,$text,$translated);
+    public function AddWarningMessage($text,$arg1=null, $arg2=null) {
+        $this->AddMessage(MessageType::Error,$text,$arg1, $arg2);
         if ($this->response->Result < ResultType::Warnings)
             $this->response->Result = ResultType::Warnings;
     }
 
 
-    public function AddErrorMessage($text,$translated=false) {
-        $this->AddMessage(MessageType::Error,$text,$translated);
+    public function AddErrorMessage($text,$arg1=null, $arg2=null) {
+        $this->AddMessage(MessageType::Error,$text,$arg1, $arg2);
         if ($this->response->Result < ResultType::Errors)
             $this->response->Result = ResultType::Errors;
     }
