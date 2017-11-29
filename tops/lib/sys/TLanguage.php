@@ -67,6 +67,13 @@ abstract class TLanguage
         }
     }
 
+    public static function formatText($resourceCode, $args, $defaultText = null)
+    {
+        $format = self::text($resourceCode,$defaultText);
+        return sprintf($format,$args);
+    }
+
+
     public static function getLanguageCodes() {
         try {
             return self::getInstance()->getLanguages();
