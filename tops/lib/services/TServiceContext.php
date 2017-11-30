@@ -31,15 +31,19 @@ class TServiceContext implements IMessageContainer {
     }
     public function AddMessage($messageType,$text,$arg1=null, $arg2=null)
     {
-        // $arg1=null, $arg2=null) {
         $message = new TServiceMessage();
         $message->MessageType = $messageType;
-        if ($arg1 === true) { // pre-translated
+        if ($arg1 === true) {
+            // text is pre-translated
+            // other arguments are ignored
             $message->Text = $text;
         } else if (is_array($arg1)) {
+            // arg1 is arguments array for formatted message
+            // arg2 is null or default text
             $message->Text = TLanguage::formatText($text, $arg1, $arg2);
         } else {
-            // if not boolean, $translated is default text
+            // translation required
+            // arg1 is default text, $arg2 is ignored
             $message->Text = TLanguage::text($text, $arg1);
         }
 
