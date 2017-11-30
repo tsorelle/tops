@@ -70,6 +70,9 @@ abstract class TLanguage
     public static function formatText($resourceCode, $args, $defaultText = null)
     {
         $format = self::text($resourceCode,$defaultText);
+        if (is_array($args)) {
+            return vsprintf($format,$args);
+        }
         return sprintf($format,$args);
     }
 

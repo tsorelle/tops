@@ -50,6 +50,17 @@ class TDates
         return date($format,$timestamp);
     }
 
+    public static function formatMySqlDate($dateString) {
+        if (empty($dateString)) {
+            return null;
+        }
+        $formatted = self::reformatDateTime($dateString,self::MySqlDateFormat);
+        if ($formatted == '0000-00-00') {
+            return null;
+        }
+        return $formatted;
+    }
+
     public static function today($format=self::MySqlDateFormat) {
         return date($format);
     }
