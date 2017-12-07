@@ -164,7 +164,17 @@ class TPostOffice {
     private function _sendMessageToUs($fromAddress, $subject, $bodyText, $addressId='admin')
     {
         $message = $this->_createMessageToUs($addressId);
-        $message->setFromAddress($fromAddress);
+        $parts=explode('=',$fromAddress);
+        if (sizeof($parts == 2)) {
+            $mailbox = $this->mailboxes->findByCode(trim($parts[0]));
+            if ($mailbox != null) {
+                $message->setFromAddress($mailbox->getEmail(),$mailbox->getName());
+            }
+        }
+        else {
+            $message->setFromAddress($fromAddress);
+        }
+
         $message->setSubject($subject);
         $message->setMessageBody($bodyText);
         $message->setReturnAddress($fromAddress);
