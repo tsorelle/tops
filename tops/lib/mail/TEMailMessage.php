@@ -89,21 +89,18 @@ class TEMailMessage {
         $this->validationWarnings = array();
     }
 
-    private function toEmailAddress($address,$name=null) {
+    private function toEmailAddress($address,$name=null)
+    {
         if (empty($address)) {
             return null;
         }
-        $test = is_string($address);
-        if ($test) {
-//        if (is_string($address)) {
+        if (is_string($address)) {
             if ($name == null) {
                 $address = TEmailAddress::FromString($address);
-            }
-            else {
-                $address = new TEmailAddress($address,$name);
+            } else {
+                $address = new TEmailAddress($address, $name);
             }
         }
-
         return $this->validateEmailAddress($address);
     }
 
@@ -304,46 +301,41 @@ class TEMailMessage {
     /**
      * @param $sender
      * @param null $name
-     * @return bool
+     * @return TEmailAddress
+     *
+     * Address used in From: field
      */
     public function setFromAddress($sender, $name=null)
     {
-        $sender = $this->toEmailAddress($sender,$name);
-        if ($sender != null) {
-            $this->fromAddress = $sender;
-            return true;
-        }
-        return false;
+        $this->fromAddress = $this->toEmailAddress($sender);
+        return $this->fromAddress;
     }  //  setFromAddress
 
     /**
      * @param $address
      * @param null $name
-     * @return bool
+     * @return TEmailAddress
+     *
+     * Used in 'Return-Path' header, used to return invalid or blocked messages.
      */
+
     public function setReturnAddress($address, $name=null)
     {
-        $address = $this->toEmailAddress($address,$name);
-        if ($address != null) {
-            $this->returnAddress = $address;
-            return true;
-        }
-        return false;
+        $this->returnAddress = $this->toEmailAddress($address,$name);
+        return $this->returnAddress;
     }  //  setReturnAddress
 
     /**
      * @param $address
      * @param null $name
-     * @return bool
+     * @return TEmailAddress
+     *
+     * The 'Reply-To' header may be use to redrect the recipients reply to a different address that the From: field
      */
     public function setReplyTo($address, $name=null)
     {
-        $address = $this->toEmailAddress($address,$name);
-        if ($address != null) {
-            $this->fromAddress = $address;
-            return true;
-        }
-        return false;
+        $this->replyTo = $this->toEmailAddress($address,$name);
+        return $this->replyTo;
     }  //  setReturnAddress
 
     /**

@@ -12,11 +12,6 @@ namespace Tops\mail;
 use Tops\sys\TLanguage;
 use Tops\sys\TObjectContainer;
 
-// from
-
-
-
-
 class TEmailValidator
 {
     private $warnings=array();
@@ -29,6 +24,15 @@ class TEmailValidator
     public static function Create()
     {
         return new TEmailValidator();
+    }
+
+    public static function Validate($emailAddress) {
+        $result = new \stdClass();
+        $validator = new TEmailValidator();
+        $result->isValid = $validator->isValid($emailAddress);
+        $result->error = $validator->getError();
+        $result->warnings = $validator->getWarnings();
+        return $result;
     }
 
     private function getEmailAddress() {
@@ -77,7 +81,7 @@ class TEmailValidator
                 $this->warnings[] = $message;
             }
             return true;
-		}
+        }
         if ($this->result < TSayersEmailValidator::ISEMAIL_RFC5321) {
             $message = TLanguage::text('smtp-odd-address');
             if ($strict) {
@@ -88,7 +92,7 @@ class TEmailValidator
                 $this->warnings[] = $message;
             }
             return true;
-		}
+        }
         if ($this->result < TSayersEmailValidator::ISEMAIL_CFWS) {
             $message = TLanguage::text('smtp-warning-2');
             if ($strict) {
@@ -99,7 +103,7 @@ class TEmailValidator
                 $this->warnings[] = $message;
             }
             return true;
-		}
+        }
         if ($this->result < TSayersEmailValidator::ISEMAIL_DEPREC) {
             $message = TLanguage::text('smtp-warning-3');
             if ($strict) {
@@ -110,7 +114,7 @@ class TEmailValidator
                 $this->warnings[] = $message;
             }
             return true;
-		}
+        }
         if ($this->result < TSayersEmailValidator::ISEMAIL_RFC5322) {
             $message = TLanguage::text('smtp-warning-4');
             if ($strict) {
@@ -121,9 +125,9 @@ class TEmailValidator
                 $this->warnings[] = $message;
             }
             return true;
-		}
+        }
 
-		$errMessage = TLanguage::text('validation-invalid-email');
+        $errMessage = TLanguage::text('validation-invalid-email');
         $this->error = sprintf($errMessage,$emailAddress);
         return false;
     }

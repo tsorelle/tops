@@ -87,4 +87,14 @@ class TEmailAddress {
 
         return new TEmailAddress($emailAddress);
     }
+
+    public static function Create($emailAddress,$name = null) {
+        if ($name !== null) {
+            return new TEmailAddress($emailAddress,$name);
+        }
+        if (is_string($emailAddress)) {
+            return self::FromString($emailAddress);
+        }
+        return $emailAddress;
+    }
 }

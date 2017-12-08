@@ -8,8 +8,6 @@
 
 namespace Tops\mail;
 
-use Tops\sys\TL;
-use Tops\sys\TLanguage;
 use Tops\sys\TObjectContainer;
 
 /**
@@ -72,6 +70,14 @@ class TPostOffice {
         return self::getInstance()->_createMessageToUs($addressId);
     }
 
+    private $bounceAddress;
+    public function getBounceAddress() {
+        if (!isset($this->bounceAddress)) {
+            $this->bounceAddress = self::GetMailboxAddress(IMailboxManager::BounceBox);
+        }
+        return $this->bounceAddress;
+    }
+
     private function _createMessageToUs($addressId='support')
     {
         $result = new TEMailMessage();
@@ -79,42 +85,61 @@ class TPostOffice {
         $recipients = explode(',',$addressId);
         $count = 0;
         foreach ($recipients as $addressId) {
-            $mailbox = $this->mailboxes->findByCode($addressId);
+            $mailbox = self::GetMailboxAddress($addressId);
             if ($mailbox != null) {
-                $result->addRecipient($mailbox->getEmail(),$mailbox->getName());
+                $result->addRecipient($mailbox->getAddress(),$mailbox->getName());
                 $count++;
             }
         }
         if ($count == 0) {
             throw new \Exception('No mailboxes found.');
         }
+
+        $result->setReturnAddress($this->getBounceAddress());
+
         return $result;
     }
 
 
     public static function GetMailboxAddress($addressId)
     {
+        $mailbox = self::GetMailbox($addressId);
+        if ($mailbox === false) {
+            return false;
+        }
+        return new TEmailAddress($mailbox->getEmail(),$mailbox->getName());
+    }
+
+    public static function GetMailbox($code) {
         $repository = self::getInstance()->mailboxes;
-        return $repository->findByCode($addressId);
+        $mailbox = $repository->findByCode($code);
+        if (empty($mailbox)) {
+            return false;
+        }
+        return $mailbox;
+
     }
 
     public static function CreateMessageFromUs($addressId='support',$subject=null,$body=null,$contentType='text') {
         return self::getInstance()->_createMessageFromUs($addressId,$subject,$body,$contentType);
     }
 
-    private function _createMessageFromUs($addressId='support',$subject=null,$body=null,$contentType='text')
+    private function _createMessageFromUs($addressId='support',$subject=null,$body=null,$contentType='text',$bounce=null)
     {
-
         // TTracer::Trace("CreateMessageFromUs($addressId) address: $address; name: $identity");
-        $bounce = $this->mailboxes->findByCode('bounce');
-
         $result = new TEMailMessage();
-        $mailbox = $this->mailboxes->findByCode($addressId);
-        if ($mailbox == null) {
-            return null;
+
+        $mailbox = self::GetMailboxAddress($addressId);
+        if (empty($mailbox)) {
+            return false;
         }
-        $result->setFromAddress($mailbox->getEmail(), $mailbox->getName());
-        $result->setReturnAddress($bounce->getEmail());
+        $result->setFromAddress($mailbox);
+        if ($bounce===null) {
+            $result->setReturnAddress($this->getBounceAddress());
+        }
+        else {
+            $result->setReturnAddress(self::GetMailboxAddress($bounce));
+        }
         if (!empty($subject))
             $result->setSubject($subject);
         if (!empty($body)) {
@@ -157,27 +182,19 @@ class TPostOffice {
         return $this->mailer->send($message);
     }
 
-    public static function SendMessageToUs($fromAddress, $subject, $bodyText, $addressId='admin')
+    public static function SendMessageToUs($fromAddress, $subject, $bodyText, $senderId='admin',$addressId='admin')
     {
-        return self::getInstance()->_sendMessageToUs($fromAddress, $subject, $bodyText, $addressId);
+        return self::getInstance()->_sendMessageToUs($fromAddress, $subject, $bodyText,$senderId,$addressId);
     }
-    private function _sendMessageToUs($fromAddress, $subject, $bodyText, $addressId='admin')
+
+    private function _sendMessageToUs($fromAddress, $subject, $bodyText, $senderId='admin',$addressId='admin')
     {
         $message = $this->_createMessageToUs($addressId);
-        $parts=explode('=',$fromAddress);
-        if (sizeof($parts == 2)) {
-            $mailbox = $this->mailboxes->findByCode(trim($parts[0]));
-            if ($mailbox != null) {
-                $message->setFromAddress($mailbox->getEmail(),$mailbox->getName());
-            }
-        }
-        else {
-            $message->setFromAddress($fromAddress);
-        }
-
+        $senderAddress = self::GetMailboxAddress($senderId);
+        $message->setFromAddress($senderAddress);
+        $message->setReplyTo($fromAddress);
         $message->setSubject($subject);
         $message->setMessageBody($bodyText);
-        $message->setReturnAddress($fromAddress);
         return $this->mailer->send($message);
     }
 
@@ -185,27 +202,27 @@ class TPostOffice {
         return self::getInstance()->_sendMessageFromUs($recipients, $subject, $bodyText, $addressId, $contentType);
     }
 
-    private function _sendMessageFromUs($recipient, $subject, $bodyText, $addressId='admin', $contentType='html'  ) {
+    private function _sendMessageFromUs($recipient, $subject, $bodyText, $addressId='admin', $contentType='html',$bounce=null  ) {
         // TTracer::Trace('SendMessageFromUs');
-        $message = $this->_createMessageFromUs($addressId, $subject, $bodyText, $contentType);
+        $message = $this->_createMessageFromUs($addressId, $subject, $bodyText, $contentType,$bounce);
         $message->setRecipient($recipient);
         return $this->mailer->send($message);
     }
 
-    public static function SendHtmlMessageFromUs($recipients, $subject, $bodyText, $addressId='support' ) {
-        return self::getInstance()->_sendHtmlMessageFromUs($recipients, $subject, $bodyText, $addressId);
+    public static function SendHtmlMessageFromUs($recipients, $subject, $bodyText, $addressId='support',$bounce=null ) {
+        return self::getInstance()->_sendHtmlMessageFromUs($recipients, $subject, $bodyText, $addressId,$bounce);
     }
-    private function _sendHtmlMessageFromUs($recipients, $subject, $bodyText, $addressId='support' ) {
-        $message = $this->_createMessageFromUs($addressId, $subject, $bodyText, 'html');
+    private function _sendHtmlMessageFromUs($recipients, $subject, $bodyText, $addressId='support',$bounce=null ) {
+        $message = $this->_createMessageFromUs($addressId, $subject, $bodyText, 'html',$bounce);
         $message->setRecipient($recipients);
         return $this->mailer->send($message);
     }
 
-    public static function SendMultiPartMessageFromUs($recipients, $subject, $bodyText, $textPart, $addressId='support' ) {
-        return self::getInstance()->_sendMultiPartMessageFromUs($recipients, $subject, $bodyText, $textPart, $addressId);
+    public static function SendMultiPartMessageFromUs($recipients, $subject, $bodyText, $textPart, $addressId='support', $bounce=null ) {
+        return self::getInstance()->_sendMultiPartMessageFromUs($recipients, $subject, $bodyText, $textPart, $addressId,$bounce);
     }
-    private function _sendMultiPartMessageFromUs($recipients, $subject, $bodyText, $textPart, $addressId='support' ) {
-        $message = $this->_createMessageFromUs($addressId, $subject, $bodyText, 'html');
+    private function _sendMultiPartMessageFromUs($recipients, $subject, $bodyText, $textPart, $addressId='support',$bounce=null ) {
+        $message = $this->_createMessageFromUs($addressId, $subject, $bodyText, 'html',$bounce);
         $message->setAlternateBodyText($textPart);
         $message->setRecipient($recipients);
         return $this->mailer->send($message);
@@ -218,6 +235,5 @@ class TPostOffice {
     public static function GetMailboxManager() {
         return self::getInstance()->mailboxes;
     }
-
 
 }
