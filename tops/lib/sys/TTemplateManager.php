@@ -36,7 +36,7 @@ class TTemplateManager
             }
             $templateLocation = $this->templateLocation;
         }
-        $templateFile = TPath::combine($templateLocation,$templateName);
+        $templateFile = TPath::combine($templateLocation,$templateName,TPath::normalize_no_exception);
         if ($templateFile === false) {
             return false;
         }
