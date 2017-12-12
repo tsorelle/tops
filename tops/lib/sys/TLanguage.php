@@ -33,11 +33,20 @@ abstract class TLanguage
     /**
      * @var TLanguage
      */
-    private static $instance;
+    private static $instance = null;
+
+    public static function setInstance(TLanguage $instance) {
+         self::$instance = $instance;
+    }
+
+    public static function clearInstance()
+    {
+        self::$instance = null;
+    }
 
     private static function getInstance()
     {
-        if (!isset(self::$instance)) {
+        if (self::$instance === null) {
             if (TObjectContainer::HasDefinition('tops.language')) {
                 self::$instance = TObjectContainer::Get('tops.language');
             } else {
@@ -180,7 +189,7 @@ abstract class TLanguage
         if (!is_array($languages)) {
             $languages = explode(',',$languages);
         }
-
+        unset($this->languages);
         while(sizeof($languages) > 0) {
             $code = array_pop($languages);
             $this->setLanguageCode($code);
@@ -213,11 +222,26 @@ abstract class TLanguage
         }
         $result = array($code);
         $parts = explode('-',$code);
+
         if (sizeof($parts)>1) {
             $result[] = $parts[0];
         }
         return $result;
     }
 
+    public static function FindLangugeFile($basepath,$fileName) {
+        $basepath =  realpath($basepath);
+        if ($basepath !== false) {
+            $languages = TLanguage::getLanguageCodes();
+            foreach ($languages as $language) {
+                $language = strtolower($language);
+                $found = realpath("$basepath/$language/$fileName");
+                if ($found !== false) {
+                    return $found;
+                }
+            }
+        }
+        return false;
+    }
 
 }
