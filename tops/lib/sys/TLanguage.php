@@ -12,6 +12,7 @@ namespace Tops\sys;
 abstract class TLanguage
 {
     const default = 'en-US';
+    const useSiteLanguage = 'site';
 
     private $cached = array();
 
@@ -229,10 +230,19 @@ abstract class TLanguage
         return $result;
     }
 
-    public static function FindLangugeFile($basepath,$fileName) {
+    public static function FindLangugeFile($basepath,$fileName,$languages=null) {
         $basepath =  realpath($basepath);
         if ($basepath !== false) {
-            $languages = TLanguage::getLanguageCodes();
+            if (empty($languages)) {
+                $languages = TLanguage::getLanguageCodes();
+            }
+            else if ($languages === self::useSiteLanguage) {
+                $languages = self::getSupportedLanguages();
+            }
+            else if (!is_array($languages)) {
+                $languages = explode(',',$languages);
+            }
+
             foreach ($languages as $language) {
                 $language = strtolower($language);
                 $found = realpath("$basepath/$language/$fileName");
