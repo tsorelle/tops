@@ -32,6 +32,12 @@ class TLanguageTest extends TestCase
         return $result.']';
     }
 
+    public function testGetLanguageCodes() {
+        $actual = $this->getLanguageCodes();
+        $this->assertNotEmpty($actual);
+        $this->assertEquals('[en-US,en]',$actual);
+    }
+
     public function testSetLanguages() {
         $default = 'en-US,en';
         $expected = "[$default]";

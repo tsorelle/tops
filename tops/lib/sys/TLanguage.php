@@ -144,7 +144,9 @@ abstract class TLanguage
         return $result;
     }
 
-
+    public static function GetSiteLanguageCodes() {
+        return self::getInstance()->getSiteLanguages();
+    }
 
     protected function getSiteLanguages() {
         $siteLanguage = TConfiguration::getValue('language','site');
