@@ -201,9 +201,13 @@ abstract class TServiceCommand {
             }
         }
 
-        // disallow any html tags that might contain script injection
+
         if (strstr($content,'<')) {
-            $tags = array('script', 'object', 'img', 'a','button', 'p', 'span', 'div', 'form', 'section', 'input','ul','ol','select','text','style');
+            // For content admins, disallow any html tags that might contain script injection.
+            // Disallow all tags for other users
+            $tags = ($this->getUser()->isAuthorized(TPermissionsManager::editContentPermissionsName)) ?
+                ['script', 'object','form'] :
+                ['script', 'object', 'img', 'a','button', 'p', 'span', 'div', 'form', 'section', 'input','ul','ol','select','text','style'];
             foreach ($tags as $tag) {
                 $pattern = '/(' . $tag . '|<*\s' . $tag . ')(>|\s)/i';
                 if (preg_match($pattern, $content)) {

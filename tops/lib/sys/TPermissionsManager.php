@@ -24,6 +24,7 @@ abstract class TPermissionsManager
     const updateDirectoryPermissionName = 'Update directory';
     const managePermissionsPermissionName = 'Manage permissions';
     const sendMailingsPermissionName = 'Send mailings';
+    const editContentPermissionsName = 'Edit content';
 
 
     const keyFormat = TStrings::dashedFormat;
