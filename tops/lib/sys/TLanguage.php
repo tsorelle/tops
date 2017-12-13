@@ -149,7 +149,7 @@ abstract class TLanguage
     }
 
     protected function getSiteLanguages() {
-        $siteLanguage = TConfiguration::getValue('language','site');
+        $siteLanguage = TConfiguration::getValue('language','site',self::default);
         return $this->parseLanguageCode($siteLanguage);
     }
 
