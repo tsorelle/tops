@@ -23,6 +23,7 @@ abstract class TPermissionsManager
     const viewDirectoryPermissionName = 'View directory';
     const updateDirectoryPermissionName = 'Update directory';
     const managePermissionsPermissionName = 'Manage permissions';
+    const sendMailingsPermissionName = 'Send mailings';
 
 
     const keyFormat = TStrings::dashedFormat;
