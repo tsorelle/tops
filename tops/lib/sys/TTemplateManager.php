@@ -11,6 +11,8 @@ namespace Tops\sys;
 
 class TTemplateManager
 {
+    const defaultTokenFormat = '[[%s]]';
+
     private $templateLocation;
     private $tokenFormat = '[[%s]]';
     public function setTokenFormat($format) {
@@ -21,12 +23,16 @@ class TTemplateManager
         $this->templateLocation = $templateLocation;
     }
 
-    public function replaceTokens($content, array $tokens) {
+    public static function ReplaceContentTokens($content, array $tokens,$tokenFormat = self::defaultTokenFormat) {
         foreach ($tokens as $name=>$value) {
-            $token = sprintf($this->tokenFormat,$name);
+            $token = sprintf($tokenFormat,$name);
             $content = str_replace($token,$value,$content);
         }
         return $content;
+    }
+
+    public function replaceTokens($content, array $tokens) {
+        return self::ReplaceContentTokens($content,$tokens,$this->tokenFormat);
     }
 
     public function getContent($templateName, $templateLocation='') {
