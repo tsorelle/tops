@@ -14,7 +14,7 @@ class TTemplateManager
     const defaultTokenFormat = '[[%s]]';
 
     private $templateLocation;
-    private $tokenFormat = '[[%s]]';
+    private $tokenFormat = self::defaultTokenFormat;
     public function setTokenFormat($format) {
         $this->tokenPattern = $format;
     }
