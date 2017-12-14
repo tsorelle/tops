@@ -239,7 +239,7 @@ abstract class TLanguage
                 $languages = TLanguage::getLanguageCodes();
             }
             else if ($languages === self::useSiteLanguage) {
-                $languages = self::getSupportedLanguages();
+                $languages = self::GetSiteLanguageCodes();
             }
             else if (!is_array($languages)) {
                 $languages = explode(',',$languages);
