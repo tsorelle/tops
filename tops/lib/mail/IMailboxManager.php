@@ -14,12 +14,6 @@ namespace Tops\mail;
  * @package Tops\sys
  */
 interface IMailboxManager {
-    // system mailbox names
-    const AdminBox = 'admin';
-    const BounceBox = 'bounce';
-    const VendorBox = 'two-quakers-support';
-    const ContactBox = 'contact-form';
-
     /**
      *
      * @param $id
