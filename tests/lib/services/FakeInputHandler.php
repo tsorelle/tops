@@ -10,6 +10,7 @@ namespace TwoQuakers\testing\services;
 
 
 use Tops\services\ServiceRequestInputHandler;
+use Tops\sys\TSession;
 
 class FakeInputHandler extends \Tops\services\ServiceRequestInputHandler
 {
@@ -59,8 +60,9 @@ class FakeInputHandler extends \Tops\services\ServiceRequestInputHandler
 
     public function getSecurityToken()
     {
-        return empty($_GET[ServiceRequestInputHandler::securityTokenKey]) ? null
-            : $_GET[ServiceRequestInputHandler::securityTokenKey];
+        return TSession::GetSecurityToken();
+//        return empty($_GET[ServiceRequestInputHandler::securityTokenKey]) ? null
+//            : $_GET[ServiceRequestInputHandler::securityTokenKey];
     }
 
 }
