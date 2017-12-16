@@ -39,7 +39,7 @@ class TProcessManager
     private static function getlogRepository()
     {
         if (!isset(self::$logRepository)) {
-            self::$logRepository = new ProcessesRepository();
+            self::$logRepository = new ProcessLogRepository();
         }
         return self::$logRepository;
     }
@@ -137,12 +137,14 @@ class TProcessManager
 
     public function log($event,$message='',$messageType=MessageType::Info,$detail=null) {
 
-        $entry = new ProcessLogEntry();
-        $entry->processCode = $this->code;
-        $entry->event = $event;
-        $entry->message = $message;
-        $entry->messageType = $messageType;
-        $entry->detail = $detail;
+        $entry = ProcessLogEntry::Create(
+            $this->code,
+            $event,
+            $message,
+            $messageType,
+            $detail
+        );
+
         self::getlogRepository()->insert($entry);
     }
 

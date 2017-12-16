@@ -6,6 +6,8 @@
 
 namespace Tops\db\model\entity;
 
+use Tops\sys\TDates;
+
 class  ProcessLogEntry
 { 
     public $id;
@@ -15,6 +17,24 @@ class  ProcessLogEntry
     public $message;
     public $messageType;
     public $detail;
+
+
+    public static function Create(
+        $processCode,
+        $event,
+        $message,
+        $messageType,
+        $detail)
+    {
+        $entry = new ProcessLogEntry();
+        $entry->processCode= $processCode;
+        $entry->event= $event;
+        $entry->message= $message;
+        $entry->messageType= $messageType;
+        $entry->detail= $detail;
+        $entry->posted = TDates::now();
+        return $entry;
+    }
 
      public function assignFromObject($dto)
      {
