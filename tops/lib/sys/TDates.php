@@ -14,7 +14,7 @@ use DateTime;
 class TDates
 {
     const MySqlDateFormat = 'Y-m-d';
-    const MySqlDateTimeFormat = 'Y-m-d H:i:s';
+    const MySqlDateTimeFormat = 'Y-m-d H:i:s';
     const Equal = 0;
     const Before = -1;
     const After = 1;
@@ -188,6 +188,11 @@ class TDates
      * @return bool|int  - False on failure else const TDates::Before (-1), TDates::After (1) or TDates::Equal (0)
      */
     public static function CompareDates($date1,$offset,$date2=null) {
+        // reformat to ISO dates for consistent results;
+        $date1 = TDates::reformatDateTime($date1,DateTime::ATOM);
+        if ($date2 !== null) {
+            $date2 = TDates::reformatDateTime($date2,DateTime::ATOM);
+        }
         try {
             $left = new \DateTime($date1);
             $right = $date2 === null ?
@@ -230,4 +235,16 @@ class TDates
     public static function CompareTwoDates($date1,$date2=null) {
         return self::CompareDates($date1,null,$date2);
     }
+    /**
+     * CompareDates with no offset
+     *
+     * @param $date1
+     * @param null $date2
+     * @return bool|int
+     */
+    public static function CompareWithNow($date1) {
+
+        return self::CompareDates($date1,null,null);
+    }
+
 }

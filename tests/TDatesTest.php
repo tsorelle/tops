@@ -63,7 +63,6 @@ class TDatesTest extends TestCase
         $actual = TDates::StringToInterval($s);
         $this->assertTrue($actual === false);
 
-
         $s = '7 days';
         $expected = 7;
         $actual = TDates::StringToInterval($s);
@@ -142,8 +141,6 @@ class TDatesTest extends TestCase
         $onehour = $actual;
 
 
-
-
         $date = new \DateTime('2017-12-28');
         $expected = '2018-01-04';
         $date = $date->add($sevendays);
@@ -185,7 +182,7 @@ class TDatesTest extends TestCase
     }
 
     public function testCompareDates() {
-        $format = 'Y-m-d H:i:s';
+        $format = TDates::MySqlDateTimeFormat; // 'Y-m-d H:i:s';
         $today = new \DateTime();
         $todayString = $today->format($format);
 
@@ -218,4 +215,16 @@ class TDatesTest extends TestCase
         $this->assertEquals($expected,$actual,"3: $incremented before $right");
     }
 
+    public function testCompareNow() {
+        $test = new \DateTime();
+        $i = TDates::StringToInterval('1 hour');
+        $test->add(TDates::StringToInterval('1 hour'));
+        $actual = TDates::CompareWithNow($test->format(TDates::MySqlDateTimeFormat));
+        $this->assertEquals(TDates::After,$actual);
+
+        $test = new \DateTime();
+        $test->sub(TDates::StringToInterval('1 hour'));
+        $actual = TDates::CompareWithNow($test->format(TDates::MySqlDateTimeFormat));
+        $this->assertEquals(TDates::Before,$actual);
+    }
 }
