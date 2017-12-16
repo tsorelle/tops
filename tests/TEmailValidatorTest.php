@@ -44,7 +44,7 @@ class TEmailValidatorTest extends TestCase
 
     }
 
-    public function testDnsCheck() {
+    public function testDnsFail() {
         $emails = array('me@nodomain.foo','foo<badformat');
         foreach ($emails as $email) {
             $validator = TEmailValidator::Create();
@@ -59,4 +59,19 @@ class TEmailValidatorTest extends TestCase
             $this->assertEmpty($warnings,'Warnings: '.join(',',$warnings));
         }
     }
+
+    public function testDnsCheck() {
+        $emails = array('tls@2quakers.net' => true,'me@nodomain.foo' => false,'foo<badformat' => false,
+            'ery2@2quakers.net' => true,'nobody@2quakers.net' => true,'axmurderer@microsoft.com' => true);
+        foreach ($emails as $email => $expected) {
+            $validator = TEmailValidator::Create();
+            $actual = $validator->checkDns($email);
+            $this->assertEquals($expected,$actual,$email);
+        }
+    }
+
+
+
+
+
 }

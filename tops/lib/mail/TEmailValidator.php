@@ -18,6 +18,7 @@ class TEmailValidator
     private $error;
     private $result = 0;
     private $emailAddress = false;
+    private $dnsFailed = false;
 
     private static $instance;
 
@@ -72,6 +73,7 @@ class TEmailValidator
             return true;
         }
         if ($this->result < TSayersEmailValidator::ISEMAIL_DNSWARN) {
+            $this->dnsFailed = true;
             $message = 'Address is valid but a DNS check was not successful';
             if ($failDns) {
                 $this->error = $message;
@@ -137,6 +139,7 @@ class TEmailValidator
         $this->result = 0;
         $this->error = '';
         $this->warnings = array();
+        $this->dnsFailed = false;
         $parsed = $this->parseEmailAddress($emailAddress);
         $resultCode = TSayersEmailValidator::is_email($parsed->address,$dnsCheck, true);
         $isValid = $this->translateResult($resultCode,$failDns,$strict,$emailAddress);
@@ -145,6 +148,18 @@ class TEmailValidator
         }
         return $isValid;
 
+    }
+
+    public function checkDns($emailAddress) {
+        $isvalid =  $this->isValid($emailAddress,true,true);
+        if ($isvalid) {
+            return $this->getDnsResult();
+        }
+        return false;
+    }
+
+    public function getDnsResult() {
+        return !$this->dnsFailed;
     }
 
     public function getResultCode() {
