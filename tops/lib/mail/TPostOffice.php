@@ -190,18 +190,21 @@ class TPostOffice {
     }
 
 
-    public static function SendMessage($to, $senderId, $subject, $bodyText, $contentType=TContentType::Text, $replyTo=null,  $bounce = null)
+    public static function SendMessage($to, $senderId, $senderAlias, $subject, $bodyText, $contentType=TContentType::Text, $replyTo=null,  $bounce = null)
     {
         //TTracer::Trace('SendMessage');
-        return self::getInstance()->_sendMessage($to, $senderId, $subject, $bodyText, $contentType, $replyTo, $bounce);
+        return self::getInstance()->_sendMessage($to, $senderId, $senderAlias, $subject, $bodyText, $contentType, $replyTo, $bounce);
     }
-    private function _sendMessage($to, $senderId, $subject, $bodyText, $contentType=TContentType::Text, $replyTo=null, $bounce = null) {
+    private function _sendMessage($to, $senderId, $senderAlias, $subject, $bodyText, $contentType=TContentType::Text, $replyTo=null, $bounce = null) {
         $message = new TEMailMessage();
         $message->setRecipient($to);
         if (empty($message->senderId)) {
             $senderId = self::DefaultMailbox;
         }
         $senderAddress = self::GetMailboxAddress($senderId);
+        if (!empty($senderAlias)) {
+            $senderAddress->setName($senderAlias);
+        }
         $message->setFromAddress($senderAddress);
         $message->setSubject($subject);
         $message->setMessageBody($bodyText,$contentType);
