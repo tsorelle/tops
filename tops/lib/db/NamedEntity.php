@@ -62,7 +62,7 @@ class NamedEntity extends TEntity
             $this->setName($dto->name);
         }
         if (isset($dto->code)) {
-            $this->setCreateTime($dto->code);
+            $this->setCode($dto->code);
         }
         if (isset($dto->description)) {
             $this->setDescription($dto->description);
