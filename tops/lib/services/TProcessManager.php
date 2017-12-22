@@ -82,7 +82,9 @@ class TProcessManager
         if (array_key_exists($code,self::$managers)) {
             return self::$managers[$code];
         }
-        return self::Start($code);
+        $processManager = new TProcessManager($code);
+        self::$managers[$code] = $processManager;
+        return $processManager;
     }
 
     private function getProcess() {
@@ -108,7 +110,7 @@ class TProcessManager
         $process->paused = $expiry->format(TDates::MySqlDateTimeFormat);
         self::getProcessRepository()->update($process);
         $this->log('pause',$reason);
-        return true;
+        return $process->paused;
     }
 
     public function isPaused() {
@@ -117,7 +119,7 @@ class TProcessManager
             return false;
         }
         $diff = TDates::CompareWithNow($process->paused);
-        return $diff == TDates::Before;
+        return ($diff == TDates::After) ? $process->paused : false;
     }
 
     public function startProcess() {
