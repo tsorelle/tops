@@ -191,4 +191,9 @@ class TNullUser implements IUser {
     {
          return 'system';
     }
+
+    public function signIn($username, $password = null)
+    {
+        return true;
+    }
 }

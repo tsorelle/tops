@@ -115,6 +115,8 @@ abstract class TAbstractUser implements IUser
      */
     public abstract function getRoles();
 
+    public abstract function signIn($username, $password = null);
+
     /**
      * @param $roleName
      * @return bool

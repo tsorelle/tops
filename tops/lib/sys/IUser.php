@@ -95,4 +95,11 @@ interface IUser
 
     public function getUserPicture($size=0, array $classes = [], array $attributes = []);
 
+    /**
+     * @param $username
+     * @param null $password
+     * @return bool
+     */
+    public function signIn($username,$password=null);
+
 }

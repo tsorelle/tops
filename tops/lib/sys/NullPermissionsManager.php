@@ -58,7 +58,7 @@ class NullPermissionsManager extends TPermissionsManager
         return [];
     }
 
-    public function addPermission($name, $description)
+    public function addPermission($name, $description=null)
     {
         throw new \Exception('Role management not supported.');
     }

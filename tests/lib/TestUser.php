@@ -179,4 +179,8 @@ class TestUser extends TAbstractUser
         throw new Exception("Unsupported method 'loadByEmail");
     }
 
+    public function signIn($username, $password = null)
+    {
+        return true;
+    }
 }
