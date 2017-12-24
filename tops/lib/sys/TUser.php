@@ -75,9 +75,12 @@ class TUser {
     }
 
     public static function SignIn($username, $password=null) {
-        $result = self::Create();
-        $result->signIn($username);
-        return $result;
+        $user = self::Create();
+        $success = $user->signIn($username);
+        if ($success) {
+            self::setCurrent($username);
+        }
+        return $success;
     }
 
     public static function getByUserName($userName) {
