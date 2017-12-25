@@ -78,10 +78,13 @@ class TUser {
         $user = self::Create();
         $success = $user->signIn($username,$password);
         if ($success) {
-            self::setCurrent($username);
+            $user->loadCurrentUser();
+            self::$currentUser = $user;
         }
         return $success;
     }
+
+
 
     public static function getByUserName($userName) {
 
