@@ -227,4 +227,83 @@ class TDatesTest extends TestCase
         $actual = TDates::CompareWithNow($test->format(TDates::MySqlDateTimeFormat));
         $this->assertEquals(TDates::Before,$actual);
     }
+
+    private function getDtoDate($object,$propertyName) {
+        if (property_exists($object,$propertyName)) {
+            $result = TDates::formatMySqlDate($object->$propertyName);
+            return $result;
+
+        }
+        return false;
+    }
+
+    public function testFormatMySqlDate() {
+        $dt = '';
+        $actual = TDates::formatMySqlDate($dt);
+        $this->assertTrue($actual===null);
+        $dt = null;
+        $actual = TDates::formatMySqlDate($dt);
+        $this->assertTrue($actual===null);
+        $dt = '0000-00-00';
+        $actual = TDates::formatMySqlDate($dt);
+        $this->assertTrue($actual===null);
+        $dt = '9/12/1947';
+        $expected = '1947-09-12';
+        $actual = TDates::formatMySqlDate($dt);
+        $this->assertEquals($expected,$actual);
+
+        $dt = 'invalid date';
+        $actual = TDates::formatMySqlDate($dt);
+        $this->assertTrue($actual===false);
+
+        $dt = '0000-00-00 00:00:00';
+        $actual = TDates::formatMySqlDate($dt,true);
+        $this->assertTrue($actual===null);
+
+        $dt = '9/12/1947 1:23 pm';
+        $expected = '1947-09-12 13:23:00';
+        $actual = TDates::formatMySqlDate($dt,true);
+        $this->assertEquals($expected,$actual);
+
+        $dt = 'invalid date';
+        $actual = TDates::formatMySqlDate($dt,true);
+        $this->assertTrue($actual===false);
+    }
+
+    public function testObjectDate() {
+        $test = new stdClass();
+        $actual = TDates::GetMySqlDateProperty($test,'dt');
+        $this->assertTrue($actual===false);
+
+        $test->dt = 'invalid date';
+        $actual = TDates::GetMySqlDateProperty($test,'dt');
+        $this->assertTrue($actual===false);
+
+        $test->dt = null;
+        $actual = TDates::GetMySqlDateProperty($test,'dt');
+        $this->assertTrue($actual===null);
+
+        $test->dt = '0000-00-00';
+        $actual = TDates::GetMySqlDateProperty($test,'dt');
+        $this->assertTrue($actual===null);
+
+        $test->dt = '0000-00-00 00:00:00';
+        $actual = TDates::GetMySqlDateProperty($test,'dt');
+        $this->assertTrue($actual===null);
+
+        $test->dt = '';
+        $actual = TDates::GetMySqlDateProperty($test,'dt');
+        $this->assertTrue($actual===null);
+
+        $test->dt = '9/12/1947';
+        $expected = '1947-09-12';
+        $actual = TDates::GetMySqlDateProperty($test,'dt');
+        $this->assertEquals($expected,$actual);
+
+        $test->dt = '9/12/1947 1:23 pm';
+        $expected = '1947-09-12 13:23:00';
+        $actual = TDates::GetMySqlDateProperty($test,'dt',true);
+        $this->assertEquals($expected,$actual);
+
+    }
 }
