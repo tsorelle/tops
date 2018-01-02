@@ -23,6 +23,8 @@ class TDataTransfer
     const dataTypeNow = 'now' ;
     const dataTypeTime = 'time' ;
     const dataTypeDefault = 'any' ;
+    const validationCodeInvalidDate = 'validation-invalid-date';
+    const validationCodeRequiredValue = 'validation-field-req';
 
     // todo: support time data type
 
@@ -110,7 +112,7 @@ class TDataTransfer
         if (property_exists($this->data, $propertyName) && property_exists($this->object, $propertyName)) {
             $dateValue = TDates::formatMySqlDate($this->data->$propertyName, $includeTime);
             if ($dateValue === false) {
-                $this->errors[$propertyName] = 'validation-invalid-date';
+                $this->errors[$propertyName] = self::validationCodeInvalidDate;
             }
             else {
                 $this->object->$propertyName = $dateValue;
@@ -170,6 +172,16 @@ class TDataTransfer
                         $value = str_replace('`','',$value);
                         $this->object->$propertyName = $value;
                         continue;
+                }
+            }
+        }
+    }
+
+    public function checkRequiredValues($properties = []) {
+        foreach ($properties as $propertyName) {
+            if (empty($this->object->$propertyName)) {
+                if (!array_key_exists($propertyName,$this->errors)) {
+                    $this->errors[$propertyName] = self::validationCodeRequiredValue;
                 }
             }
         }
