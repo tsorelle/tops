@@ -6,34 +6,26 @@
 
 namespace Tops\db\model\entity;
 
-class Process  
+use Tops\sys\TDataTransfer;
+
+class Process
 { 
     public $id;
     public $code;
     public $name;
     public $description;
-    public $paused;
-    public $enabled;
+    public $paused; // datetime
+    public $enabled; // flag
 
-     public function assignFromObject($dto) {
-    if (isset($dto->id)) {
-       $this->id = $dto->id;
-    }
-    if (isset($dto->code)) {
-       $this->code = $dto->code;
-    }
-    if (isset($dto->name)) {
-       $this->name = $dto->name;
-    }
-    if (isset($dto->description)) {
-       $this->description = $dto->description;
-    }
-    if (isset($dto->paused)) {
-       $this->paused = $dto->paused;
-    }
-    if (isset($dto->enabled)) {
-       $this->enabled = $dto->enabled;
-    }
-
-} 
+     public function assignFromObject($dto)
+     {
+         $dt = new TDataTransfer($dto, $this, [
+             'paused' >= TDataTransfer::dataTypeDateTime
+         ]);
+         $dt->assignAll();
+         $dt->assignDefaultValues([
+             'id' => 0,
+             'enabled' => 1
+         ]);
+     }
 }

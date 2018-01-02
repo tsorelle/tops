@@ -54,13 +54,14 @@ class TDataTransferTest extends TestCase
         $dto->ignored = 'ignore this';
         $dto->defaultValue2 = $expectedDeault2;
 
+
         $dt = new TDataTransfer($dto,$obj,[
             'dateField'=>'date',
             'dateTimeField'=>'datetime',
             'flag'=>'flag'
             ,'falseFlag'=>'flag'
-            ,'today'=>'today'
-            ,'now'=>'now'
+            // ,'today'=>'today' // today assigned by defaults
+            ,'now'=>'now'  // now updated if supplied, timestamped otherwise.
             ,'emptyDate1' => 'date'
             ,'emptyDate2' => 'datetime'
             ,'emptyDate3' => 'date'
@@ -68,7 +69,6 @@ class TDataTransferTest extends TestCase
         $dt->assignAll();
         $dt->assignDefaultValues([
             'today' => 'today',
-            'now' => 'now',
             'defaultValue' => $expectedDefault,
             'defaultValue2' => $expectedDefault  // overridden since pre-assigned
         ]);

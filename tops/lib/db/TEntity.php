@@ -30,13 +30,12 @@ class TEntity extends TimeStampedEntity
         return !empty($this->active);
     }
 
-    public function assignFromObject($dto) {
-        parent::assignFromObject($dto);
-        if (isset($dto->id)) {
-            $this->setId($dto->id);
-        }
-        if (isset($dto->active)) {
-            $this->setActive($dto->active);
-        }
+    public function getDtoDefaults($username = 'system')
+    {
+        $defaults = parent::getDtoDefaults($username);
+        $defaults['id'] = 0;
+        $defaults['active'] = 1;
+        return $defaults;
     }
+
 }

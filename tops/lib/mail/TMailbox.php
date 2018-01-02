@@ -7,6 +7,7 @@
  */
 
 namespace Tops\mail;
+use Tops\db\TEntity;
 use Tops\db\TimeStampedEntity;
 use Tops\sys\TObjectContainer;
 
@@ -15,7 +16,7 @@ use Tops\sys\TObjectContainer;
  * Class TMailbox
  * @package Tops\sys
  */
-class TMailbox extends TimeStampedEntity implements IMailbox
+class TMailbox extends TEntity implements IMailbox
 {
     /**
      * @var int
@@ -117,13 +118,6 @@ class TMailbox extends TimeStampedEntity implements IMailbox
     public function setDescription($description)
     {
         $this->description = $description;
-    }
-
-    /**
-     * @param bool $value
-     */
-    public  function setActive($value=true) {
-        $this->active = empty($value) ? 0 : 1;
     }
 
     /**

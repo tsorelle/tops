@@ -8,6 +8,8 @@
 
 namespace Tops\db;
 
+use Tops\sys\TDataTransfer;
+
 class TimeStampedEntity
 {
     public $createdby;
@@ -33,12 +35,30 @@ class TimeStampedEntity
         $this->changedon = $date;
     }
 
-    public function assignFromObject($dto) {
-        if (!empty($dto->createdby)) {
-            $this->changedby = $dto->createdby;
+    public function assignFromObject($dto,$username='admin')
+    {
+        $datatypes = $this->getDtoDataTypes();
+        $dt = new TDataTransfer($dto, $this, $datatypes);
+        $dt->assignAll();
+        $defaults = $this->getDtoDefaults($username);
+        $dt->assignDefaultValues($defaults);
+    }
+
+
+    public function getDtoDataTypes() {
+        return [
+            'createdon' => TDataTransfer::dataTypeDateTime,
+            'changedon' => TDataTransfer::dataTypeDateTime
+        ];
         }
-        if (!empty($dto->createdon)) {
-            $this->createdon = $dto->createdon;
-        }
+
+    public function getDtoDefaults($username='system') {
+        return [
+            'id' => 0,
+            'createdby' => $username,
+            'changedby' => $username,
+            'createdon' => TDataTransfer::dataTypeNow,
+            'changedon' => TDataTransfer::dataTypeNow
+        ];
     }
 }

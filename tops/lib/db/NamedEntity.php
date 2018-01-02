@@ -56,17 +56,4 @@ class NamedEntity extends TEntity
         $this->setDescription($description);
     }
 
-    public function assignFromObject($dto) {
-        parent::assignFromObject($dto);
-        if (isset($dto->name)) {
-            $this->setName($dto->name);
-        }
-        if (isset($dto->code)) {
-            $this->setCode($dto->code);
-        }
-        if (isset($dto->description)) {
-            $this->setDescription($dto->description);
-        }
-    }
-
 }

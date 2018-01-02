@@ -6,6 +6,7 @@
 
 namespace Tops\db\model\entity;
 
+use Tops\sys\TDataTransfer;
 use Tops\sys\TDates;
 
 class  ProcessLogEntry
@@ -38,23 +39,8 @@ class  ProcessLogEntry
 
      public function assignFromObject($dto)
      {
-         if (isset($dto->id)) {
-             $this->id = $dto->id;
-         }
-         if (isset($dto->processCode)) {
-             $this->processCode = $dto->processCode;
-         }
-         if (isset($dto->posted)) {
-             $this->posted = $dto->posted;
-         }
-         if (isset($dto->event)) {
-             $this->event = $dto->event;
-         }
-         if (isset($dto->message)) {
-             $this->message = $dto->message;
-         }
-         if (isset($dto->messageType)) {
-             $this->messageType = $dto->messageType;
-         }
+         (new TDataTransfer($dto,$this,[
+             'posted' => TDataTransfer::dataTypeNow
+         ]))->assignAll();
      }
 }
