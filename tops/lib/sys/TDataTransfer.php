@@ -91,7 +91,7 @@ class TDataTransfer
                 }
             }
         }
-        return empty($this->errors);
+        return $this->errors;
     }
 
     public function getErrors() {
@@ -112,7 +112,7 @@ class TDataTransfer
         if (property_exists($this->data, $propertyName) && property_exists($this->object, $propertyName)) {
             $dateValue = TDates::formatMySqlDate($this->data->$propertyName, $includeTime);
             if ($dateValue === false) {
-                $this->errors[$propertyName] = self::validationCodeInvalidDate;
+                $this->errors[$propertyName] = TLanguage::formatText(self::validationCodeInvalidDate,[$this->data->$propertyName]);
             }
             else {
                 $this->object->$propertyName = $dateValue;
@@ -147,7 +147,7 @@ class TDataTransfer
     public function assignFlag($propertyName)
     {
         if (property_exists($this->data, $propertyName) && property_exists($this->object, $propertyName)) {
-            $this->object->$propertyName = empty($this->data->$propertyName) ? 1 : 0;
+            $this->object->$propertyName = empty($this->data->$propertyName) ? 0 : 1;
             return true;
         }
         return false;
@@ -181,9 +181,10 @@ class TDataTransfer
         foreach ($properties as $propertyName) {
             if (empty($this->object->$propertyName)) {
                 if (!array_key_exists($propertyName,$this->errors)) {
-                    $this->errors[$propertyName] = self::validationCodeRequiredValue;
+                    $this->errors[$propertyName] = TLanguage::formatText(self::validationCodeRequiredValue,[$propertyName]);
                 }
             }
         }
+        return $this->errors;
     }
 }
