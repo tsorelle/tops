@@ -37,16 +37,7 @@ class TDataTransfer
         if (array_key_exists($propertyName,$this->dataTypes)) {
             return $this->dataTypes[$propertyName];
         }
-        switch ($propertyName) {
-            case 'active' :
-                return self::dataTypeFlag;
-            case 'createdon' :
-                return self::dataTypeNow;
-            case 'changedon' :
-                return self::dataTypeNow;
-            default :
-                return self::dataTypeDefault;
-        }
+        return $propertyName == 'active' ? self::dataTypeFlag : self::dataTypeDefault;
     }
 
     public function getData()
