@@ -10,7 +10,7 @@ namespace Tops\db;
 
 use Tops\sys\TDataTransfer;
 
-class TimeStampedEntity
+class TimeStampedEntity extends TAbstractEntity
 {
     public $createdby;
     public $createdon;
@@ -35,30 +35,34 @@ class TimeStampedEntity
         $this->changedon = $date;
     }
 
-    public function assignFromObject($dto,$username='admin')
+
+    public function getDtoDataTypes()
     {
-        $datatypes = $this->getDtoDataTypes();
-        $dt = new TDataTransfer($dto, $this, $datatypes);
-        $dt->assignAll();
-        $defaults = $this->getDtoDefaults($username);
-        $dt->assignDefaultValues($defaults);
-    }
-
-
-    public function getDtoDataTypes() {
         return [
             'createdon' => TDataTransfer::dataTypeDateTime,
             'changedon' => TDataTransfer::dataTypeDateTime
         ];
-        }
+    }
 
-    public function getDtoDefaults($username='system') {
-        return [
-            'id' => 0,
-            'createdby' => $username,
-            'changedby' => $username,
-            'createdon' => TDataTransfer::dataTypeNow,
-            'changedon' => TDataTransfer::dataTypeNow
-        ];
+    /**
+     * @var bool
+     * Timestamps are usually assigned by the database. Use this switch on the rare occasion where you
+     * need to preassign them in the DTO
+     */
+    private $timestampDefaults = false;
+    public function useTimeStampDefaults($on=false) {
+        $this->timeStampDefaults = $on;
+    }
+
+    public function getDtoDefaults($username = 'system')
+    {
+        return $this->timestampDefaults ?
+            [
+                'id' => 0,
+                'createdby' => $username,
+                'changedby' => $username,
+                'createdon' => TDataTransfer::dataTypeNow,
+                'changedon' => TDataTransfer::dataTypeNow
+            ] : ['id' => 0];
     }
 }
