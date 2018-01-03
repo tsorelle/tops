@@ -8,26 +8,42 @@
 
 use Tops\db\model\entity\Process;
 use PHPUnit\Framework\TestCase;
+use Tops\sys\TDates;
 
 class ProcessTest extends TestCase
 {
 
     public function testAssignFromObject()
     {
-        $instance = new Process();
         $dto = new stdClass();
-//        $dto->id = 0;
+        $dto->description = 'description';
+
+        $instance = new Process();
+        $errors = $instance->assignFromObject($dto);
+        $this->assertEquals(2,sizeof($errors));
+
         $dto->code = 'code';
         $dto->name = 'name';
-        $dto->description = 'description';
-//        $dto->paused =
-//        $dto->enabled
+        $instance = new Process();
+        $errors = $instance->assignFromObject($dto);
+        $this->assertEmpty($errors);
 
-        $instance->assignFromObject($dto);
+
         $this->assertEquals($dto->code,        $instance->code);
         $this->assertEquals($dto->name,        $instance->name);
         $this->assertEquals($dto->description, $instance->description);
         $this->assertEmpty($instance->paused);
         $this->assertEquals(1,$instance->enabled);
+
+        $paused = '9/12/2018 0:12:59';
+        $expected = TDates::formatMySqlDate($paused,true);
+        $dto->paused = $paused;
+        $instance = new Process();
+        $errors = $instance->assignFromObject($dto);
+        if (!empty($errors)) {
+            print_r($errors);
+        }
+        $this->assertEmpty($errors);
+        $this->assertEquals($expected,$instance->paused);
     }
 }

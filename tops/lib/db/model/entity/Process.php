@@ -6,9 +6,10 @@
 
 namespace Tops\db\model\entity;
 
+use Tops\db\TAbstractEntity;
 use Tops\sys\TDataTransfer;
 
-class Process
+class Process extends TAbstractEntity
 { 
     public $id;
     public $code;
@@ -17,15 +18,23 @@ class Process
     public $paused; // datetime
     public $enabled; // flag
 
-     public function assignFromObject($dto)
-     {
-         $dt = new TDataTransfer($dto, $this, [
-             'paused' >= TDataTransfer::dataTypeDateTime
-         ]);
-         $dt->assignAll();
-         $dt->assignDefaultValues([
-             'id' => 0,
-             'enabled' => 1
-         ]);
-     }
+    protected function getRequiredFields()
+    {
+        return ['code','name'];
+    }
+
+    protected function getDtoDataTypes()
+    {
+        return [
+            'paused' => TDataTransfer::dataTypeDateTime,
+            'enabled' => TDataTransfer::dataTypeFlag];
+    }
+
+    protected function getDtoDefaults($username = 'system')
+    {
+        return [
+            'id' => 0,
+            'enabled' => 1
+        ];
+    }
 }
