@@ -45,6 +45,8 @@ class TModelBuilder
         $q->execute();
         $fields = $q->fetchAll(PDO::FETCH_OBJ);
 
+        $dtoTypes = [];
+
         $repository = @$params['repository'];
 
         if (empty($repository)) {
@@ -90,6 +92,22 @@ class TModelBuilder
                     $fieldDefs[] = "'$fieldName'=>PDO::PARAM_STR";
                     break;
                 default:
+                    switch ($field->Type) {
+                        case 'datetime':
+                            $dtoTypes[$fieldName] = "DateTime";
+                            break;
+                        case 'date' :
+                            $dtoTypes[$fieldName] = "Date";
+                            break;
+                        case 'tinyint(1)' :
+                            if ($fieldName != 'active') {
+                                $dtoTypes[$fieldName] = "Flag";
+                            }
+                            break;
+                        case 'time' :
+                            // todo: supported later
+                            break;
+                    }
                     $entityProperties[$field->Field] = '    public $' . $field->Field . ";";
                     $type = explode('(', $field->Type)[0];
                     $type = $type == 'int' ? 'INT' : 'STR';
@@ -128,6 +146,9 @@ class TModelBuilder
                 $superclass = 'TimeStampedEntity';
             }
         }
+        else {
+            $superclass = 'TAbstractEntity';
+        }
 
         if ($buildEntity) {
             $superclass =  isset($superclass) ?  ' extends \Tops\db\\'.$superclass : '';
@@ -142,20 +163,17 @@ class TModelBuilder
                 "namespace " . self::$appNamespace . "\\entity;" . "\n\n" .
                 "class $entityName $superclass \n" .
                 "{ \n" .
-                join("\n", array_values($entityProperties)) .
-                "\n\n     public function assignFromObject($dto) {\n";
+                join("\n", array_values($entityProperties))."\n\n";
 
-            if ($isNamedEntity) {
-                $entity.= "    parent::assignFromObject($dto);\n";
+            if (!empty($dtoTypes)) {
+                $entity .= "    public function getDtoDataTypes()\n    {\n        ".'$'."types = parent::getDtoDataTypes();\n";
+                foreach ($dtoTypes as $propertyName => $dtoType) {
+                    $entity .= '        $'.sprintf("types['%s'] = \Tops\sys\TDataTransfer::dataType%s;\n",$propertyName,$dtoType);
             }
-            foreach (array_keys($entityProperties) as $fieldName) {
-                $entity .=
-                    '    if (isset($dto->'.$fieldName.")) {\n".
-                    '       $this->'.$fieldName.' = $dto->'.$fieldName.";\n".
-                    "    }\n";
+                $entity .= '        return $types;'."\n    }\n";
             }
 
-            $entity .= "\n} \n}";
+            $entity .= "}\n";
 
             $fullClassName = self::$appNamespace."\\entity\\" . $entityName;
         }
