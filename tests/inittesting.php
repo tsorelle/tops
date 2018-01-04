@@ -10,5 +10,7 @@ global $_SESSION;
 if (!isset($_SESSION)) {
     $_SESSION = [];
 }
+$_SESSION['tops-session-cache'] = [];
+include  __DIR__.'\..\vendor\autoload.php';
 \Tops\sys\TPath::Initialize($projectFileRoot,'tests/config');
 
