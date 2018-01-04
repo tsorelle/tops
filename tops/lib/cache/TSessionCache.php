@@ -28,13 +28,15 @@ class TSessionCache extends TAbstractCache {
     {
         $category = $keys[0];
         $key = $keys[1];
-        $cache = $_SESSION[self::cacheKey];
-        if (isset($cache[$category][$key])) {
-            $data = $cache[$category][$key];
-            if (empty($data)) {
-                return null;
+        if (array_key_exists(self::cacheKey, $_SESSION)) {
+            $cache = $_SESSION[self::cacheKey];
+            if (isset($cache[$category][$key])) {
+                $data = $cache[$category][$key];
+                if (empty($data)) {
+                    return null;
+                }
+                return TCachedItem::Deserialize($data);
             }
-            return TCachedItem::Deserialize($data);
         }
         return null;
     }
