@@ -114,6 +114,17 @@ abstract class TEntityRepository implements IEntityRepository
         return $stmt;
     }
 
+    public function getCount($includeInactive, $where='', $clauses='') {
+        $sql = $this->addSqlConditionals(
+            'SELECT COUNT(*) FROM '.$this->getTableName(),
+            $includeInactive,
+            $where
+        );
+        $stmt = $this->executeStatement($sql);
+        $result = $stmt->fetch();
+        return (empty($result) ?  0 : $result[0]);
+    }
+
     protected function addSqlConditionals($sql, $includeInactive, $where, $clauses='')
     {
         $activeOnly = (
