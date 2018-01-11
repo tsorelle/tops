@@ -8,9 +8,6 @@ namespace Tops\db;
 
 use \PDO;
 use PDOStatement;
-use PHPUnit\Runner\Exception;
-use Tops\db\TDatabase;
-use Tops\db\TEntityRepository;
 
 class TNamedEntitiesRepository extends TEntityRepository
 {
@@ -19,6 +16,7 @@ class TNamedEntitiesRepository extends TEntityRepository
     }
 
     protected function getTableName() {
+        /** @noinspection PhpUnhandledExceptionInspection */
         throw new \Exception('Table name function must be overriden in subclass');
     }
 
@@ -34,6 +32,7 @@ class TNamedEntitiesRepository extends TEntityRepository
     public function getListing($where='',$includeInactive=false,$clauses='') {
 
         $dbh = $this->getConnection();
+        /** @noinspection SqlNoDataSourceInspection */
         $sql =
             $this->addSqlConditionals(
                 "SELECT id,`code`,`name`, IF(description IS NULL OR description='',`name`,description) AS description FROM ".
@@ -70,6 +69,7 @@ class TNamedEntitiesRepository extends TEntityRepository
 
     public function getGetNameValueList($where='',$includeInactive = false) {
         $dbh = $this->getConnection();
+        /** @noinspection SqlNoDataSourceInspection */
         $sql = $this->addSqlConditionals(
             'SELECT `name` as "Name", id as "Value" FROM '.$this->getTableName(),
             $includeInactive,
