@@ -26,6 +26,8 @@ abstract class ServiceRequestInputHandler
      */
     public abstract function get($key);
 
+    public abstract function getValues($exclude = []);
+
     public abstract function getSecurityToken();
 
     /**

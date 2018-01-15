@@ -45,4 +45,21 @@ class DefaultInputHandler extends ServiceRequestInputHandler
         return $result;
     }
 
+    public function getValues($exclude = [])
+    {
+        $result = new \stdClass();
+        foreach ($_POST as $key => $value) {
+            if (!array_key_exists($key,$exclude)) {
+                $result->$key = $value;
+            }
+        }
+        foreach ($_GET as $key => $value) {
+            if (!array_key_exists($key,$exclude)) {
+                if (empty($result->$key)) {
+                    $result->$key = $value;
+                }
+            }
+        }
+        return $result;
+    }
 }

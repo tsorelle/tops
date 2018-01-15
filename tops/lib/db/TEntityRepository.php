@@ -11,7 +11,7 @@ namespace Tops\db;
 use \PDO;
 use PDOStatement;
 
-abstract class TEntityRepository implements IEntityRepository
+abstract class TEntityRepository extends TPdoQueryManager implements IEntityRepository
 {
 
     private $fieldDefinitions;
@@ -21,8 +21,6 @@ abstract class TEntityRepository implements IEntityRepository
     protected abstract function getClassName();
 
     protected abstract function getTableName();
-
-    protected abstract function getDatabaseId();
 
     private function getFieldDefinitions()
     {
@@ -37,44 +35,9 @@ abstract class TEntityRepository implements IEntityRepository
         return 'id';
     }
 
-    /**
-     * @var PDO
-     */
-    private $connection = null;
-
     private $lastErrorCode = PDO::ERR_NONE;
     public function getLastErrorCode() {
         return $this->lastErrorCode;
-    }
-
-    protected function getConnection()
-    {
-        if ($this->connection != null) {
-            return $this->connection;
-        }
-        return TDatabase::getConnection($this->getDatabaseId());
-    }
-
-    public function startTransaction()
-    {
-        $this->connection = TDatabase::getPersistentConnection($this->getDatabaseId());
-        $this->connection->beginTransaction();
-    }
-
-    public function commitTransaction()
-    {
-        if ($this->connection != null) {
-            $this->connection->commit();
-            $this->connection = null;
-        }
-    }
-
-    public function rollbackTransaction()
-    {
-        if ($this->connection != null) {
-            $this->connection->rollBack();
-            $this->connection = null;
-        }
     }
 
     /**
@@ -86,22 +49,6 @@ abstract class TEntityRepository implements IEntityRepository
         return $this->getSingleEntity('id = ?', [$id], true);
     }
 
-    /**
-     * @param $sql
-     * @param array $params
-     * @return PDOStatement
-     */
-    protected function executeStatement($sql, $params = array())
-    {
-        $dbh = $this->getConnection();
-        /**
-         * @var PDOStatement
-         */
-        $stmt = $dbh->prepare($sql);
-        $stmt->execute($params);
-        return $stmt;
-    }
-
     protected function executeEntityQuery($where, $params, $includeInactive = false)
     {
         $sql = $this->addSqlConditionals(
@@ -110,6 +57,7 @@ abstract class TEntityRepository implements IEntityRepository
             $where
         );
         $stmt = $this->executeStatement($sql, $params);
+        /** @noinspection PhpMethodParametersCountMismatchInspection */
         $stmt->setFetchMode(PDO::FETCH_CLASS, $this->getClassName());
         return $stmt;
     }
@@ -203,7 +151,8 @@ abstract class TEntityRepository implements IEntityRepository
             }
         }
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
-        $count = $stmt->execute();
+        // $count = $stmt->execute();
+        $stmt->execute();
         $this->lastErrorCode = $dbh->errorCode();
         $result = $stmt->rowCount();
         return $result;

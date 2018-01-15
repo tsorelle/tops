@@ -17,5 +17,8 @@
       "Bookstore\\" : "tests/lib/bookstore",
       "TestPackage\\" : "tests/pnut/packages/test-package/src"
     }
+  },
+  "require": {
+    "phpunit/phpunit": "5.7.26"
   }
 }

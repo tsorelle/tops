@@ -65,4 +65,14 @@ class FakeInputHandler extends \Tops\services\ServiceRequestInputHandler
 //            : $_GET[ServiceRequestInputHandler::securityTokenKey];
     }
 
+    public function getValues($exclude = [])
+    {
+        $result = new \stdClass();
+        foreach (self::$values as $key => $value) {
+            if (!array_key_exists($key,$exclude)) {
+                $result->$key = $value;
+            }
+        }
+        return $result;
+    }
 }
