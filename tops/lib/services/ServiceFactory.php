@@ -16,20 +16,19 @@
  */
 namespace Tops\services;
 
-use PHPUnit\Runner\Exception;
 use Tops\sys;
 use Tops\services\ServiceRequestInputHandler;
 
 
-class ServiceFactory
+class ServiceFactory extends TAbstractServiceFactory
 {
 
-    /**
-     * @var ServiceRequestInputHandler
-     */
-    private $inputHandler;
-    
     private static $instance;
+
+    /**
+     * @return string|TServiceResponse
+     * @throws \Exception
+     */
     public static function Execute() {
         if (!isset(self::$instance)) {
             self::$instance = new ServiceFactory();
@@ -37,63 +36,13 @@ class ServiceFactory
         return self::$instance->executeService();
     }
 
-    public function __construct()
-    {
-        $inputHandler = sys\TObjectContainer::Get('services.inputhandler');
-        $this->inputHandler = $inputHandler === false ?  new DefaultInputHandler() : $inputHandler;
-    }
-
-    private function getSecurityToken(ServiceRequestInputHandler $request) {
-
-        $tokensEnabled = sys\TConfiguration::getValue('xxstokens','security',true);
-        if ($request != null && $tokensEnabled) {
-            $securityToken = $request->get('topsSecurityToken');
-            if (!$securityToken) {
-                return 'invalid';
-            }
-        }
-        return '';
-    }
 
     /**
      * @return string|TServiceResponse
      */
     public function executeService() {
-        $response = '';
         try {
-
-            $serviceId = $this->inputHandler->getServiceId();
-
-            $securityToken = $this->inputHandler->getSecurityToken();
-            $input = $this->inputHandler->getInput();
-
-            $parts = explode('::', $serviceId);
-            if (sizeof($parts) == 1) {
-                $namespace =  sys\TConfiguration::getValue('applicationNamespace', 'services');
-                if (empty($namespace)) {
-                    throw new \Exception('For default service, "applicationNamespace=" is required in settings.ini');
-                }
-                $namespace .= "\\". sys\TConfiguration::getValue('servicesNamespace', 'services','services');
-            } else {
-                $namespace = $this->inputHandler->getServiceNamespace($parts[0]);
-                $serviceId =  $parts[1];
-            }
-
-            // get subdirectories  e.g. where serviceId is 'subdirectory.serviceId'
-            $serviceId = str_replace('.',"\\",$serviceId);
-
-            $className = $namespace . "\\" . $serviceId . 'Command';
-
-            if (!class_exists($className)) {
-                throw new \Exception("Cannot instatiate service '$className'.");
-            }
-
-            /**
-             * @var $cmd TServiceCommand
-             */
-            $cmd = new $className();
-            $response = $cmd->execute($input,$securityToken);
-
+            return parent::executeService();
         }
         catch (\Exception $ex) {
             $debugInfo = new \stdClass();
@@ -115,11 +64,8 @@ class ServiceFactory
             }
 
 
-            $response = $this->getFailureResponse($debugInfo);
+            return $this->getFailureResponse($debugInfo);
         }
-
-        return $response;
-        // echo json_encode($response);
     }
 
     /**
@@ -137,5 +83,4 @@ class ServiceFactory
         }
         return $this->failureResponse;
     }
-
 }

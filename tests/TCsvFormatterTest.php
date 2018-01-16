@@ -6,17 +6,9 @@
  * Time: 9:45 AM
  */
 
-use Tops\db\TDownloadManager;
 
-class TDownloadManagerTest extends PHPUnit_Framework_TestCase
+class TCsvFormatterTest extends PHPUnit_Framework_TestCase
 {
-
-    public function disabledtestGetCsvData()
-    {
-
-    }
-
-
     private function createTestObj($name,$address,$city) {
         $result = new stdClass();
         $result->Name = $name;
@@ -30,9 +22,9 @@ class TDownloadManagerTest extends PHPUnit_Framework_TestCase
         $objs = [];
         $objs[] = $this->createTestObj('Terry',1,'Austin');
         $objs[] = $this->createTestObj('Joe',2,'Boston');
-        $manager = new TDownloadManager();
-        $actual = $manager->objectsToCsv($objs,['Address' => 'number']);
+        $actual = \Tops\sys\TCsvFormatter::ToCsv($objs,['Address' => 'number']);
         $this->assertNotEmpty($actual);
-
+        $expected = ['"Name","Address","City"','"Terry",1,"Austin"','"Joe",2,"Boston"'];
+        $this->assertEquals($expected,$actual);
     }
 }

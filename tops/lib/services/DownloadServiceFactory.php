@@ -12,67 +12,56 @@ namespace Tops\services;
 use Tops\sys\TConfiguration;
 use Tops\sys\TObjectContainer;
 
-class DownloadServiceFactory
+class DownloadServiceFactory extends TAbstractServiceFactory
 {
-    /**
-     * @var ServiceRequestInputHandler
-     */
-    private $inputHandler;
 
     private static $instance;
-    public static function Execute() {
+
+    public static function Execute()
+    {
         if (!isset(self::$instance)) {
             self::$instance = new ServiceFactory();
         }
         return self::$instance->executeService();
     }
 
-    public function __construct()
-    {
-        $inputHandler = TObjectContainer::Get('services.inputhandler');
-        $this->inputHandler = $inputHandler === false ?  new DefaultInputHandler() : $inputHandler;
-    }
-
     /**
-     * @return string|TServiceResponse
      * @throws \Exception
      */
-    public function executeService()
-    {
-        $serviceId = $this->inputHandler->getServiceId();
-        $securityToken = $this->inputHandler->getSecurityToken();
-        $input = $this->inputHandler->getValues(['serviceCode','sid']);
-        $parts = explode('::', $serviceId);
-        if (sizeof($parts) == 1) {
-            $namespace = TConfiguration::getValue('applicationNamespace', 'services');
-            if (empty($namespace)) {
-                throw new \Exception('For default service, "applicationNamespace=" is required in settings.ini');
+    public static function PrintOutput() {
+        $response = self::Execute();
+        if (empty($response) || empty($response->Value) || (!isset($response->value->data))) {
+            throw new \Exception('Error invalid download response.');
+        }
+        $fileName = empty($response->Value->filename ? 'download' : $response->Value->filename);
+        if ($response->Result === ResultType::Errors) {
+            $errors = [];
+            $errors[] = '"Message","Cannot download. Errors occurred';
+            foreach ($response->Messages as $message) {
+                switch ($message->MessageType) {
+                    case MessageType::Error :
+                        $type = 'Error';
+                        break;
+                    case MessageType::Warning :
+                        $type = 'Warning';
+                        break;
+                    default:
+                        continue;
+                }
+                $errors[] = sprintf('"%s","%s"',$type,$message->Text);
+                $data = join("\n",$errors);
             }
-            $namespace .= "\\" . TConfiguration::getValue('servicesNamespace', 'services', 'services');
-        } else {
-            $namespace = $this->inputHandler->getServiceNamespace($parts[0]);
-            $serviceId = $parts[1];
         }
-
-        // get subdirectories  e.g. where serviceId is 'subdirectory.serviceId'
-        $serviceId = str_replace('.', "\\", $serviceId);
-        $className = $namespace . "\\" . $serviceId . 'Command';
-        if (!class_exists($className)) {
-            throw new \Exception("Cannot instatiate service '$className'.");
+        else {
+            $data = empty($response->Value->data) ? 'No data returned' : $response->Value->data;
         }
-
-        /**
-         * @var $cmd TServiceCommand
-         */
-        $cmd = new $className();
-        $response = $cmd->execute($input, $securityToken);
-        if (is_array($response)) {
-            $response = join("\n",$response);
-        }
-        return $response;
+        header("Pragma: public");
+        header("Expires: 0");
+        header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+        header("Cache-Control: private",false);
+        header("Content-Type: application/octet-stream");
+        header("Content-Disposition: attachment; filename=\"$fileName.csv\";" );
+        header("Content-Transfer-Encoding: binary");
+        print $data;
     }
-
-
-
-
 }
