@@ -28,9 +28,9 @@ class DefaultInputHandler extends ServiceRequestInputHandler
     public function get($key)
     {
         if ($this->getMethod() == 'POST') {
-            return $_POST[$key];
+            return (is_array($_POST) && isset($_POST[$key])) ? $_POST[$key] : null;
         }
-        return $_GET[$key];
+        return (is_array($_GET) && isset($_GET[$key])) ? $_GET[$key] : null;
     }
 
     public function getSecurityToken()

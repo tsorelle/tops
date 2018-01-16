@@ -40,7 +40,7 @@ class ServiceFactory extends TAbstractServiceFactory
     /**
      * @return string|TServiceResponse
      */
-    public function executeService() {
+    public function executeService($checkSecurityToken=true) {
         try {
             return parent::executeService();
         }

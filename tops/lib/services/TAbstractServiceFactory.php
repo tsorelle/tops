@@ -31,11 +31,11 @@ abstract class TAbstractServiceFactory
      * @return string|TServiceResponse
      * @throws \Exception
      */
-    public function executeService()
+    public function executeService($checkSecurityToken=true)
     {
         $inputHandler =  self::getInputHandler();
         $serviceId = $inputHandler->getServiceId();
-        $securityToken = $inputHandler->getSecurityToken();
+        $securityToken = $checkSecurityToken ? $inputHandler->getSecurityToken() : false;
         $input = $inputHandler->getValues(['serviceCode','sid']);
         $parts = explode('::', $serviceId);
         if (sizeof($parts) == 1) {
@@ -61,9 +61,6 @@ abstract class TAbstractServiceFactory
          */
         $cmd = new $className();
         $response = $cmd->execute($input, $securityToken);
-        if (is_array($response)) {
-            $response = join("\n",$response);
-        }
         return $response;
     }
 
