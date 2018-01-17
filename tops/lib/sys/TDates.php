@@ -15,6 +15,7 @@ class TDates
 {
     const MySqlDateFormat = 'Y-m-d';
     const MySqlDateTimeFormat = 'Y-m-d H:i:s';
+    const FilenameTimeFormat = 'Y-m-d@H-i-s';
     const Equal = 0;
     const Before = -1;
     const After = 1;
