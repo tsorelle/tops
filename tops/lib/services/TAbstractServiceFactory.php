@@ -36,7 +36,6 @@ abstract class TAbstractServiceFactory
         $inputHandler =  self::getInputHandler();
         $serviceId = $inputHandler->getServiceId();
         $securityToken = $checkSecurityToken ? $inputHandler->getSecurityToken() : false;
-        $input = $inputHandler->getValues(['serviceCode','sid']);
         $parts = explode('::', $serviceId);
         if (sizeof($parts) == 1) {
             $namespace = TConfiguration::getValue('applicationNamespace', 'services');
@@ -60,6 +59,10 @@ abstract class TAbstractServiceFactory
          * @var $cmd TServiceCommand
          */
         $cmd = new $className();
+        $input = $inputHandler->getValues(['serviceCode','sid']);
+        if (isset($input->request)) {
+            $input = json_decode($input->request);
+        }
         $response = $cmd->execute($input, $securityToken);
         return $response;
     }
