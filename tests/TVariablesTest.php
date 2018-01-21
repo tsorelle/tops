@@ -32,4 +32,17 @@ class TVariablesTest extends TestCase
 
     }
 
+    public function testGetObject() {
+        $obj = new stdClass();
+        $obj->first = 'Terry';
+        $obj->last = 'SoRelle';
+        $obj->city = 'Austin';
+
+        TVariables::SetObject('test',$obj);
+        $actual = TVariables::GetObject('test');
+
+        $this->assertNotEmpty($actual);
+        $this->assertEquals($obj,$actual);
+    }
+
 }

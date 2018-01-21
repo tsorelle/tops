@@ -273,4 +273,54 @@ class TDates
     public static function isValidDateString($dateString) {
         return strtotime($dateString) !== false;
     }
+
+    public static function buildCalendar($assignFunction,$month=null,$year=null,$format='Y-m-d') {
+        if ($month === null ) {
+            $month = date('m');
+        }
+        if ($year === null) {
+            $year = date('Y');
+        }
+        $monthStart = strtotime(sprintf('%d-%d-1',$year,$month));
+        $monthEnd = strtotime('last day of this month', $monthStart);// time());
+        $date = date('N', $monthStart) == 7 ? $monthStart : strtotime('last Sunday', $monthStart);
+        $calEnd = date('N', $monthEnd) == 6 ? strtotime('+ 1 day',$monthEnd) : strtotime('next Sunday', $monthEnd);
+        $result = [];
+        while ($date != $calEnd) {
+            $datestr = date($format,$date);
+            $result[$datestr] = $assignFunction($date);
+            $date =  strtotime('+ 1 day',$date);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $year
+     * @param $month
+     * @param $dayofweek -- valid date format string e.g.  'Wed','wed','Wednesday' or 'wednesday' or number where 1=sunday
+     */
+    public static function getWeekDates($year,$month,$dayofweek) {
+        if (is_numeric($dayofweek)) {
+            if ($dayofweek < 1 || $dayofweek > 7) {
+                // invalid input
+                return false;
+            }
+            // since October 2017 started on sunday we can get day of week from format
+            $dayofweek = date('D', mktime(0, 0, 0, 10, $dayofweek, 2017));
+        }
+        $ordinals = ['first', 'second', 'third', 'fourth', 'fifth'];
+        $date = new DateTime(sprintf("%d-%d-1", $year, $month));
+        $date->modify(sprintf("last %s of this month", $dayofweek));
+        $last = $date->format('Y-m-d');
+        $result = [];
+        foreach ($ordinals as $ordinal) {
+            $date->modify(sprintf("%s %s of this month", $ordinal, $dayofweek));
+            $result[] = $date->format('Y-m-d');
+            if ($date->format('Y-m-d') == $last) {
+                break;
+            }
+        }
+        return $result;
+    }
 }

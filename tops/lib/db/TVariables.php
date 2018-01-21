@@ -61,6 +61,10 @@ class TVariables
         return  @$values[$key];
     }
 
+    public function setValue($key,$value) {
+        $this->cache->Set($key,$value);
+    }
+
     public function clearCache() {
         if (isset($this->cache)) {
             $this->cache->Remove(self::cacheKey);
@@ -71,6 +75,19 @@ class TVariables
         $value = self::getInstance()->getValue($key);
         return ($value === null && $default !== false) ? $default : $value;
     }
+
+    public static function GetObject($key) {
+        $value = self::getInstance()->getValue($key);
+        if (empty($value)) {
+            return null;
+        }
+        return json_decode($value);
+    }
+
+    public static function SetObject($key,$value) {
+        self::getInstance()->setValue($key,json_encode($value));
+    }
+
 
     public static function Clear() {
         if (isset(self::$instance)) {
