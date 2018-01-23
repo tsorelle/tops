@@ -8,6 +8,7 @@
 
 use Tops\db\TVariables;
 use PHPUnit\Framework\TestCase;
+use Tops\sys\TStrings;
 
 class TVariablesTest extends TestCase
 {
@@ -26,8 +27,8 @@ class TVariablesTest extends TestCase
         $this->assertEquals($org,$actual);
 
         // from cache
-        $actual = TVariables::Get(TVariables::siteOrganizationKey);
-        $this->assertEquals($org,$actual);
+/*        $actual = TVariables::Get(TVariables::siteOrganizationKey);
+        $this->assertEquals($org,$actual);*/
 
 
     }
@@ -38,8 +39,9 @@ class TVariablesTest extends TestCase
         $obj->last = 'SoRelle';
         $obj->city = 'Austin';
 
-        TVariables::SetObject('test',$obj);
+        TVariables::SetObject('test','test object',$obj,null,'unit test');
         $actual = TVariables::GetObject('test');
+        TVariables::remove('test');
 
         $this->assertNotEmpty($actual);
         $this->assertEquals($obj,$actual);

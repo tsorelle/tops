@@ -9,6 +9,7 @@
 namespace Tops\db;
 
 
+use Tops\db\model\entity\VariableEntity;
 use Tops\db\model\repository\VariablesRepository;
 use Tops\sys\TObjectContainer;
 use Tops\cache\ITopsCache;
@@ -28,6 +29,15 @@ class TVariables
             self::$instance = new TVariables();
         }
         return self::$instance;
+    }
+
+    private static $repository;
+    private static function getRepository()
+    {
+        if (!isset(self::$repository)) {
+            self::$repository = new VariablesRepository();
+        }
+        return self::$repository;
     }
 
     /**
@@ -52,7 +62,11 @@ class TVariables
 
     public function __construct()
     {
-        $repository = new VariablesRepository();
+        $this->refreshCache();
+    }
+
+    private function refreshCache() {
+        $repository = self::getRepository();
         $this->getCache()->Set(self::cacheKey,$repository->getArray());
     }
 
@@ -61,8 +75,45 @@ class TVariables
         return  @$values[$key];
     }
 
-    public function setValue($key,$value) {
-        $this->cache->Set($key,$value);
+    /**
+     * @param $key
+     * @param $value
+     * @param string $user
+     */
+    public static function setValue($key,$name,$value,$description=null,$user='system') {
+        $repository = self::getRepository();
+        /**
+         * @var $entry VariableEntity
+         */
+        $entry = $repository->getEntityByCode($key);
+        if ($entry) {
+            $entry->value = $value;
+            $repository->update($entry,$user);
+        }
+        else {
+            $entry = VariableEntity::Create($key,$name,$value,$description);
+            $repository->insert($entry,$user);
+        }
+        self::refresh();
+    }
+
+    public static function remove($key) {
+        $repository = self::getRepository();
+        $entry = $repository->getEntityByCode($key);
+        if ($entry) {
+            $repository->delete($entry->id);
+            self::refresh();
+        }
+    }
+
+    public static function refresh()
+    {
+        if (isset(self::$instance)) {
+            self::$instance->refreshCache();
+        }
+        else {
+            self::getInstance();
+        }
     }
 
     public function clearCache() {
@@ -77,15 +128,23 @@ class TVariables
     }
 
     public static function GetObject($key) {
-        $value = self::getInstance()->getValue($key);
+        $value = self::Get($key);
         if (empty($value)) {
             return null;
         }
         return json_decode($value);
     }
 
-    public static function SetObject($key,$value) {
-        self::getInstance()->setValue($key,json_encode($value));
+    /**
+     * @param $key
+     * @param $name
+     * @param $value
+     * @param null $description
+     * @param string $user
+     */
+    public static function SetObject($key,$name,$value,$description=null,$user='system') {
+        $value = json_encode($value);
+        self::setValue($key,$name,$value,$description,$user);
     }
 
 

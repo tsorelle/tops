@@ -7,7 +7,7 @@
  */
 
 
-class TCsvFormatterTest extends PHPUnit_Framework_TestCase
+class TCsvFormatterTest extends \PHPUnit\Framework\TestCase
 {
     private function createTestObj($name,$address,$city) {
         $result = new stdClass();

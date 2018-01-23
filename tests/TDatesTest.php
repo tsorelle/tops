@@ -359,9 +359,26 @@ class TDatesTest extends TestCase
         ];
         $actual = [];
         for($i=1;$i<8;$i++) {
-            $actual[$i] = Tdates::getWeekDates(2017,7,$i);
+            $actual[$i] = TDates::getWeekDates(2017,7,$i);
         }
 
         self::assertEquals($expected,$actual);
     }
+
+
+    public function testGetDatesInRange() {
+        $actual = TDates::getDatesInRange('2018-1-11','2018-1-24');
+        $this->assertNotEmpty($actual);
+
+        $options = new stdClass();
+        $options->weekDays = true;
+        $actual = TDates::getDatesInRange('2018-1-11','2018-1-24',$options);
+        $this->assertNotEmpty($actual);
+
+        $options = new stdClass();
+        $options->skip = 3;
+        $actual = TDates::getDatesInRange('2018-1-11','2018-1-24',$options);
+        $this->assertNotEmpty($actual);
+    }
+
 }
