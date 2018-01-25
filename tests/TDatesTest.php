@@ -367,18 +367,188 @@ class TDatesTest extends TestCase
 
 
     public function testGetDatesInRange() {
-        $actual = TDates::getDatesInRange('2018-1-11','2018-1-24');
+        $start = '2018-1-11';
+        $end  = '2018-1-25';
+        $expectedStart = date('Y-m-d',strtotime($start));
+        $expectedEnd = (new DateTime($end))->modify('- 1 day')->format('Y-m-d');
+
+        $len = 14;
+        $actual = TDates::getDatesInRange($start,$end);
         $this->assertNotEmpty($actual);
+        $this->assertEquals($len,sizeof($actual));
+        $this->assertEquals($expectedStart,$actual[0]);
+        $this->assertEquals($expectedEnd,$actual[$len -1]);
+
 
         $options = new stdClass();
         $options->weekDays = true;
-        $actual = TDates::getDatesInRange('2018-1-11','2018-1-24',$options);
+        $len = 10;
+        $actual = TDates::getDatesInRange($start,$end,$options);
         $this->assertNotEmpty($actual);
+        $this->assertEquals($len,sizeof($actual));
+        $this->assertEquals($expectedStart,$actual[0]);
+        $this->assertEquals($expectedEnd,$actual[$len -1]);
 
         $options = new stdClass();
         $options->skip = 3;
-        $actual = TDates::getDatesInRange('2018-1-11','2018-1-24',$options);
+        $len = 5;
+        $actual = TDates::getDatesInRange($start,$end,$options);
         $this->assertNotEmpty($actual);
+        $this->assertEquals($len,sizeof($actual));
+        $this->assertEquals($expectedStart,$actual[0]);
+        $this->assertEquals('2018-01-23',$actual[$len -1]);
+
+    }
+
+    public function testSetDowThisWeek() {
+        $currentDate = new DateTime('2017-12-31');
+        $expectedDates = [
+            '2017-12-31',
+            '2018-01-01',
+            '2018-01-02',
+            '2018-01-03',
+            '2018-01-04',
+            '2018-01-05',
+            '2018-01-06',
+        ];
+        for ($d = 0; $d<7; $d++) {
+            for ($i = 0; $i < 7; $i++) {
+                $day = TDates::DowNames[$i];
+                $actual = clone $currentDate;
+                TDates::SetDowThisWeek($actual, $day);
+                $this->assertEquals($expectedDates[$i], $actual->format('Y-m-d'));
+
+                $day = $i + 1;
+                $actual = clone $currentDate;
+                TDates::SetDowThisWeek($actual, $day);
+                $this->assertEquals($expectedDates[$i], $actual->format('Y-m-d'));
+            }
+            $currentDate->modify("+ 1 day");
+        }
+    }
+
+    public function testGetCalendarDates() {
+        $actual = TDates::GetCalendarMonth(2018,1);
+        $expectedStart='2017-12-31';
+        $expectedEnd='2018-02-04';
+        $this->assertEquals($expectedStart,$actual->start,'start');
+        $this->assertEquals($expectedEnd,$actual->end,'end');
+
+        $actual = TDates::GetCalendarMonth(2018,2,'right');
+        $expectedStart='2018-02-04';
+        $expectedEnd='2018-03-04';
+        $this->assertEquals($expectedStart,$actual->start,'right-start');
+        $this->assertEquals($expectedEnd,$actual->end,'right-end');
+
+        $actual = TDates::GetCalendarMonth(2017,12,'left');
+        $expectedStart='2017-11-26';
+        $expectedEnd='2017-12-31';
+        $this->assertEquals($expectedStart,$actual->start,'left-start');
+        $this->assertEquals($expectedEnd,$actual->end,'left-end');
+
+
+
+
+        /*
+                $actual = TDates::GetCalendarMonth(2018,2);
+                $expectedStart='2018-01-28';
+                $expectedEnd='2018-03-04';
+                $this->assertEquals($expectedStart,$actual->start);
+                $this->assertEquals($expectedEnd,$actual->end);
+
+                $actual = TDates::GetCalendarMonth(2018,3);
+                $expectedStart='2018-02-25';
+                $expectedEnd='2018-04-01';
+                $this->assertEquals($expectedStart,$actual->start);
+                $this->assertEquals($expectedEnd,$actual->end);
+
+                $actual = TDates::GetCalendarMonth(2018,4);
+                $expectedStart='2018-04-01';
+                $expectedEnd='2018-05-06';
+                $this->assertEquals($expectedStart,$actual->start);
+                $this->assertEquals($expectedEnd,$actual->end);
+
+                $actual = TDates::GetCalendarMonth(2018,5);
+                $expectedStart='2018-04-29';
+                $expectedEnd='2018-06-03';
+                $this->assertEquals($expectedStart,$actual->start);
+                $this->assertEquals($expectedEnd,$actual->end);
+
+                $actual = TDates::GetCalendarMonth(2018,6);
+                $expectedStart='2018-05-27';
+                $expectedEnd='2018-07-01';
+                $this->assertEquals($expectedStart,$actual->start);
+                $this->assertEquals($expectedEnd,$actual->end);
+
+                $actual = TDates::GetCalendarMonth(2018,7);
+                $expectedStart='2018-07-01';
+                $expectedEnd='2018-08-05';
+                $this->assertEquals($expectedStart,$actual->start);
+                $this->assertEquals($expectedEnd,$actual->end);
+
+                $actual = TDates::GetCalendarMonth(2018,8);
+                $expectedStart='2018-07-29';
+                $expectedEnd='2018-09-02';
+                $this->assertEquals($expectedStart,$actual->start);
+                $this->assertEquals($expectedEnd,$actual->end);
+
+                $actual = TDates::GetCalendarMonth(2018,9);
+                $expectedStart='2018-08-26';
+                $expectedEnd='2018-10-07';
+                $this->assertEquals($expectedStart,$actual->start);
+                $this->assertEquals($expectedEnd,$actual->end);
+
+                $actual = TDates::GetCalendarMonth(2018,10);
+                $expectedStart='2018-09-30';
+                $expectedEnd='2018-11-04';
+                $this->assertEquals($expectedStart,$actual->start);
+                $this->assertEquals($expectedEnd,$actual->end);
+
+                $actual = TDates::GetCalendarMonth(2018,11);
+                $expectedStart='2018-10-28';
+                $expectedEnd='2018-12-02';
+                $this->assertEquals($expectedStart,$actual->start);
+                $this->assertEquals($expectedEnd,$actual->end);
+
+                $actual = TDates::GetCalendarMonth(2018,12);
+                $expectedStart='2018-11-25';
+                $expectedEnd='2019-01-06';
+                $this->assertEquals($expectedStart,$actual->start);
+                $this->assertEquals($expectedEnd,$actual->end);*/
+    }
+
+    public function testDowListToArray() {
+        $days = '1234567';
+        $expected = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+        $actual = TDates::DowListToArray($days);
+        $this->assertEquals($expected,$actual);
+
+        $days = '247';
+        $expected = ['Mon','Wed','Sat'];
+        $actual = TDates::DowListToArray($days);
+        $this->assertEquals($expected,$actual);
+    }
+
+    public function testDowRoutines() {
+        for ($expected = 1; $expected < 8;$expected++) {
+            $dow = TDates::GetDowName($expected);
+            $this->assertTrue(in_array($dow,TDates::DowNames));
+            $actual =  TDates::GetDowNumber($dow);
+            $this->assertEquals($expected,$actual);
+        }
+    }
+
+    public function testCreateDateTime() {
+        $expected = '2018-02-30';
+        $actual = TDates::CreateDateTime($expected);
+        $this->assertTrue($actual === false);
+        $expected = '2018-02-27';
+        $actual = TDates::CreateDateTime($expected);
+        $this->assertEquals($expected,$actual->format('Y-m-d'));
+
+        $expected = '2018-02-07';
+        $actual = TDates::CreateDateTime('2018-2-7');
+        $this->assertEquals($expected,$actual->format('Y-m-d'));
     }
 
 }

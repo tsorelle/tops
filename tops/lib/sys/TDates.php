@@ -19,6 +19,7 @@ class TDates
     const Equal = 0;
     const Before = -1;
     const After = 1;
+    const DowNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
     public static function reformatDateTime($timeString, $newFormat, $originalFormat = null)
     {
@@ -312,15 +313,116 @@ class TDates
         $ordinals = ['first', 'second', 'third', 'fourth', 'fifth'];
         $date = new DateTime(sprintf("%d-%d-1", $year, $month));
         $date->modify(sprintf("last %s of this month", $dayofweek));
-        $last = $date->format('Y-m-d');
+        $last = clone $date;
         $result = [];
         foreach ($ordinals as $ordinal) {
             $date->modify(sprintf("%s %s of this month", $ordinal, $dayofweek));
             $result[] = $date->format('Y-m-d');
-            if ($date->format('Y-m-d') == $last) {
+            if ($date == $last) {
                 break;
             }
         }
         return $result;
     }
+
+    public static function getDatesInRange($startDate,$endDate,$options=null) {
+        $weekDays = !empty($options->weekDays);
+        $skip = empty($options->skip) ? 1 : $options->skip;
+        $endDate=new DateTime($endDate);
+        $result = [];
+        $current = new DateTime($startDate);
+        while ($current < $endDate) {
+            $dow = $weekDays ? $dow = $current->format('D') : '' ;
+            if ($dow != 'Sat' && $dow != 'Sun') {
+                $result[] = $current->format('Y-m-d');;
+            }
+            $current->modify("+ $skip days");
+        }
+        return $result;
+    }
+    
+    public static function GetCalendarMonth($year,$month,$pageDirection='')
+    {
+        $result = new \stdClass();
+        $startDate = new DateTime(sprintf('%d-%d-1', $year, $month));
+        $result->monthDate = clone $startDate;
+        $endDate = clone $startDate;
+        $endDate->modify('last day of this month');
+        if ($startDate->format('D') != 'Sun') {
+            $startDate->modify('last sun of last month');
+        }
+        if ($endDate->format('D') != 'Sat') {
+            $endDate->modify('first sat of next month');
+        }
+        $endDate->modify('+ 1 day');
+        if ($pageDirection =='left') {
+            $endDate->modify('-7 days');
+        }
+        else if ($pageDirection == 'right') {
+            $startDate->modify('+7 days');
+        }
+
+        $result->start = $startDate->format('Y-m-d');
+        $result->end = $endDate->format('Y-m-d');
+        return $result;
+    }
+
+    public static function DowListToArray($days) {
+        $count = strlen($days);
+        $result = [];
+        if ($count > 7) {
+            for ($i = 0; $i < $count; $i++) {
+                // since October 2017 started on sunday we can get day of week from format
+                $result[] = date('D', mktime(0, 0, 0, 10, $days{$i}, 2017));
+            }
+        }
+        return $result;
+    }
+
+    public static function GetDowName($n) {
+        return self::DowNames[$n-1];
+    }
+    public static function GetDowNumber($s) {
+        return array_search($s,self::DowNames) + 1;
+    }
+
+
+    public static function SetDowThisWeek(DateTime $date,$dow) {
+        if (!is_numeric($dow)) {
+            $dow = self::GetDowNumber($dow);
+        }
+        $currentDow = self::GetDowNumber($date->format('D'));
+        if ($currentDow !== $dow) {
+            $dif = $dow - $currentDow;
+            $adjustment = sprintf('%s %d days',$dif < 0 ? "-" : '+',abs($dif));
+            $date->modify($adjustment);
+        }
+    }
+
+    /**
+     * @param DateTime $date
+     * @param $dow
+     * @param string $format
+     * @return DateTime
+     */
+    public static function GetDowThisWeek(DateTime $date,$dow,$format='Y-m-d') {
+        $result = clone $date;
+        self::SetDowThisWeek($result,$dow);
+        return $result;
+    }
+
+    /**
+     * @param $date
+     * @return bool|DateTime
+     */
+    public static function CreateDateTime($date) {
+        $parts = explode('-',$date);
+        $date= sprintf("%d-%02d-%02d", $parts[0], $parts[1], $parts[2]);
+        $d = DateTime::createFromFormat('Y-m-d', $date);
+        if ($d->format('Y-m-d') === $date) {
+            return $d;
+        };
+        return false;
+    }
+
 }
