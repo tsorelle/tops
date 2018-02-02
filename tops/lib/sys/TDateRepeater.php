@@ -15,6 +15,21 @@ class TDateRepeater
 {
 
     /**
+     * Entry point for getRepeatingDates.  Used mostly for testing.
+     *
+     * @param $year
+     * @param $month
+     * @param $repeatSpec
+     * @param string $pageDirection
+     * @return array|bool
+     */
+    public function getDates($year, $month, $repeatSpec, $pageDirection = '')
+    {
+        $calendarPage = TCalendarPage::Create($year, $month, $pageDirection);
+        return $this->getRepeatingDates($calendarPage,$repeatSpec);
+    }
+
+    /**
      * @param $year
      * @param $month
      * @param $repeatSpec (see below)
@@ -57,10 +72,8 @@ class TDateRepeater
      *      Assumes that start date is within the repeating pattern.
      *      Use getRepeatDateRange to validate and correct the start day and to convert occurance count to an end date
      */
-    public function getDates($year, $month, $repeatSpec, $pageDirection = '')
+    public function getRepeatingDates(TCalendarPage $calendarPage, $repeatSpec)
     {
-        // $calendarPage = TDates::GetCalendarMonth($year, $month, $pageDirection);
-        $calendarPage = TCalendarPage::Create($year, $month, $pageDirection);
         @list($pattern, $range) = explode(';', $repeatSpec);
         if (empty($range)) {
             return false;
