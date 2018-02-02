@@ -21,6 +21,9 @@ class TDates
     const After = 1;
     const DowNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
+    const ConstrainEndOfMonth = 'end of month';
+    const ConstrainMonth = 'month';
+
     public static function reformatDateTime($timeString, $newFormat, $originalFormat = null)
     {
         $time = self::stringToTimestamp($timeString, $originalFormat);
@@ -325,12 +328,11 @@ class TDates
         return $result;
     }
 
-    public static function getDatesInRange($startDate,$endDate,$options=null) {
+    public static function getDatesInRange(DateTime $startDate,DateTime $endDate,$options=null) {
         $weekDays = !empty($options->weekDays);
         $skip = empty($options->skip) ? 1 : $options->skip;
-        $endDate=new DateTime($endDate);
         $result = [];
-        $current = new DateTime($startDate);
+        $current = clone $startDate;
         while ($current < $endDate) {
             $dow = $weekDays ? $dow = $current->format('D') : '' ;
             if ($dow != 'Sat' && $dow != 'Sun') {
@@ -345,7 +347,6 @@ class TDates
     {
         $result = new \stdClass();
         $startDate = new DateTime(sprintf('%d-%d-1', $year, $month));
-        $result->monthDate = clone $startDate;
         $endDate = clone $startDate;
         $endDate->modify('last day of this month');
         if ($startDate->format('D') != 'Sun') {
@@ -362,15 +363,15 @@ class TDates
             $startDate->modify('+7 days');
         }
 
-        $result->start = $startDate->format('Y-m-d');
-        $result->end = $endDate->format('Y-m-d');
+        $result->start = $startDate;
+        $result->end = $endDate;
         return $result;
     }
 
     public static function DowListToArray($days) {
         $count = strlen($days);
         $result = [];
-        if ($count > 7) {
+        if ($count < 8) {
             for ($i = 0; $i < $count; $i++) {
                 // since October 2017 started on sunday we can get day of week from format
                 $result[] = date('D', mktime(0, 0, 0, 10, $days{$i}, 2017));
@@ -380,12 +381,15 @@ class TDates
     }
 
     public static function GetDowName($n) {
+        if ($n > sizeof(self::DowNames)) {
+            return false;
+        }
         return self::DowNames[$n-1];
     }
+
     public static function GetDowNumber($s) {
         return array_search($s,self::DowNames) + 1;
     }
-
 
     public static function SetDowThisWeek(DateTime $date,$dow) {
         if (!is_numeric($dow)) {
@@ -412,17 +416,177 @@ class TDates
     }
 
     /**
-     * @param $date
+     *
+     *
+     * @param $date  - assumes format M-d-y
      * @return bool|DateTime
      */
-    public static function CreateDateTime($date) {
-        $parts = explode('-',$date);
-        $date= sprintf("%d-%02d-%02d", $parts[0], $parts[1], $parts[2]);
-        $d = DateTime::createFromFormat('Y-m-d', $date);
-        if ($d->format('Y-m-d') === $date) {
-            return $d;
-        };
+    public static function CreateDateTime($date,$constraint=self::ConstrainEndOfMonth)
+    {
+        $t = strtotime($date);
+        if ($t === false) {
+            return false;
+        }
+        $d = new DateTime(date('Y-m-d',$t));
+        if ($d !== false && $constraint != false) {
+            // check for false positive, Any valid number produces a 'true' result but might be wrong
+            $original = date_parse($date);
+            $result = self::checkDateConstraint($d,$original,$constraint);
+            if ($result === false) {
+                return false;
+            }
+        }
+        return $d;
+    }
+
+    public static function ToDateTime($date)
+    {
+        if (empty($date)) {
+            return null;
+        }
+        if (is_string($date)) {
+            return self::CreateDateTime($date,self::ConstrainMonth);
+        }
+        else if (is_object($date)) {
+            return $date;
+        }
         return false;
+    }
+
+    public static function GetLastDayOfMonth($year,$month) {
+        $year = ltrim($year,'0');
+        $month = ltrim($month,'0');
+        if (function_exists('cal_days_in_month')) {
+            return @cal_days_in_month(CAL_GREGORIAN, $month, $year);
+        }
+        $d = DateTime::createFromFormat('Y-m-d',"$year-$month-1");
+        if ($d === false) {
+            return false;
+        }
+        $d->modify("+ 1 month");
+        $d->modify("-1 day");
+        return $d->format('d');
+    }
+
+    public static function IncrementDate(DateTime $date,$i,$unit,$constraint=false) {
+        $test = sprintf('%s %d %s',
+            ($i < 0 ? '-' : '+'), abs($i), $unit);
+        return self::ModifyDate($date,sprintf('%s %d %s',
+            ($i < 0 ? '-' : '+'), abs($i), $unit),$constraint);
+    }
+
+    public static function SetSundayThisWeek(DateTime $date) {
+        if ($date->format('D') !== 'Sun') {
+            $date->modify('sunday last week');
+        }
+    }
+
+    public static function GetSundayThisWeek($date) {
+        $date = is_string($date) ?
+            new DateTime($date) :
+            clone $date;
+
+        if ($date->format('D') !== 'Sun') {
+            $date->modify('sunday last week');
+        }
+        return $date;
+    }
+
+    private static function checkDateConstraint(DateTime $date, $original, $constraint) {
+        if ($constraint !== false) {
+            $month = $original['month'];
+            if ($date->format('m') != $month) {
+                $day = $original['day'];
+                $year = $original['year'];
+                switch ($constraint) {
+                    case self::ConstrainMonth :
+                        $date->setDate($year, $month, $day);
+                        return false;
+                    case self::ConstrainEndOfMonth :
+                        $day = self::GetLastDayOfMonth($original['year'], $original['month']);
+                }
+                $date->setDate($year, $month, $day);
+            }
+        }
+        return $date->format('Y-m-d');
+    }
+
+    public static function ModifyDate(DateTime $date,$modification,$constraint=self::ConstrainMonth) {
+        if ($constraint) {
+            $original = date_parse($date->format('Y-m-d'));
+            $date->modify($modification);
+            return self::checkDateConstraint($date,$original,$constraint);
+        }
+        else {
+            $date->modify($modification);
+        }
+
+        return $date->format('Y-m-d');
+    }
+
+    public static function SetDayOfMonth(DateTime $date,$day,$constraint = self::ConstrainMonth) {
+        $original = date_parse($date->format('Y-m-d'));
+        $date->setDate($original['year'],$original['month'],$day);
+        if ($constraint) {
+            return self::checkDateConstraint($date,$original,$constraint);
+        }
+        return $date->format('Y-m-d');
+    }
+
+    public static function GetEndOfMonth(DateTime $date) {
+        $year = $date->format('Y');
+        $month = $date->format('m');
+        $lastday = self::GetLastDayOfMonth($year,$month);
+        return new DateTime("$year-$month-$lastday");
+    }
+
+    public static function SetLastOrdinalDayOfMonth(DateTime $date,$dow) {
+        $month = $date->format('m');
+        $dow = self::GetDowName($dow);
+        $date->modify("5 $dow");
+        if ($date->format('m') !== $month) {
+            $date->modify('-7 days');
+        }
+        return $date;
+    }
+
+    public static function SetFirstOfMonth(DateTime $date) {
+        $date->setDate($date->format('Y'),$date->format('m'),1);
+    }
+
+    public static function GetFirstOfMonth(DateTime $date) {
+        $date = clone $date;
+        $date->setDate($date->format('Y'),$date->format('m'),1);
+        return $date;
+    }
+
+    public static function GetModifiedDate(DateTime $date,$modification) {
+        $date = clone $date;
+        $date->modify($modification);
+        return $date;
+    }
+
+    public static function SetOrdinalDayOfMonth(DateTime $date, $order, $dow,$constraint = self::ConstrainMonth)
+    {
+        if (is_numeric($dow)) {
+            if ($order == 6) {
+                return self::SetLastOrdinalDayOfMonth($date,$dow);
+            }
+            if ($order < 1 || $order > 5) {
+                return false;
+            }
+            $dow = self::GetDowName($dow);
+            if ($dow === false) {
+                return false;
+            }
+        }
+        return self::ModifyDate($date, "$order $dow", $constraint);
+    }
+
+    public static function GetOrdinalDayOfMonth(DateTime $date, $order, $dow,$constraint = self::ConstrainMonth) {
+        $date = clone $date;
+        $result = self::SetOrdinalDayOfMonth($date,$order,$dow,$constraint);
+        return $result === false ? false : $date;
     }
 
 }

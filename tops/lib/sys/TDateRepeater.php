@@ -17,238 +17,497 @@ class TDateRepeater
     /**
      * @param $year
      * @param $month
-     * @param $repeatSpec
+     * @param $repeatSpec (see below)
+     * @param $pageDirection - 'right','left' or empty.  To ignore previously fetched dates on paging
      * @return array | bool
      *
      * $repeatSpec string format:
      *    Convention
-     *    	[pattern-string];[range-string (optional)
+     *        [pattern-string];[range-string (optional)
      *    Pattern
-     *    	conventions
-     *    		two char type+spec
-     *    		no separator for single char values
-     *    		comma separator for multi-char values
-     *    		in day spec 1=sunday..5=last
-     *    		if no ambiguity, no separator between series of single-char values
+     *        conventions
+     *            two char type+spec
+     *            no separator for single char values
+     *            comma separator for multi-char values
+     *            in day spec 1=sunday..5=last
+     *            if no ambiguity, no separator between series of single-char values
      *
-     *    	Daily
-     *    		every x days | every weekday
-     *    			dd30	   every thirty days
-     *    			dw			every weekday
-     *    	weekly
-     *    		every x weeks + set of weekdays
-     *    			wk3,34		every three weeks on tues and wednesday
+     *        Daily
+     *            every x days | every weekday
+     *                dd30       every thirty days
+     *                dw            every weekday
+     *        weekly
+     *            every x weeks + set of weekdays
+     *                wk3,34        every three weeks on tues and wednesday
      *
-     *    	monthly
-     *    		day x of y months | Ord day of every x months
-     *    			md23,2		day 23 of every one two months
-     *    			mo323		third tues every three months
-     *    	yearly
-     *    		every x years on date | every ord dayofweek in month
-     *    			yd2,2,32	Every 2 years on Feb 32
-     *    			yo4311		4th tues in November
+     *        monthly
+     *            day x of y months | Ord day of every x months
+     *                md2,23        every two months on 23 if day is greated than last day of month, last day is selected.
+     *                mo3,3,4        third wednesday every three months
+     *        yearly
+     *            every x years on date | every ord dayofweek in month
+     *                yd2,2,32    Every 2 years on Feb 32
+     *                yo2,4,3,11        4th tues in November
      *    Range
-     *    	start-date + no-end, after-x, by-date
+     *        start-date + no-end, after-x, by-date
      *
-     *    	[pattern-string]2017-09-2			        Start 2017-09-2, no end
-     *    	[pattern-string];2017-09-2,10		        Start 2017-09-2, end after 10 times
-     *    	[pattern-string];start 2017-09-2,2018-2-12	Start 2017-09-2, End by Feb 12, 2018-2-12
+     *        [pattern-string]2017-09-2                    Start 2017-09-2, no end
+     *        [pattern-string];start 2017-09-2,2018-2-12    Start 2017-09-2, End by Feb 12, 2018-2-12
+     *
+     *      Assumes that start date is within the repeating pattern.
+     *      Use getRepeatDateRange to validate and correct the start day and to convert occurance count to an end date
      */
-    public function getDates($year,$month,$repeatSpec,$pageDirection='') {
-        $calendarPage = TDates::GetCalendarMonth($year,$month,$pageDirection);
-
-        @list($pattern,$range) = explode(';',$repeatSpec);
+    public function getDates($year, $month, $repeatSpec, $pageDirection = '')
+    {
+        // $calendarPage = TDates::GetCalendarMonth($year, $month, $pageDirection);
+        $calendarPage = TCalendarPage::Create($year, $month, $pageDirection);
+        @list($pattern, $range) = explode(';', $repeatSpec);
         if (empty($range)) {
             return false;
         }
-        $patternType = substr($pattern,0,2);
-        $pattern = substr($pattern,2);
-        @list($startDate,$endDate) = explode(',',$range);
-        $startDate = date('Y-m-d',strtotime($startDate));
-        if ($startDate >= $calendarPage->end){
+        $patternType = substr($pattern, 0, 2);
+        $pattern = substr($pattern, 2);
+        @list($startDate, $endDate) = explode(',', $range);
+        $startDate = TDates::CreateDateTime($startDate);
+        if ($startDate === false) {
             return [];
         }
-
-        if (is_numeric($endDate)) {
-            $endDate = $this->calculateEndDate($startDate,$endDate, $pattern);
-        }
-
-        if (!empty($endDate)) {
-            if ($endDate <= $calendarPage->start ) {
-                return [];
-            }
-            if ($endDate <=  $calendarPage->end) {
-                $calendarPage->end = $endDate;
-            }
-        }
-
-        switch($patternType) {
+        switch ($patternType) {
             case 'dd' :
-                return $this->getDaysSinceStart($startDate,$calendarPage, $pattern);
+                return $this->getDaysSinceStart($startDate, $endDate, $calendarPage, $pattern);
                 break;
             case 'dw' :
-                return $this->getWeekDays($startDate,$calendarPage, $pattern);
+                return $this->getWeekDays($startDate, $endDate, $calendarPage); // , $pattern);
                 break;
             case 'wk' :
-                return $this->getWeekly($startDate, $calendarPage, $pattern);
+                return $this->getWeekly($startDate, $endDate, $calendarPage, $pattern);
                 break;
             case 'md' :
-                return $this->monthDates($month,$year,$startDate, $calendarPage, $pattern);
+                return $this->monthDates($startDate, $endDate, $calendarPage, $pattern);
                 break;
             case 'mo' :
-                return $this->getOrdinalDaysOfMonth($startDate,$calendarPage,$pattern);
+                return $this->getOrdinalDaysOfMonth($startDate, $endDate, $calendarPage, $pattern);
                 break;
             case 'yd' :
-                return $this->getDayOfYear($startDate,$calendarPage,$pattern);
+                return $this->getDayOfYear($startDate, $endDate, $calendarPage, $pattern);
                 break;
             case 'yo' :
-                return $this->getOrdinalDayOfYear($startDate,$calendarPage,$pattern);
+                return $this->getOrdinalDayOfYear($startDate, $endDate, $calendarPage, $pattern);
                 break;
             default:
                 return false;
         }
     }
 
-    private function getDaysSinceStart($startDate,$calendarPage, $pattern)
+    /**
+     * Validate and correct the start day and to convert occurance count to an end date
+     *
+     * @param $pattern   - see getDates()
+     * @param $startDate - date string
+     * @param null $end  - may be a date string or occurance count
+     * @return array  where [0] is start date and optionally [1] is the end date.  Empty array indicates an error
+     */
+    public function getRepeatDateRange($pattern, $startDate, $end = null)
     {
-        $rangeStart =  ($startDate >= $calendarPage->start) ? $startDate : $calendarPage->start;
+        $patternType = substr($pattern, 0, 2);
+        $pattern = substr($pattern, 2);
+        $startDate = TDates::CreateDateTime($startDate);
+        if ($startDate === false) {
+            return [];
+        }
+        $endDate = null;
+        $occurances = null;
+        if (!empty($end)) {
+            $endDate = null;
+            if (is_numeric($end)) {
+                $occurances = $end;
+            } else {
+                $endDate = TDates::CreateDateTime($end);
+            }
+        }
+        switch ($patternType) {
+            case 'dd' :
+                if ($occurances !== null) {
+                    $endDate = clone $startDate;
+                    $days = ($occurances * $pattern) - ($pattern - 1);
+                    $endDate->modify("+ $days days");
+                }
+                break;
+            case 'dw' :
+                /** @noinspection PhpWrongStringConcatenationInspection */
+                $dowOffset = ($startDate->format('w') + 1) % 7;
+                if ($dowOffset < 2) {
+                    // move saturday/sunday to first week day
+                    $startDate->modify(sprintf('+ %d days', 2 - $dowOffset));
+                }
+
+                if ($occurances !== null) {
+                    $endDate = clone $startDate;
+                    $weeks = floor($occurances / 5);
+                    $extra = ($occurances % 5);
+                    $increment = ($weeks * 7) + $extra;
+                    $endDate->modify("+ $increment days");
+                }
+                break;
+            case 'wk' :
+                @list($interval, $days) = explode(',', $pattern);
+                $count = strlen($days);
+                $startWeek = TDates::GetSundayThisWeek($startDate);
+                $startDay = null;
+                for ($i = 0; $i < $count; $i++) {
+                    $day = TDates::GetDowThisWeek($startWeek, $days{$i});
+                    if ($day >= $startDate) {
+                        $startDay = $days{$i};
+                        break;
+                    }
+                }
+                if ($startDay === null) {
+                    $startWeek->modify('+7 days');
+                    $startDay = $days{0};
+                }
+                TDates::SetDowThisWeek($startDate, $startDay);
+
+                if ($occurances !== null) {
+                    $endDate = $this->calculateWeeklyDowEndDate($startWeek, $startDay, $days, $occurances, $interval);
+                }
+
+                break;
+            case 'md' :
+                @list($interval, $day) = explode(',', $pattern);
+                $startDay = $startDate->format('d');
+                $startMonth = TDates::GetFirstOfMonth($startDate);
+                if ($startDay > $day) {
+                    $startMonth->modify('+1 month');
+                    $startDate = clone $startMonth;
+                    TDates::SetDayOfMonth($startDate, $day, TDates::ConstrainEndOfMonth);
+                }
+
+                if ($occurances !== null) {
+                    $endDate = clone $startDate;
+                    $months = ($interval * $occurances) - ($interval);
+                    $endDate->modify("+ $months months");
+                    $endDate->modify("+ 1 day");
+                }
+
+                break;
+            case 'mo' :
+                @list($interval, $ordinal, $dow) = explode(',', $pattern);
+                $startMonth = TDates::GetFirstOfMonth($startDate);
+                $startDay = TDates::GetOrdinalDayOfMonth($startDate, $ordinal, $dow, TDates::ConstrainEndOfMonth);
+                if ($startDay === false || $startDay < $startDate) {
+                    $startMonth->modify('+1 month');
+                    $startDate = TDates::GetOrdinalDayOfMonth($startMonth, $ordinal, $dow, TDates::ConstrainEndOfMonth);
+                }
+
+                if ($occurances !== null) {
+                    $endDate = TDates::GetFirstOfMonth($startDate);
+                    $months = ($interval * $occurances) - ($interval);
+                    $endDate->modify("+ $months months");
+                    TDates::SetOrdinalDayOfMonth($endDate,$ordinal,$dow);
+                    $endDate->modify("+ 1 day");
+                }
+
+                break;
+            case 'yd' :
+                @list($interval, $month, $day) = explode(',', $pattern);
+
+                $firstDate = TDates::CreateDateTime($startDate->format("Y-$month-$day"));
+                if ($firstDate < $startDate) {
+                    $startDate->modify('+1 year');
+                }
+
+                if ($occurances !== null) {
+                    $endDate = clone $startDate;
+                    $years = ($interval * ($occurances - 1));
+                    $endDate->modify("+ $years years");
+                    $endDate->modify("+ 1 day");
+                }
+
+                break;
+            case 'yo' :
+                @list($interval, $ordinal, $dow, $month) = explode(',', $pattern);
+
+                $firstDate = TDates::CreateDateTime($startDate->format("Y-$month-1"));
+                TDates::SetOrdinalDayOfMonth($firstDate, $ordinal, $dow, TDates::ConstrainEndOfMonth);
+                if ($firstDate < $startDate) {
+                    $startDate->modify('+1 year');
+                }
+
+                if ($occurances !== null) {
+                    $endDate = TDates::GetFirstOfMonth($startDate);
+                    // $years = ($occurances - 1);
+                    $years = ($interval * ($occurances - 1));
+                    $endDate->modify("+ $years years");
+                    TDates::SetOrdinalDayOfMonth($endDate,$ordinal,$dow);
+                    $endDate->modify("+ 1 day");
+                }
+
+                break;
+            default:
+                return [];
+        }
+
+        $result = [$startDate->format('Y-m-d')];
+        if (!empty($endDate)) {
+            $result[] = $endDate->format('Y-m-d');
+        }
+        return $result;
+    }
+
+    private function getDaysSinceStart(DateTime $startDate, $endDate, TCalendarPage $calendarPage, $pattern)
+    {
+        if (!$calendarPage->update($startDate, $endDate)) {
+            return [];
+        }
+
         $options = new \stdClass();
         if ($pattern > 1) {
             $options->skip = $pattern;
             if ($startDate < $calendarPage->start) {
-                $patternStartDate = new \DateTime($startDate);
-                $rangeStartDate = new DateTime($calendarPage->start);
-                $offset = ($patternStartDate->diff($rangeStartDate)->days % $pattern) - 1;
-                $rangeStartDate->modify("+ $offset days");
-                $rangeStart = $rangeStartDate->format('Y-m-d');
+                $offset = ($startDate->diff($calendarPage->start)->days % $pattern) - 1;
+                $calendarPage->start->modify("+ $offset days");
             }
         }
-        return TDates::getDatesInRange($rangeStart,$calendarPage->end,$options);
+        return TDates::getDatesInRange($calendarPage->start, $calendarPage->end, $options);
     }
 
-    private function getWeekDays($startDate,$calendarPage, $pattern)
+    private function getWeekDays(DateTime $startDate, $endDate, TCalendarPage $calendarPage) // , $pattern)
     {
-        $rangeStart =  ($startDate > $calendarPage->start) ? $startDate : $calendarPage->start;
+        if (!$calendarPage->update($startDate, $endDate)) {
+            return [];
+        }
+
         $options = new \stdClass();
         $options->weekDays = true;
-        return TDates::getDatesInRange($rangeStart,$calendarPage->end,$options);
+        return TDates::getDatesInRange($calendarPage->start, $calendarPage->end, $options);
     }
 
-    private function getWeekly($startDate,$calendarPage, $pattern)
+    public function calculateWeeklyDowEndDate(DateTime $startWeek, $startDow, $days, $occurances, $interval = 1)
+    {
+        $endDate = clone $startWeek;
+        $offset = strpos($days, strval($startDow));
+        $count = strlen($days);
+        $occurances += $offset;
+        $weeks = floor($occurances / $count);
+        $extra = $occurances % $count;
+        if ($extra == 0) {
+            $weeks -= 1;
+            $i = $days{$count - 1};
+            $day = TDates::GetDowName($i);
+        } else {
+            $i = $days{$extra - 1};
+            $day = TDates::GetDowName($i);
+        }
+        $weeks *= $interval;
+        $endDate->modify("+ $weeks weeks");
+        if ($day != 'Sun') {
+            $endDate->modify($day);
+        }
+        $endDate->modify('+1 day');
+        return $endDate;
+    }
+
+    private function getWeekly(DateTime $startDate, $endDate, TCalendarPage $calendarPage, $pattern)
     {
         @list($interval, $days) = explode(',', $pattern);
-        $result = [];
-        $startDate = new DateTime($startDate);
-        $currentWeek = new DateTime($calendarPage->start);
-        $endDate = new DateTime($calendarPage->end);
-        if ($interval > 1 && $startDate < $currentWeek) {
-            $firstDate = clone $startDate;
-            if ($firstDate->format('D') !== 'Sun') {
-                $firstDate->modify('sunday last week');
-            }
-            $weeks = $interval * 7;
-            $offset = ($firstDate->diff($currentWeek)->days % $weeks);
+        $count = strlen($days);
+        $startWeek = TDates::GetSundayThisWeek($startDate);
+
+        if (!$calendarPage->update($startDate, $endDate)) {
+            return [];
+        }
+
+        $currentWeek = TDates::GetSundayThisWeek($calendarPage->start);
+
+        if ($startWeek == $currentWeek) {
+            $calendarPage->start = $startDate;
+        } else if ($startWeek > $currentWeek) {
+            $currentWeek = $startWeek;
+        }
+
+        $intervalDays = $interval * 7;
+        if ($interval > 1 && $startWeek < $currentWeek) {
+            $offset = ($startWeek->diff($currentWeek)->days % ($intervalDays - 1));
             $currentWeek->modify("+ $offset days");
         }
-        if ($startDate > $currentWeek) {
-            $result[] = $startDate->format('Y-m-d');
-        }
-        $count = strlen($days);
-        $nextWeek = sprintf("+ %d days",$interval*7);
-        while ($currentWeek <= $endDate ) {
-            for ($i=1;$i<=$count;$i++) {
-                $dow = $days{$i-1};
+        $result = [];
+        while ($currentWeek <= $calendarPage->end) {
+            for ($i = 1; $i <= $count; $i++) {
+                $dow = $days{$i - 1};
                 $date = TDates::GetDowThisWeek($currentWeek, $dow);
-                if ($date >= $endDate) {
+                if ($date >= $calendarPage->end) {
                     return $result;
                 }
-                if ($date > $startDate) {
+                if ($date >= $calendarPage->start) {
                     $result[] = $date->format('Y-m-d');
                 }
             }
-            $currentWeek->modify($nextWeek);
+            $currentWeek->modify("+ $intervalDays days");
         }
 
         return $result;
 
     }
 
-    private function showThisMonth($monthDate,$interval,$startDate,$calendarStart) {
-        if ($monthDate < $calendarStart) {
+    private function getMonthRange(DateTime $startMonth, TCalendarPage $calendarPage, $interval)
+    {
+        $month = TDates::GetFirstOfMonth($calendarPage->start);
+        if ($startMonth > $month) {
+            $month = $startMonth;
+        }
+        $endMonth = TDates::GetModifiedDate($calendarPage->end, '-1 day');
+        TDates::SetFirstOfMonth($endMonth);
+        if ($startMonth >= $endMonth) {
             return false;
         }
-
         if ($interval > 1) {
-            $monthStart = clone $monthDate;
+            $offset = $startMonth->diff($month)->m % $interval;
+            if ($offset > 0) {
+                $offset = $interval - $offset;
+                $month->modify("+ $offset months");
+            }
+        }
 
-            if ($startDate->diff($calendarStart)->m % $interval !== 0) {
-                return false;
-            }
+        if ($month > $endMonth) {
+            return false;
         }
-        return true;
-    }
-    private function monthDates($month,$year,$startDate,$calendarPage,$pattern)
-    {
-        @list($day, $interval) = explode(',', $pattern);
-        $startDate = new DateTime($startDate);
-        $currentMonth = TDates::CreateDateTime(sprintf("%d-%d-%d",$year,$month,$day));
-        $monthDate = new DateTime(sprintf("%d-%d-01",$year,$month));
-        $monthDate->modify("-1 month");
-        $prevMonth = TDates::CreateDateTime(sprintf("%d-%d-%d",$monthDate->format('Y'),$monthDate->format('m'),$day));
-        $monthDate->modify("+2 month");
-        $nextMonth = TDates::CreateDateTime(sprintf("%d-%d-%d",$monthDate->format('Y'),$monthDate->format('m'),$day));
-        $calendarStart = new DateTime($calendarPage->start);
-        $calendarEnd = new DateTime($calendarPage->end);
-        $months = [];
-        if ($prevMonth !== false) {
-            $months[] = $prevMonth;
-        }
-        if ($currentMonth !== false) {
-            $months[] = $currentMonth;
-        }
-        if ($nextMonth !== false) {
-            $months[] = $nextMonth;
-        }
-        if (empty($months)) {
-            return [];
-        }
-        $result = [];
-        foreach ($months as $month) {
-            if ($month >= $startDate && $month >= $calendarStart && $month <= $calendarEnd) {
-                if ($interval > 1) {
-                    $monthStart = new DateTime($month->format("Y-m-1"));
-                    if ($startDate->diff($monthStart)->m % $interval !== 0) {
-                        continue;
-                    }
-                }
-                $result[] = $month->format('Y-m-d');
-            }
-        }
+        $result = new \stdClass();
+        $result->start = $month;
+        $result->end = $endMonth;
         return $result;
     }
 
-    private function getOrdinalDaysOfMonth($startDate,$calendarPage,$pattern)
+    private function monthDates(DateTime $startDate, $endDate, TCalendarPage $calendarPage, $pattern)
     {
-        // todo: getOrdinalDaysOfMonth
-        return [];
+        @list($interval, $day) = explode(',', $pattern);
+
+        if (!$calendarPage->update($startDate, $endDate)) {
+            return [];
+        }
+        $startMonth = TDates::GetFirstOfMonth($startDate);
+        $monthRange = $this->getMonthRange($startMonth, $calendarPage, $interval);
+        if ($monthRange === false) {
+            return [];
+        }
+        /**
+         * @var $month DateTime
+         */
+        $month = $monthRange->start;
+        $result = [];
+        while ($month <= $monthRange->end) {
+            $date = clone $month;
+            TDates::SetDayOfMonth($date, $day, TDates::ConstrainEndOfMonth);
+            if ($date >= $calendarPage->start && $date <= $calendarPage->end) {
+                $result[] = $date->format('Y-m-d');
+            }
+            $month->modify("+ $interval months");
+        }
+
+        return $result;
     }
 
-    private function getDayOfYear($startDate,$calendarPage,$pattern)
+    private function getOrdinalDaysOfMonth(DateTime $startDate, $endDate, TCalendarPage $calendarPage, $pattern)
     {
-        //todo: getDayOfYear
-        return [];
+        // Outlook, but not Google, supports  day, weekday, and weekend day. Probably not needed.  Consider later.
+        @list($interval, $ordinal, $dow) = explode(',', $pattern);
+
+        if (!$calendarPage->update($startDate, $endDate)) {
+            return [];
+        }
+
+        $startMonth = TDates::GetFirstOfMonth($startDate);
+        $monthRange = $this->getMonthRange($startMonth, $calendarPage, $interval);
+        if ($monthRange === false) {
+            return [];
+        }
+
+
+        $result = [];
+        /**
+         * @var $month DateTime
+         */
+        $month = $monthRange->start;
+        while ($month <= $monthRange->end) {
+            $date = clone $month;
+            $valid = true;
+            if ($ordinal == 6) {
+                TDates::SetLastOrdinalDayOfMonth($date, $dow);
+            } else {
+                $valid = TDates::SetOrdinalDayOfMonth($date, $ordinal, $dow);
+            }
+            if ($valid !== false && $date >= $calendarPage->start && $date <= $calendarPage->end) {
+                $result[] = $date->format('Y-m-d');
+            }
+            $month->modify("+ $interval months");
+        }
+
+        return $result;
     }
 
-    private function getOrdinalDayOfYear($startDate,$calendarPage,$pattern)
+    private function getDayOfYear(DateTime $startDate, $endDate, TCalendarPage $calendarPage, $pattern)
     {
-        // todo: getOrdinalDayOfYear
-        return [];
+        @list($interval, $month, $day) = explode(',', $pattern);
+        if (!$calendarPage->update($startDate, $endDate)) {
+            return [];
+        }
+
+        $startYear = $startDate->format('Y');
+        $thisMonth = TDates::GetFirstOfMonth($calendarPage->start); //  new DateTime($calStart->format('Y-m-1'));
+        $endMonth = TDates::GetFirstOfMonth($calendarPage->end); // new DateTime($endDate->format('Y-m-1'));
+        $dates = [];
+        while ($thisMonth <= $endMonth) {
+            $thisYear = $thisMonth->format('Y');
+            $currentMonth = $thisMonth->format('m');
+            if (($thisYear - $startYear) % $interval == 0 && $currentMonth == $month) {
+                $date = TDates::CreateDateTime(sprintf("%d-%d-%d", $thisYear, $currentMonth, $day), TDates::ConstrainMonth);
+                if ($date !== false && $date >= $calendarPage->start && $date <= $calendarPage->end) {
+                    $dates[] = $date->format('Y-m-d');
+                }
+            }
+            $thisMonth->modify("+1 month");
+        }
+        return $dates;
     }
 
-    private function calculateEndDate($startDate, $days, $pattern)
+    private function getOrdinalDayOfYear(DateTime $startDate, $endDate, TCalendarPage $calendarPage, $pattern)
     {
-        // todo: support calculated end date
-        return null;
+        @list($interval, $ordinal, $dow, $month) = explode(',', $pattern);
+
+        if (!$calendarPage->update($startDate, $endDate)) {
+            return [];
+        }
+
+        $startYear = $startDate->format('Y');
+        $thisMonth = TDates::GetFirstOfMonth($calendarPage->start); //  new DateTime($calStart->format('Y-m-1'));
+        $endMonth = TDates::GetFirstOfMonth($calendarPage->end); // new DateTime($endDate->format('Y-m-1'));
+        $dates = [];
+        while ($thisMonth <= $endMonth) {
+            $thisYear = $thisMonth->format('Y');
+            $currentMonth = $thisMonth->format('m');
+            if (($thisYear - $startYear) % $interval == 0 && $currentMonth == $month) {
+                $date = TDates::GetOrdinalDayOfMonth($thisMonth, $ordinal, $dow, TDates::ConstrainEndOfMonth);
+                if ($date !== false && $date >= $calendarPage->start && $date <= $calendarPage->end) {
+                    $dates[] = $date->format('Y-m-d');
+                }
+            }
+            $thisMonth->modify("+1 month");
+        }
+        return $dates;
+    }
+
+    /**
+    /**
+     * @param $pattern string
+     * @param $startDate string
+     * @param $endDate string | null | number
+     * @return string
+     */
+    public static function AppendPatternDates($pattern,$startDate,$endDate) {
+        $result = "$pattern;$startDate";
+        if (!empty($endDate)) {
+            $result .= ",$endDate";
+        }
+        return $result;
     }
 
 }

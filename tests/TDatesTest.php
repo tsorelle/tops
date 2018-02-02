@@ -373,7 +373,7 @@ class TDatesTest extends TestCase
         $expectedEnd = (new DateTime($end))->modify('- 1 day')->format('Y-m-d');
 
         $len = 14;
-        $actual = TDates::getDatesInRange($start,$end);
+        $actual = TDates::getDatesInRange(new DateTime($start),new DateTime($end));
         $this->assertNotEmpty($actual);
         $this->assertEquals($len,sizeof($actual));
         $this->assertEquals($expectedStart,$actual[0]);
@@ -383,7 +383,7 @@ class TDatesTest extends TestCase
         $options = new stdClass();
         $options->weekDays = true;
         $len = 10;
-        $actual = TDates::getDatesInRange($start,$end,$options);
+        $actual = TDates::getDatesInRange(new DateTime($start),new DateTime($end),$options);
         $this->assertNotEmpty($actual);
         $this->assertEquals($len,sizeof($actual));
         $this->assertEquals($expectedStart,$actual[0]);
@@ -392,7 +392,7 @@ class TDatesTest extends TestCase
         $options = new stdClass();
         $options->skip = 3;
         $len = 5;
-        $actual = TDates::getDatesInRange($start,$end,$options);
+        $actual = TDates::getDatesInRange(new DateTime($start),new DateTime($end),$options);
         $this->assertNotEmpty($actual);
         $this->assertEquals($len,sizeof($actual));
         $this->assertEquals($expectedStart,$actual[0]);
@@ -429,20 +429,20 @@ class TDatesTest extends TestCase
 
     public function testGetCalendarDates() {
         $actual = TDates::GetCalendarMonth(2018,1);
-        $expectedStart='2017-12-31';
-        $expectedEnd='2018-02-04';
+        $expectedStart=new DateTime('2017-12-31');
+        $expectedEnd=new DateTime('2018-02-04');
         $this->assertEquals($expectedStart,$actual->start,'start');
         $this->assertEquals($expectedEnd,$actual->end,'end');
 
         $actual = TDates::GetCalendarMonth(2018,2,'right');
-        $expectedStart='2018-02-04';
-        $expectedEnd='2018-03-04';
+        $expectedStart=new DateTime('2018-02-04');
+        $expectedEnd=new DateTime('2018-03-04');
         $this->assertEquals($expectedStart,$actual->start,'right-start');
         $this->assertEquals($expectedEnd,$actual->end,'right-end');
 
         $actual = TDates::GetCalendarMonth(2017,12,'left');
-        $expectedStart='2017-11-26';
-        $expectedEnd='2017-12-31';
+        $expectedStart=new DateTime('2017-11-26');
+        $expectedEnd=new DateTime('2017-12-31');
         $this->assertEquals($expectedStart,$actual->start,'left-start');
         $this->assertEquals($expectedEnd,$actual->end,'left-end');
 
@@ -539,16 +539,151 @@ class TDatesTest extends TestCase
     }
 
     public function testCreateDateTime() {
-        $expected = '2018-02-30';
-        $actual = TDates::CreateDateTime($expected);
+        $expected = '2018-02-28';
+        $test = '2018-02-30';
+        $actual = TDates::CreateDateTime($test);
+        $this->assertEquals($expected,$actual->format('Y-m-d'));
+
+        $expected = '2018-09-30';
+        $test = '2018-9-31';
+        $actual = TDates::CreateDateTime($test);
+        $this->assertEquals($expected,$actual->format('Y-m-d'));
+
+        $test = '2018-9-31';
+        $actual = TDates::CreateDateTime($test,TDates::ConstrainMonth); // don't fix invalid date
         $this->assertTrue($actual === false);
+
         $expected = '2018-02-27';
         $actual = TDates::CreateDateTime($expected);
         $this->assertEquals($expected,$actual->format('Y-m-d'));
 
         $expected = '2018-02-07';
-        $actual = TDates::CreateDateTime('2018-2-7');
+        $test = '2018-2-7';
+        $actual = TDates::CreateDateTime($test);
         $this->assertEquals($expected,$actual->format('Y-m-d'));
+
+        $test= '2018-13-07';
+        $actual = TDates::CreateDateTime($test);
+        $this->assertTrue($actual === false);
+
+        $test= 'invalid';
+        $actual = TDates::CreateDateTime($test);
+        $this->assertTrue($actual === false);
     }
+
+    public function testLastMonthDay() {
+        $year = 2018;
+        $month='02';
+        $expected = 28;
+        $actual = TDates::GetLastDayOfMonth($year,$month);
+        $this->assertEquals($expected,$actual);
+
+        $month='foo';
+        $expected = false;
+        $actual = TDates::GetLastDayOfMonth($year,$month);
+        $this->assertEquals($expected,$actual);
+
+        $month=9;
+        $expected = 30;
+        $actual = TDates::GetLastDayOfMonth($year,$month);
+        $this->assertEquals($expected,$actual);
+
+        $month=1;
+        $expected = 31;
+        $actual = TDates::GetLastDayOfMonth($year,$month);
+        $this->assertEquals($expected,$actual);
+
+    }
+
+    public function testModifyDate() {
+        $year = 2018;
+        $month= 1;
+        $day = 1;
+        $date = new DateTime("$year-$month-$day");
+        $test = clone $date;
+        $expected = '2018-01-10';
+        $result = TDates::ModifyDate($date,'2 Wed');
+        $this->assertTrue($result !== false);
+        $this->assertEquals($result,$expected);
+
+        $result = TDates::SetOrdinalDayOfMonth($test, 2, 4);
+        $this->assertTrue($result !== false);
+        $this->assertEquals($result,$expected);
+        $this->assertEquals($test,$date);
+
+        $month = 2;
+        $date = new DateTime("$year-$month-$day");
+        $test = clone $date;
+        $result = TDates::SetOrdinalDayOfMonth($test, 5, 4);
+        $this->assertTrue($result === false);
+        $this->assertEquals($test,$date);
+
+        $month= 1;
+        $day = 1;
+        $date = new DateTime("$year-$month-$day");
+        $expected = '2018-01-10';
+        $result = TDates::SetOrdinalDayOfMonth($date, 2, 'Wed');
+        $this->assertTrue($result !== false);
+        $this->assertEquals($expected,$result);
+
+
+    }
+
+    public function testIncrementDays() {
+        $year = 2018;
+        $month= 1;
+        $day = 1;
+        $date = new DateTime("$year-$month-$day");
+        $test = clone $date;
+        $expected = '2018-01-11';
+        $result = TDates::IncrementDate($date,10,'days',TDates::ConstrainMonth);
+        $this->assertTrue($result !== false);
+        $this->assertEquals($expected,$result);
+
+        $year = 2018;
+        $month= 1;
+        $day = 17;
+        $date = new DateTime("$year-$month-$day");
+        $test = clone $date;
+        $expected = '2018-01-11';
+        $result = TDates::IncrementDate($date,20,'days',TDates::ConstrainMonth);
+        $this->assertTrue($result === false);
+        $this->assertEquals($date,$test);
+    }
+
+    public function testSetDay() {
+        $year = 2018;
+        $month= 1;
+        $day = 1;
+        $date = new DateTime("$year-$month-$day");
+        $test = clone $date;
+        $expected = '2018-01-11';
+        $result = TDates::SetDayOfMonth($date,11);
+        $this->assertTrue($result !== false);
+        $this->assertEquals($expected,$result);
+        $this->assertEquals($expected, $date->format('Y-m-d'));
+
+        $year = 2018;
+        $month= 2;
+        $day = 17;
+        $date = new DateTime("$year-$month-$day");
+        $test = clone $date;
+        $result = TDates::SetDayOfMonth($date,31);
+        $this->assertTrue($result === false);
+        $this->assertEquals($date,$test);
+
+    }
+
+    public function testGetEndOfMonth() {
+        $year = 2018;
+        $month= 2;
+        $day = 17;
+        $test = new DateTime("$year-$month-$day");
+        $expected = new DateTime("$year-$month-28");
+        $actual = TDates::GetEndOfMonth($test);
+        $this->assertEquals($expected,$actual);
+
+    }
+
 
 }
