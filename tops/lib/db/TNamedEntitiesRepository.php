@@ -29,13 +29,18 @@ class TNamedEntitiesRepository extends TEntityRepository
         return parent::getEntity($value, $includeInactive, 'code');
     }
 
-    public function getListing($where='',$includeInactive=false,$clauses='') {
+    private $lookupInfoColumns = null;
+    public function setLookupInfoColumns(array $value) {
+        $this->lookupInfoColumns = $value;
+    }
 
+    public function getListing($where='',$includeInactive=false,$clauses='') {
+        $columns = empty($this->lookupInfoColumns) ? '' : ','.join(',',$this->lookupInfoColumns);
         $dbh = $this->getConnection();
         /** @noinspection SqlNoDataSourceInspection */
         $sql =
             $this->addSqlConditionals(
-                "SELECT id,`code`,`name`, IF(description IS NULL OR description='',`name`,description) AS description FROM ".
+                "SELECT id,`code`,`name`, IF(description IS NULL OR description='',`name`,description) AS description  $columns FROM ".
                     $this->getTableName(),
                     $includeInactive,
                     $where,$clauses);
