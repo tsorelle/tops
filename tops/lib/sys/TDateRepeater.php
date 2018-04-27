@@ -72,8 +72,13 @@ class TDateRepeater
      *      Assumes that start date is within the repeating pattern.
      *      Use getRepeatDateRange to validate and correct the start day and to convert occurance count to an end date
      */
-    public function getRepeatingDates(TCalendarPage $calendarPage, $repeatSpec)
+    public function getRepeatingDates(TCalendarPage $calendarPageIn, $repeatSpec)
     {
+        // Clone calendar page to avoid unintended modifications
+        $calendarPage = clone $calendarPageIn;
+        $calendarPage->start = clone $calendarPage->start;
+        $calendarPage->end = clone $calendarPage->end;
+
         @list($pattern, $range) = explode(';', $repeatSpec);
         if (empty($range)) {
             return false;
