@@ -60,7 +60,7 @@ class TDates
 
     public static function formatMySqlDate($dateString, $includeTime = false)
     {
-        if (empty($dateString)) {
+        if (empty(trim($dateString))) {
             return null;
         }
         $format = $includeTime ? self::MySqlDateTimeFormat : self::MySqlDateFormat;

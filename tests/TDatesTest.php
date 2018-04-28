@@ -238,6 +238,10 @@ class TDatesTest extends TestCase
     }
 
     public function testFormatMySqlDate() {
+        $dt = '       ';
+        $actual = TDates::formatMySqlDate($dt);
+        $this->assertTrue($actual===null);
+
         $dt = '';
         $actual = TDates::formatMySqlDate($dt);
         $this->assertTrue($actual===null);
