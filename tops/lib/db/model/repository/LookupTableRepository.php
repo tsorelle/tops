@@ -83,7 +83,7 @@ class LookupTableRepository extends TNamedEntitiesRepository
         return $this->cache;
     }
 
-    public function getLookupList($translate=true,$sort=self::sortByName,$where='',$includeInactive=false)
+    public function getLookupList($translate=true, $where='',$sort=self::sortByName,$includeInactive=false)
     {
         // todo: comment out for production optimization
         $this->getCache()->Flush();
