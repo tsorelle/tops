@@ -69,7 +69,6 @@ class EntityPropertyValuesRepository extends \Tops\db\TEntityRepository
     }
 
     public function addValue($instanceId, $propertyId, $value) {
-        // todo: test this
         $item = new EntityPropertyValue();
         $item->instanceId = $instanceId;
         $item->entityPropertyId = $propertyId;

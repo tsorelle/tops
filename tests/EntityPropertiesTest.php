@@ -85,4 +85,35 @@ class EntityPropertiesTest extends TestCase
         $properties->dropValues(1);
 
     }
+
+    public function testEntitySearch() {
+        $properties = new EntityProperties('test');
+
+        $properties->dropValues(1);
+        $values = [
+            'one' => 'one',
+            'two' => '2',
+            'three' => '3.3',
+            'four' => [
+                '0' => '31',
+                '1' => '32',
+            ],
+            'five' => 5
+        ];
+
+        $properties->setValues(1,$values);
+        $properties->setValues(3,$values);
+
+
+        $search = new \Tops\db\TEntitySearch('test','tops_testentities');
+        $search->addColumn('name');
+        $search->addFilters([
+            'one' => 'one',
+            'five' => 5
+        ]);
+
+        $actual = $search->execute();
+        $this->assertNotEmpty($actual);
+
+    }
 }
