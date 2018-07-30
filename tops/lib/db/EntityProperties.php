@@ -46,9 +46,11 @@ class EntityProperties
             $repository = new EntityPropertyDefinitionsRepository();
             $definitions = $repository->getDefinitions($this->entityCode);
             $this->definitions = [];
+            if ($definitions) {
             foreach ($definitions as $definition) {
                 $this->definitions[$definition->key] = $definition;
             }
+        }
         }
         return $this->definitions;
     }
