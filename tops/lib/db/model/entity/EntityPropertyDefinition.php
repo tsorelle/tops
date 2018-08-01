@@ -17,4 +17,6 @@ class EntityPropertyDefinition  extends \Tops\db\TAbstractEntity
     public $required;
     public $defaultValue;
     public $datatype;
+    public $label;
+    public $caption;
 }
