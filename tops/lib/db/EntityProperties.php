@@ -55,6 +55,16 @@ class EntityProperties
         return $this->definitions;
     }
 
+    private $lookupDefinitions = null;
+
+    public function getLookupDefinitions() {
+        if ($this->lookupDefinitions === null) {
+            $repository = new EntityPropertyDefinitionsRepository();
+            $this->lookupDefinitions = $repository->getLookupDefinitions($this->entityCode);
+        }
+        return $this->lookupDefinitions;
+    }
+
     public function getLookups() {
         if ($this->lookups === null) {
             $this->lookups = [];

@@ -19,6 +19,15 @@ class EntityPropertiesTest extends TestCase
         $this->assertNotNull($actual);
     }
 
+    public function testGetLookupDefinitions()
+    {
+        $properties = new EntityProperties('test');
+        $actual = $properties->getLookupDefinitions();
+        $this->assertNotNull($actual);
+    }
+
+
+
     public function testGetLookups()
     {
         $properties = new EntityProperties('test');
