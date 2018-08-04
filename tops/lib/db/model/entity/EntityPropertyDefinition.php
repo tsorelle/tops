@@ -7,7 +7,11 @@
 namespace Tops\db\model\entity;
 
 class EntityPropertyDefinition  extends \Tops\db\TAbstractEntity
-{ 
+{
+    const DataTypeKey = 'k';
+    const DataTypeString = 's';
+    const DataTypeNumber = 'n';
+
     public $id;
     public $entityCode;
     public $key;
@@ -18,5 +22,4 @@ class EntityPropertyDefinition  extends \Tops\db\TAbstractEntity
     public $defaultValue;
     public $datatype;
     public $label;
-    public $caption;
 }

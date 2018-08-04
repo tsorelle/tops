@@ -39,8 +39,7 @@ class EntityPropertyDefinitionsRepository extends \Tops\db\TEntityRepository
             'required'=>PDO::PARAM_STR,
             'defaultValue'=>PDO::PARAM_STR,
             'datatype'=>PDO::PARAM_STR,
-            'label'=>PDO::PARAM_STR,
-            'caption'=>PDO::PARAM_STR,
+            'label'=>PDO::PARAM_STR
             );
     }
 
@@ -53,16 +52,19 @@ class EntityPropertyDefinitionsRepository extends \Tops\db\TEntityRepository
         return $this->getEntityCollection('entityCode=? ORDER BY `order`',[$entityCode]);
     }
 
-    public function getEntityPropertyControls($entityCode,$id=0) {
+    public function getLookupDefinitions($entityCode) {
         $defs = $this->getDefinitions($entityCode);
         $result = [];
         foreach($defs as $def) {
-            $control = new \stdClass();
-            $control->key = $def->key;
-            $control->lookup = $def->lookup;
-            $control->label = TLanguage::text($def->label);
-            $control->caption = TLanguage::text($def->caption);
-            $result[]=$control;
+            if ($def->datatype == EntityPropertyDefinition::DataTypeKey) {
+                $item = new \stdClass();
+                $item->key = $def->key;
+                $item->lookup = $def->lookup;
+                $item->required = $def->required;
+                $item->label = TLanguage::text($def->label);
+                $item->defaultValue = $def->defaultValue;
+                $result[]=$item;
+            }
         }
         return $result;
 
