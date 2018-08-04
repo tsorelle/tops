@@ -61,7 +61,7 @@ class EntityPropertyDefinitionsRepository extends \Tops\db\TEntityRepository
                 $item->key = $def->key;
                 $item->lookup = $def->lookup;
                 $item->required = $def->required;
-                $item->label = TLanguage::text($def->label);
+                $item->label = ucfirst(TLanguage::text($def->label));
                 $item->defaultValue = $def->defaultValue;
                 $result[]=$item;
             }
