@@ -92,24 +92,24 @@ class TStringTokenizer
         else {
             $endQuote = substr($word, strlen($word) - 1) === "\"";
             $startQuote = substr($word, 0, 1) === "\"";
-        }
 
-        if ($endQuote) {
-            // trim trailing quote
-            $word = trim(substr($word, 0, strlen($word) - 1));
-        }
-        if ($startQuote) {
-            // trim leading quote
-            $word = trim(substr($word, 1));
-        }
-
-        if ($startQuote === true && $endQuote === true) {
-            if (!empty($phrase)) {
-                $this->addToWordList($results, $phrase);
+            if ($endQuote) {
+                // trim trailing quote
+                $word = trim(substr($word, 0, strlen($word) - 1));
             }
-            $this->addToWordList($results, $word);
-            $phrase = null;
-            return;
+            if ($startQuote) {
+                // trim leading quote
+                $word = trim(substr($word, 1));
+            }
+
+            if ($startQuote === true && $endQuote === true) {
+                if (!empty($phrase)) {
+                    $this->addToWordList($results, $phrase);
+                }
+                $this->addToWordList($results, $word);
+                $phrase = null;
+                return;
+            }
         }
 
         if ($endQuote) {
