@@ -112,8 +112,65 @@ class TPath
         return self::normalize("$path1/$path2",($mode === self::normalize_with_exception));
     }
 
+    public static function joinPath($path1,$path2) {
+        return self::combine($path1,$path2,self::dont_normalize);
+    }
+
     public static function fromFileRoot($path,$normalize=false) {
         $root = self::getFileRoot();
         return self::combine($root,$path,$normalize);
     }
+
+    public static function incrementFileName($baseDir,$fileName,$prefix='copy',$stampFirst=null)
+    {
+        if ($stampFirst == null) {
+            $stampFirst = $prefix !== 'copy';
+        }
+
+        if (substr($baseDir,-1) == '/') {
+            $baseDir = substr($baseDir,0,strlen($baseDir -1));
+        }
+        $filePath = self::joinPath($baseDir,$fileName);
+
+        if ((!$stampFirst) && (!file_exists($filePath))) {
+            return $fileName;
+        }
+        $name = pathinfo($fileName, PATHINFO_FILENAME);
+        $ext = pathinfo($fileName, PATHINFO_EXTENSION);
+
+        $parts = explode('-', $name);
+        $last = array_pop($parts);
+        if (is_numeric($last) && $last > 0 && $last == round($last, 0)) {
+            $last = array_pop($parts);
+        }
+        if ($last === $prefix) {
+            $name = implode('-', $parts);
+        }
+
+        $search = $baseDir . '/' . $name . '-' . $prefix . '-*.' . $ext;
+        $files = glob($search);
+        if (count($files) == 0) {
+            if ($stampFirst && file_exists($filePath)) {
+                return $name . '-' . $prefix . '-0002.' . $ext;
+            }
+            return $name . '-' . $prefix . '-0001.' . $ext;
+        }
+        sort($files);
+        $i = 0;
+        while (count($files)) {
+            $current = pathinfo(array_pop($files), PATHINFO_FILENAME);
+            $parts = explode('-', $current);
+            $last = array_pop($parts);
+            if ((is_numeric($last) && $last > 0 && $last == round($last, 0))) {
+                $i = intval($last);
+                break;
+            }
+        }
+
+        if ($i === 9999) {
+            return FALSE;
+        }
+        return $name . '-' . $prefix . '-' . sprintf('%04d', ++$i) . '.' . $ext;
+    }
+
 }
