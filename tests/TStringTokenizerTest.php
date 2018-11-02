@@ -41,5 +41,20 @@ class TStringTokenizerTest extends TestCase
         $this->assertTrue(is_array($actual));
         $expected = array('this test','phrases');
         $this->assertEquals($expected, $actual);
+
+        $testString = "Wilson Smyth-Twit & Bob's dog walked home";
+        $actual = TStringTokenizer::extractKeywords($testString);
+        $this->assertNotEmpty($actual,'No values return');
+        $this->assertTrue(is_array($actual));
+        $expected = array('wilson','smyth','twit','bob','s', 'dog', 'walked','home');
+        $this->assertEquals($expected, $actual);
+
+        $testString = "Wilson Smyth-Twit & Bob's dog walked home";
+        $actual = TStringTokenizer::extractKeywords($testString,2);
+        $this->assertNotEmpty($actual,'No values return');
+        $this->assertTrue(is_array($actual));
+        $expected = array('wilson','smyth','twit','bob','dog', 'walked','home');
+        $this->assertEquals($expected, $actual);
+
     }
 }

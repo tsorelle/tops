@@ -13,7 +13,7 @@ class TStringTokenizer
 {
     const defaultIgnoreWords = 'the,a,an,and,or,of,is,for,at,in';
     const ignoreWordsTranslationCode = 'tokenizer-ignored-words';
-    const defaultRemoveChars = '?,!,.,:,;';
+    const defaultRemoveChars = '?,!,.,:,;,-,&,_';
     const removeCharsTranslationCode = 'tokenizer-removed-chars';
     private $removeChars = array();
     private $ignoredWords = array();
@@ -32,6 +32,7 @@ class TStringTokenizer
         $this->allowDuplicates = false;
         if ($addComma) {
             $this->removeChars[] = ',';
+            $this->removeChars[] = "'";
         }
     }
 
@@ -69,8 +70,8 @@ class TStringTokenizer
         self::$instance = new TStringTokenizer($ignoreWords, $removeChars);
     }
 
-    public static function extractKeywords($string) {
-        return self::getInstance()->extractWords($string);
+    public static function extractKeywords($string,$minLength=0) {
+        return self::getInstance()->extractWords($string,$minLength);
     }
 
     private function addToWordList(array &$list,$word)
@@ -133,15 +134,19 @@ class TStringTokenizer
 
     }
 
-    function extractWords($string)
+    function extractWords($string,$minLength=0)
     {
         $string = trim(strtolower(str_replace($this->removeChars, " ", $string)));
         $results = array();
+        $delimiters = " \n\t";
         $phrase = null;
-        $tok = strtok($string, " \n\t");
+        $tok = strtok($string, $delimiters);
         while ($tok !== false) {
-            $this->processWord($tok,$results,$phrase);
-            $tok = strtok(" \n\t");
+            $tok = trim($tok);
+            if (strlen($tok) >= $minLength) {
+                $this->processWord($tok, $results, $phrase);
+            }
+            $tok = strtok($delimiters);
         }
         if (!empty($phrase)) {
             $this->addToWordList($results,$phrase);
