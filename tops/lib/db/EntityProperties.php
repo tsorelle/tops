@@ -86,6 +86,7 @@ class EntityProperties
         foreach ($definitions as $definition) {
             if ($definition->valueCount > 1) {
                 $result[$definition->key] = [];
+                $result[$definition->key] = [];
             }
             else {
                 $result[$definition->key] = $definition->defaultValue;

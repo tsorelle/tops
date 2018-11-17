@@ -173,4 +173,48 @@ class TPath
         return $name . '-' . $prefix . '-' . sprintf('%04d', ++$i) . '.' . $ext;
     }
 
+    /**
+     * @param $fileName
+     * @return string
+     *
+     * Enforces a naming standard where all word seperators are dashes and all characters are lowercase.
+     * Avoids visual confusion caused by spaces or underscores and case sensitivity conflicts on unix-like systems
+     *
+     */
+    public static function normalizeFileName($fileName)
+    {
+        $fileName = str_replace([' ', '_'], '-', strtolower(trim($fileName)));
+        while (true) {
+            $result = str_replace('--', '-', strtolower($fileName));
+            if ($fileName == $result) {
+                return $result;
+            }
+            $fileName = $result;
+        }
+        return $fileName;
+    }
+
+
+    /**
+     * @param $filePath
+     * @return string
+     *
+     * See normalizeFileName for naming rules and rationale
+     * Normalizes entire path, switches windows specific path seperators.
+     */
+    public static function normalizeFilePath($filePath)
+    {
+        $filePath = trim($filePath);
+        if (empty($filePath)) {
+            return '';
+        }
+        $result = [];
+        $filePath = str_replace('\\','/',$filePath);
+        $parts = explode('/', $filePath);
+        foreach ($parts as $part) {
+            $result[] = self::normalizeFileName($part);
+        }
+        return implode('/', $result);
+    }
+
 }

@@ -32,6 +32,22 @@ class TKeyValuePair
         return $result;
     }
 
+    public static function ExpandArray(array $a) {
+        $result = array();
+        foreach ($a as $key => $value) {
+            $result[] = self::Create($key,$value);
+        }
+        return $result;
+    }
+
+    public static function FlattenArray(array $kvArray) {
+        $result = array();
+        foreach ($kvArray as $kv) {
+            $result[$kv->Key] = $kv->Value;
+        }
+        return $result;
+    }
+
     public static function CreateArray(array $a, $encodeJson=false, $replacements = null) {
         $result = array();
         foreach ($a as $key => $value) {
