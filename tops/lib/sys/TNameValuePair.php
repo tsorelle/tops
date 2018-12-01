@@ -51,6 +51,15 @@ class TNameValuePair
         return $result;
     }
 
+    public static function Find(array $objects,$value) {
+        foreach ($objects as $item) {
+            if ($item->Value == $value) {
+                return $item;
+            }
+        }
+        return false;
+    }
+
     public function getName()
     {
         return $this->Name;

@@ -231,4 +231,31 @@ class TStrings
         return is_string($glue) ? implode($glue, $array) : $array;
     }
 
+    public static function getTeaser($text, $length = 100) {
+        if (strlen($text) <= $length) {
+            return $text;
+        }
+
+        $text = strip_tags($text);
+        $text = str_replace(["\n","\t"],' ',trim($text));
+        $cleaned = '';
+        while ($text != $cleaned) {
+            $cleaned = $text;
+            $text = str_replace('  ',' ',$text);
+        }
+
+        $words = explode(' ',$text);
+        $total = 0;
+        $result = [];
+        foreach ($words as $word) {
+            $total += (strlen($word) + 1);
+            $result[] = $word;
+            if ($total >= $length) {
+                break;
+            }
+        }
+        return implode(' ',$result).'...';
+    }
+
+
 }
