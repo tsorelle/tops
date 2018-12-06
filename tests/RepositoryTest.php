@@ -74,6 +74,13 @@ class RepositoryTest extends RepositoryTestFixture
         $actualCount = sizeof($actusl);
         $expectedCount = 3;
         $this->assertEquals($expectedCount,$actualCount);
+
+        $newCustomer = $repository->get($returnedId);
+        $this->assertNotEmpty($newCustomer);
+        $uidCreated = isset($newCustomer->uid);
+        $this->assertTrue($uidCreated,'Uid was not assigned or returned.');
+        $valid = \Tops\sys\TIdentifier::IsValid($newCustomer->uid);
+        $this->assertTrue($valid,"Uid '$customer->uid' is not valid");
     }
 
     public function testGetEntity() {
@@ -89,6 +96,7 @@ class RepositoryTest extends RepositoryTestFixture
         $expectedPostalcode = '02746';
         $expectedBuyer = '';
         $expectedActive = 1;
+        $expectedUid = '220325b3-46f3-48e3-9088-912f2bae38db';
 
         $customer = $repository->get($expectedId);
 
@@ -101,6 +109,10 @@ class RepositoryTest extends RepositoryTestFixture
         $this->assertEquals($expectedPostalcode, $customer->postalcode);
         $this->assertEquals($expectedBuyer, $customer->buyer);
         $this->assertEquals($expectedActive, $customer->active);
+        $this->assertEquals($expectedUid, $customer->uid);
+
+        $actualId = $repository->getIdForUid($expectedUid);
+        $this->assertEquals($expectedId,$actualId,'Wrong id for Uid');
 
     }
 
@@ -115,6 +127,8 @@ class RepositoryTest extends RepositoryTestFixture
         $expectedPostalcode = '98765';
         $expectedBuyer = 'bob';
         $expectedActive = 1;
+        $expectedUid = 'b7e5b226-b237-46ab-b6b5-6265d8a066d7';
+
 
         $repository = new \Bookstore\model\repository\CustomerRepository();
         $customer = $repository->get(1);
@@ -136,7 +150,9 @@ class RepositoryTest extends RepositoryTestFixture
         $this->assertEquals($expectedPostalcode, $customer->postalcode);
         $this->assertEquals($expectedBuyer, $customer->buyer);
         $this->assertEquals($expectedActive, $customer->active);
+        $this->assertEquals($expectedUid, $customer->uid);
     }
+
     public function testUpdateEntityFields() {
         $this->runSqlScript('new-customer-table');
         $expectedId = 1;
@@ -148,6 +164,8 @@ class RepositoryTest extends RepositoryTestFixture
         $expectedPostalcode = '98765';
         $expectedBuyer = 'bob';
         $expectedActive = 1;
+        $expectedUid = 'b7e5b226-b237-46ab-b6b5-6265d8a066d7';
+
 
         $repository = new \Bookstore\model\repository\CustomerRepository();
         $updateValues = array(
@@ -169,6 +187,7 @@ class RepositoryTest extends RepositoryTestFixture
         $this->assertEquals($expectedPostalcode, $customer->postalcode);
         $this->assertEquals($expectedBuyer, $customer->buyer);
         $this->assertEquals($expectedActive, $customer->active);
+        $this->assertEquals($expectedUid, $customer->uid);
 
     }
     public function testRemove() {

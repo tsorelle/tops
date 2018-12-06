@@ -10,6 +10,7 @@ namespace Tops\db;
 
 use \PDO;
 use PDOStatement;
+use Tops\sys\TIdentifier;
 
 abstract class TEntityRepository extends TPdoQueryManager implements IEntityRepository
 {
@@ -133,6 +134,9 @@ abstract class TEntityRepository extends TPdoQueryManager implements IEntityRepo
         $fieldDefinitions = $this->getFieldDefinitions();
         foreach ($fields as $name => $value) {
             switch ($name) {
+                case 'uid':
+                    // ignore
+                    break;
                 case 'createdon':
                     // ignore
                     break;
@@ -164,7 +168,7 @@ abstract class TEntityRepository extends TPdoQueryManager implements IEntityRepo
         $updateValues = array();
         $fieldNames =  array_keys($this->getFieldDefinitions());
         foreach ($dto as $name => $value) {
-            if ($name != 'id' && $name != 'createdby' && $name != 'createdon' && in_array($name,$fieldNames)) {
+            if ($name != 'id' && $name != 'uid' && $name != 'createdby' && $name != 'createdon' && in_array($name,$fieldNames)) {
                 $updateValues[$name] = $value;
             }
         }
@@ -202,6 +206,10 @@ abstract class TEntityRepository extends TPdoQueryManager implements IEntityRepo
             switch ($name) {
                 case 'id':
                     //ignore
+                    break;
+                case 'uid' :
+                    $uid = TIdentifier::NewId();
+                    $stmt->bindValue(":$name", $uid, PDO::PARAM_STR);
                     break;
                 case 'createdon':
                     $stmt->bindValue(":$name", $date, PDO::PARAM_STR);
@@ -286,5 +294,24 @@ abstract class TEntityRepository extends TPdoQueryManager implements IEntityRepo
             $fieldName = $this->getLookupField();
         }
         return $this->getSingleEntity("$fieldName = ?", [$value], $includeInactive);
+    }
+
+    public function getEntityByUid($value, $includeInactive = false)
+    {
+        $fieldDefinitions = $this->getFieldDefinitions();
+        if (array_key_exists('uid',$fieldDefinitions) && TIdentifier::IsValid($value)) {
+            return $this->getSingleEntity("uid = ?", [$value], $includeInactive);
+        }
+        return false;
+    }
+
+    public function getIdForUid($value)
+    {
+        $fieldDefinitions = $this->getFieldDefinitions();
+        if (array_key_exists('uid',$fieldDefinitions) && TIdentifier::IsValid($value)) {
+            $sql = 'SELECT id FROM '.$this->getTableName().' WHERE uid = ?';
+            return $this->getValue($sql, [$value]);
+        }
+        return false;
     }
 }

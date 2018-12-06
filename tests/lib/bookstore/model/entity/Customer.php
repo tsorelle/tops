@@ -19,4 +19,5 @@ class Customer  extends TimeStampedEntity
     public $postalcode;
     public $buyer;
     public $active;
+    public $uid;
 } 

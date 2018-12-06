@@ -45,6 +45,12 @@ abstract class TPdoQueryManager
         return $stmt;
     }
 
+    protected function getValue($sql, $params = array()) {
+        $stmt = $this->executeStatement($sql,$params);
+        $result = $stmt->fetch(PDO::FETCH_NUM);
+        return empty($result) ? false : $result[0];
+    }
+
     public function startTransaction()
     {
         $this->connection = TDatabase::getPersistentConnection($this->getDatabaseId());

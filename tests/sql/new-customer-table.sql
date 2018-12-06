@@ -32,14 +32,16 @@ CREATE TABLE `bookstore_customers` (
   `changedby` VARCHAR(50) DEFAULT NULL,
   `changedon` DATETIME DEFAULT NULL,
   `active` TINYINT(1) NOT NULL DEFAULT '1',
+  `uid` varchar(36) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MYISAM AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 
+CREATE UNIQUE INDEX unique_id_customer ON bookstore_customers(uid);
 /*Data for the table `bookstore_customers` */
 
-INSERT  INTO `bookstore_customers`(`id`,`customertypeid`,`name`,`address`,`city`,`state`,`postalcode`,`buyer`,`createdby`,`createdon`,`changedby`,`changedon`,`active`) VALUES
-  (1,2,'Kids Korner Bookstore','3001 Bee Caves Road','Austin','TX','78746','bob','admin','2017-05-06 06:42:26','admin','2017-05-06 06:42:26',1),
-  (2,1,'Kinder Kindles','9032 Main','Boston','MA','02746','','admin','2017-05-06 06:42:26','admin','2017-05-06 06:42:26',1);
+INSERT  INTO `bookstore_customers`(`id`,`customertypeid`,`name`,`address`,`city`,`state`,`postalcode`,`buyer`,`createdby`,`createdon`,`changedby`,`changedon`,`active`,uid) VALUES
+  (1,2,'Kids Korner Bookstore','3001 Bee Caves Road','Austin','TX','78746','bob','admin','2017-05-06 06:42:26','admin','2017-05-06 06:42:26',1,'b7e5b226-b237-46ab-b6b5-6265d8a066d7'),
+  (2,1,'Kinder Kindles','9032 Main','Boston','MA','02746','','admin','2017-05-06 06:42:26','admin','2017-05-06 06:42:26',1,'220325b3-46f3-48e3-9088-912f2bae38db');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

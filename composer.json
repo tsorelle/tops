@@ -20,6 +20,8 @@
   },
   "require": {
     "phpunit/phpunit": "6.5.0",
-    "ext-json": "*"
+    "ext-json": "*",
+    "ext-ctype": "*",
+    "ext-pdo": "*"
   }
 }
