@@ -307,9 +307,21 @@ abstract class TEntityRepository extends TPdoQueryManager implements IEntityRepo
 
     public function getIdForUid($value)
     {
+        if (TIdentifier::IsValid($value)) {
+            return $this->getIdForFieldValue('uid',$value);
+        }
+        return false;
+    }
+
+    public function getIdForCode($value)
+    {
+        return $this->getIdForFieldValue('code', $value);
+    }
+
+    public function getIdForFieldValue($fieldName,$value) {
         $fieldDefinitions = $this->getFieldDefinitions();
-        if (array_key_exists('uid',$fieldDefinitions) && TIdentifier::IsValid($value)) {
-            $sql = 'SELECT id FROM '.$this->getTableName().' WHERE uid = ?';
+        if (array_key_exists($fieldName,$fieldDefinitions)) {
+            $sql = 'SELECT id FROM '.$this->getTableName()." WHERE $fieldName = ?";
             return $this->getValue($sql, [$value]);
         }
         return false;

@@ -10,7 +10,7 @@ namespace Tops\db;
 
 
 use PDO;
-
+// note: currently not used. needs testing
 class TEntitySearch extends TPdoQueryManager
 {
     private $dbId = null;
@@ -91,7 +91,6 @@ class TEntitySearch extends TPdoQueryManager
 
 
     public function execute($responseClass = null) {
-        // todo: test entity search
         $parameters = [$this->entityCode];
         foreach ($this->filters as $key => $value) {
             $parameters[] = $key;
