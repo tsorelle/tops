@@ -69,7 +69,7 @@ CREATE TABLE `tops_permissions` (
 
 INSERT  INTO `tops_permissions`(`permissionName`,`description`,`active`) VALUES 
 ('administer-mailboxes','Administer mailboxes',1),
-('administer-peanut-features','Administer peanut features',1),
+('administer-peanut-features','Administer peanut features',1);
 
 
 CREATE TABLE `tops_process_log` (
