@@ -73,10 +73,11 @@ class TDbMailboxManager implements IMailboxManager {
      * @param $description
      * @return IMailbox
      */
-    public function addMailbox($code, $name, $address, $description='')
+    public function addMailbox($code, $name, $address, $description='',$public=1)
     {
         $user = TUser::getCurrent();
         $mailbox = $this->createMailbox($code, $name, $address, $description);
+        $mailbox->public = empty($public) ? 0 : 1;
         $this->repository->insert($mailbox,$user->getUserName());
     }
 

@@ -54,9 +54,10 @@ interface IMailboxManager {
      * @param $name
      * @param $address
      * @param $description
+     * @param $public
      * @return IMailbox
      */
-    public function addMailbox($code,$name,$address,$description);
+    public function addMailbox($code,$name,$address,$description,$public=1);
 
     /**
      * @param IMailbox $mailbox
