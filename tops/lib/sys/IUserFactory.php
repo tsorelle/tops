@@ -31,4 +31,6 @@ interface IUserFactory {
      */
     public function addAccount($username,$password,$email=null,$roles=[],$profile=[]);
 
+    public function getAccountPageUrl($username);
+
 }

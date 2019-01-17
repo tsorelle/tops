@@ -30,4 +30,8 @@ class TestUserFactory implements \Tops\sys\IUserFactory
     {
         return $this->createUser();
     }
+
+    public function getAccountPageUrl($username) {
+        return '';
+    }
 }

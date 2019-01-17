@@ -42,4 +42,9 @@ class TNullUserFactory implements IUserFactory {
     {
         return $this->createUser();
     }
+
+    public function getAccountPageUrl($username) {
+        return '';
+    }
+
 }
