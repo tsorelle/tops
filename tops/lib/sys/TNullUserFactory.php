@@ -9,6 +9,8 @@
 namespace Tops\sys;
 
 
+use Tops\services\IMessageContainer;
+
 /**
  * Class TNullUserFactory
  * @package Tops\sys
@@ -31,5 +33,13 @@ class TNullUserFactory implements IUserFactory {
             self::$instance = new TNullUser();
         }
         return self::$instance;
+    }
+
+    /**
+     * @return IUser
+     */
+    public function addAccount(IMessageContainer $client, $username,$password,$email=null,$roles=[],$profile=[])
+    {
+        return $this->createUser();
     }
 }

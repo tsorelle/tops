@@ -64,5 +64,6 @@ class TMessageContainer implements IMessageContainer
         $response = new \stdClass();
         $response->result = $this->result;
         $response->messages = $this->messages;
+        return $response;
     }
 }

@@ -10,6 +10,7 @@ namespace Tops\sys;
 
 
 
+use Tops\services\IMessageContainer;
 use Tops\sys\IUser;
 
 interface IUserFactory {
@@ -17,4 +18,10 @@ interface IUserFactory {
      * @return IUser
      */
     public function createUser();
+
+    /**
+     * @return IUser
+     */
+    public function addAccount(IMessageContainer $client, $username,$password,$email=null,$roles=[],$profile=[]);
+
 }

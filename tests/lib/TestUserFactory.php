@@ -9,6 +9,7 @@
 namespace TwoQuakers\testing;
 
 
+use Tops\services\IMessageContainer;
 use Tops\sys\IUser;
 
 class TestUserFactory implements \Tops\sys\IUserFactory
@@ -20,5 +21,13 @@ class TestUserFactory implements \Tops\sys\IUserFactory
     public function createUser()
     {
         return new TestUser();
+    }
+
+    /**
+     * @return IUser
+     */
+    public function addAccount(IMessageContainer $client, $username, $password,  $email=null, $roles=[],  $profile = [])
+    {
+        return $this->createUser();
     }
 }

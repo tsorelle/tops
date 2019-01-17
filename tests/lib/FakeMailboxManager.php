@@ -66,7 +66,7 @@ class FakeMailboxManager implements IMailboxManager
      * @param $description
      * @return IMailbox
      */
-    public function addMailbox($code, $name, $address, $description)
+    public function addMailbox($code, $name, $address, $description,$public=1)
     {
         $box = new TMailbox();
         $box->setMailboxId(sizeof($this->boxes) + 1);
@@ -74,6 +74,7 @@ class FakeMailboxManager implements IMailboxManager
         $box->setName($name);
         $box->setEmail($address);
         $box->setDescription($description);
+        $box->setPublic($public);
         $this->boxes[$code] = $box;
     }
 
