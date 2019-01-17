@@ -9,19 +9,26 @@
 namespace Tops\sys;
 
 
-
-use Tops\services\IMessageContainer;
-use Tops\sys\IUser;
-
 interface IUserFactory {
+    const duplicateUsernameError = 'account-error-duplicate-name';
+    const duplicateEmailError = 'account-error-duplicate-email';
+    const addAccountError = 'account-error-add-failed';
+    const addAccountParameterError = 'account-error-bad-args';
+
     /**
      * @return IUser
      */
     public function createUser();
 
     /**
-     * @return IUser
+     * @return /stdClass
+     *
+     *  Expected response members:
+     *     $response->user = null | TUser;
+     *     $response->errorCode = false | string;
+     *     $response->invalidRoles = []; // with names of invalid roles
+     *     $response->invalidProperties = []; // with names of invalid properties
      */
-    public function addAccount(IMessageContainer $client, $username,$password,$email=null,$roles=[],$profile=[]);
+    public function addAccount($username,$password,$email=null,$roles=[],$profile=[]);
 
 }

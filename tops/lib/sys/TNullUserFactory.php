@@ -38,7 +38,7 @@ class TNullUserFactory implements IUserFactory {
     /**
      * @return IUser
      */
-    public function addAccount(IMessageContainer $client, $username,$password,$email=null,$roles=[],$profile=[])
+    public function addAccount($username,$password,$email=null,$roles=[],$profile=[])
     {
         return $this->createUser();
     }
