@@ -102,4 +102,6 @@ interface IUser
      */
     public function signIn($username,$password=null);
 
+    public function getAccountPageUrl();
+
 }

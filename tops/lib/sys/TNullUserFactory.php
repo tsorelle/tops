@@ -36,15 +36,12 @@ class TNullUserFactory implements IUserFactory {
     }
 
     /**
-     * @return IUser
+     * @return TAddUserAccountResponse
      */
     public function addAccount($username,$password,$email=null,$roles=[],$profile=[])
     {
-        return $this->createUser();
+        return  new TAddUserAccountResponse(
+            $this->createUser()
+        );
     }
-
-    public function getAccountPageUrl($username) {
-        return '';
-    }
-
 }

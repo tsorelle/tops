@@ -84,7 +84,12 @@ class TUser {
         return $success;
     }
 
-
+    /**
+     * @return TAddUserAccountResponse
+     */
+    public static function  addAccount($username,$password,$email=null,$roles=[],$profile=[]) {
+        return self::getUserFactory()->addAccount($username,$password,$email,$roles,$profile);
+    }
 
     public static function getByUserName($userName) {
 

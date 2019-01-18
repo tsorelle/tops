@@ -9,8 +9,8 @@
 namespace TwoQuakers\testing;
 
 
-use Tops\services\IMessageContainer;
 use Tops\sys\IUser;
+use Tops\sys\TAddUserAccountResponse;
 
 class TestUserFactory implements \Tops\sys\IUserFactory
 {
@@ -24,14 +24,13 @@ class TestUserFactory implements \Tops\sys\IUserFactory
     }
 
     /**
-     * @return IUser
+     * @return TAddUserAccountResponse
      */
-    public function addAccount( $username, $password,  $email=null, $roles=[],  $profile = [])
+    public function addAccount($username,$password,$email=null,$roles=[],$profile=[])
     {
-        return $this->createUser();
+        return  new TAddUserAccountResponse(
+            $this->createUser()
+        );
     }
 
-    public function getAccountPageUrl($username) {
-        return '';
-    }
 }

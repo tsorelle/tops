@@ -21,16 +21,8 @@ interface IUserFactory {
     public function createUser();
 
     /**
-     * @return /stdClass
-     *
-     *  Expected response members:
-     *     $response->user = null | TUser;
-     *     $response->errorCode = false | string;
-     *     $response->invalidRoles = []; // with names of invalid roles
-     *     $response->invalidProperties = []; // with names of invalid properties
+     * @return TAddUserAccountResponse
      */
     public function addAccount($username,$password,$email=null,$roles=[],$profile=[]);
-
-    public function getAccountPageUrl($username);
 
 }

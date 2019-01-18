@@ -327,4 +327,12 @@ abstract class TAbstractUser implements IUser
         return TStrings::convertNameFormat($key,TStrings::dashedFormat);
     }
 
+    public function getAccountPageUrl()
+    {
+        // override in subclass
+        return '';
+    }
+
+
+
 }
