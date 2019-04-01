@@ -43,6 +43,16 @@ class TNameValuePair
         return $result;
     }
 
+    public static function FromArray(array $a,$startIndex=false) {
+        $result = array();
+        foreach ($a as $key => $name) {
+            $value = $startIndex === false ? $key : $key+$startIndex;
+            $result[$key] = self::Create($name,$value);
+        }
+        return $result;
+    }
+
+
     public static function ToArray(array $objects ) {
         $result = array();
         foreach ($objects as $kv) {
@@ -58,6 +68,20 @@ class TNameValuePair
             }
         }
         return false;
+    }
+
+    public static function FindDuplicates(array $objects) {
+        $names = [];
+        $duplicates = [];
+        foreach ($objects as $item) {
+            if (in_array($item->Name,$names)) {
+                $duplicates[] = $item;
+            }
+            else {
+                $names[] = $item->Name;
+            }
+        }
+        return $duplicates;
     }
 
     public function getName()

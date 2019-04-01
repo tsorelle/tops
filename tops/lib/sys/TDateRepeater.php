@@ -39,6 +39,10 @@ class TDateRepeater
      * $repeatSpec string format:
      *    Convention
      *        [pattern-string];[range-string (optional)
+     *    Values
+     *      Ordinal day-of-week in month = 1..6 = first, second, third, fourth, fifth, last = 6
+     *      Day of week = 1..6, Sunday = 1 ... Saturday = 6
+     *
      *    Pattern
      *        conventions
      *            two char type+spec
@@ -56,7 +60,7 @@ class TDateRepeater
      *                wk3,34        every three weeks on tues and wednesday
      *
      *        monthly
-     *            day x of y months | Ord day of every x months
+     *            day x of y months | Ord day-of-week of every x months  (Ord 6 = last)
      *                md2,23        every two months on 23 if day is greated than last day of month, last day is selected.
      *                mo3,3,4        third wednesday every three months
      *        yearly
@@ -209,19 +213,23 @@ class TDateRepeater
 
                 break;
             case 'mo' :
-                @list($interval, $ordinal, $dow) = explode(',', $pattern);
+                @list($interval, $ordinals, $dow) = explode(',', $pattern);
                 $startMonth = TDates::GetFirstOfMonth($startDate);
+                $ordinal = substr($ordinals,0,1);
+                $lastOrd = substr($ordinals,-1);
                 $startDay = TDates::GetOrdinalDayOfMonth($startDate, $ordinal, $dow, TDates::ConstrainEndOfMonth);
                 if ($startDay === false || $startDay < $startDate) {
                     $startMonth->modify('+1 month');
                     $startDate = TDates::GetOrdinalDayOfMonth($startMonth, $ordinal, $dow, TDates::ConstrainEndOfMonth);
                 }
-
                 if ($occurances !== null) {
                     $endDate = TDates::GetFirstOfMonth($startDate);
                     $months = ($interval * $occurances) - ($interval);
                     $endDate->modify("+ $months months");
-                    TDates::SetOrdinalDayOfMonth($endDate,$ordinal,$dow);
+                    TDates::SetOrdinalDayOfMonth($endDate,
+                        $lastOrd, // $ordinal,
+                        $dow);
+
                     $endDate->modify("+ 1 day");
                 }
 
@@ -369,13 +377,18 @@ class TDateRepeater
 
     private function getMonthRange(DateTime $startMonth, TCalendarPage $calendarPage, $interval)
     {
+        $result = new \stdClass();
         $month = TDates::GetFirstOfMonth($calendarPage->start);
         if ($startMonth > $month) {
             $month = $startMonth;
         }
+        if ($month == $startMonth) {
+            $result->start = $month;
+            $result->end = TDates::GetEndOfMonth($month);
+        }
         $endMonth = TDates::GetModifiedDate($calendarPage->end, '-1 day');
         TDates::SetFirstOfMonth($endMonth);
-        if ($startMonth >= $endMonth) {
+        if ($startMonth > $endMonth) {
             return false;
         }
         if ($interval > 1) {
@@ -389,7 +402,6 @@ class TDateRepeater
         if ($month > $endMonth) {
             return false;
         }
-        $result = new \stdClass();
         $result->start = $month;
         $result->end = $endMonth;
         return $result;
@@ -427,7 +439,7 @@ class TDateRepeater
     private function getOrdinalDaysOfMonth(DateTime $startDate, $endDate, TCalendarPage $calendarPage, $pattern)
     {
         // Outlook, but not Google, supports  day, weekday, and weekend day. Probably not needed.  Consider later.
-        @list($interval, $ordinal, $dow) = explode(',', $pattern);
+        @list($interval, $ordinals, $dow) = explode(',', $pattern);
 
         if (!$calendarPage->update($startDate, $endDate)) {
             return [];
@@ -446,16 +458,20 @@ class TDateRepeater
          */
         $month = $monthRange->start;
         while ($month <= $monthRange->end) {
-            $date = clone $month;
             $valid = true;
-            if ($ordinal == 6) {
-                TDates::SetLastOrdinalDayOfMonth($date, $dow);
-            } else {
-                $valid = TDates::SetOrdinalDayOfMonth($date, $ordinal, $dow);
-            }
-            if ($valid !== false && $date >= $calendarPage->start && $date <= $calendarPage->end) {
-                $result[] = $date->format('Y-m-d');
-            }
+            $len = strlen($ordinals);
+            for ($i = 0; $i < $len; $i++) {
+                $date = clone $month;
+                $ordinal = substr($ordinals, $i, 1);
+                if ($ordinal == 6) {
+                    TDates::SetLastOrdinalDayOfMonth($date, $dow);
+                } else {
+                    $valid = TDates::SetOrdinalDayOfMonth($date, $ordinal, $dow);
+                }
+                if ($valid !== false && $date >= $calendarPage->start && $date <= $calendarPage->end) {
+                    $result[] = $date->format('Y-m-d');
+                }
+            };
             $month->modify("+ $interval months");
         }
 

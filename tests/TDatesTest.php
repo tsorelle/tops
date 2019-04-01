@@ -11,6 +11,33 @@ use PHPUnit\Framework\TestCase;
 
 class TDatesTest extends TestCase
 {
+    /**
+     * @throws Exception
+     */
+    public function testMonthIncrementNext() {
+        $inDate = '2019-03-31';
+        $date = new \DateTime($inDate);
+        $expected = 4;
+        TDates::IncrementMonth($date,1);
+        $actual = $date->format('n');
+        $this->assertEquals($expected,
+            $actual,
+            "Input: $inDate");
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testMonthIncrementPrev() {
+        $inDate = '2019-04-30';
+        $date = new \DateTime($inDate);
+        $expected = '2019-02-28';
+        $actual = TDates::IncrementMonth($date,-2);
+        $this->assertEquals($expected,
+            $actual,
+            "Input: $inDate");
+    }
+
     public function testGetValidDate() {
         $date = '9/12/47';
         $expected = false;
@@ -689,5 +716,40 @@ class TDatesTest extends TestCase
 
     }
 
+    public function testFirstWeekday() {
+        $start = new \DateTime('2019-03-01');
+
+        TDates::IncrementToDOW($start,4);
+        $expected = '2019-03-06';
+        $actual = $start->format('Y-m-d');
+        $this->assertEquals($expected,$actual);
+
+        $start = new \DateTime('2019-03-01');
+        TDates::IncrementToDOW($start,4,2);
+        $expected = '2019-03-13';
+        $actual = $start->format('Y-m-d');
+        $this->assertEquals($expected,$actual);
+
+        $start = new \DateTime('2019-03-01');
+        TDates::IncrementToDOW($start,6,1);
+        $expected = '2019-03-01';
+        $actual = $start->format('Y-m-d');
+        $this->assertEquals($expected,$actual);
+
+        $start = new \DateTime('2019-03-01');
+        TDates::IncrementToDOW($start,1,1);
+        $expected = '2019-03-03';
+        $actual = $start->format('Y-m-d');
+        $this->assertEquals($expected,$actual);
+
+        $start = new \DateTime('2019-03-01');
+        TDates::IncrementToDOW($start,1,3);
+        $expected = '2019-03-17';
+        $actual = $start->format('Y-m-d');
+        $this->assertEquals($expected,$actual);
+
+
+
+    }
 
 }

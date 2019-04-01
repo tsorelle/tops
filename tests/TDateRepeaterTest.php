@@ -226,6 +226,65 @@ class TDateRepeaterTest extends TestCase
 
     }
 
+    public function testOrdinalDowMonthsMultiple()
+    {
+        $month = 3; $year = 2019;
+        $repeat = $this->getRepeatSpec('mo1,13,4;2019-03-01,2019-04-01');
+        $expected = ['2019-03-06','2019-03-20']; // no april overlap
+        $repeater = new TDateRepeater();
+        $actual = $repeater->getDates($year,$month,$repeat);
+        $this->assertEquals($expected,$actual);
+
+        $month = 3; $year = 2019;
+        $repeat = $this->getRepeatSpec('mo1,24,4;2019-03-01,2019-04-01');
+        $expected = ['2019-03-13','2019-03-27'];
+        $repeater = new TDateRepeater();
+        $actual = $repeater->getDates($year,$month,$repeat);
+        $this->assertEquals($expected,$actual);
+
+        $month = 2; $year = 2019;
+        $repeat = $this->getRepeatSpec('mo1,24,4;2019-02-01');
+        $expected = ['2019-02-13','2019-02-27'];
+        $repeater = new TDateRepeater();
+        $actual = $repeater->getDates($year,$month,$repeat);
+        $this->assertEquals($expected,$actual);
+
+        $month = 3; $year = 2019;
+        $repeat = $this->getRepeatSpec('mo1,24,4;2019-02-01');
+        $expected = ['2019-02-27','2019-03-13','2019-03-27']; // gets february calendar overlap
+        $repeater = new TDateRepeater();
+        $actual = $repeater->getDates($year,$month,$repeat);
+        $this->assertEquals($expected,$actual);
+
+        $month = 3; $year = 2019;
+        $repeat = $this->getRepeatSpec('mo1,24,4;2019-03-01');
+        $expected = ['2019-03-13','2019-03-27']; // no overlap
+        $repeater = new TDateRepeater();
+        $actual = $repeater->getDates($year,$month,$repeat);
+        $this->assertEquals($expected,$actual);
+
+        $month = 3; $year = 2019;
+        $repeat = $this->getRepeatSpec('mo1,13,4;2019-03-01');
+        $expected = ['2019-03-06','2019-03-20','2019-04-03']; // april overlap
+        $repeater = new TDateRepeater();
+        $actual = $repeater->getDates($year,$month,$repeat);
+        $this->assertEquals($expected,$actual);
+
+        $month = 2; $year = 2019;
+        $repeat = $this->getRepeatSpec('mo1,245,4;2019-02-01');
+        $expected = ['2019-02-13','2019-02-27'];
+        $repeater = new TDateRepeater();
+        $actual = $repeater->getDates($year,$month,$repeat);
+        $this->assertEquals($expected,$actual);
+
+        $month = 2; $year = 2019;
+        $repeat = $this->getRepeatSpec('mo1,134,4;2019-02-01');
+        $expected = ['2019-02-06','2019-02-20','2019-02-27'];
+        $repeater = new TDateRepeater();
+        $actual = $repeater->getDates($year,$month,$repeat);
+        $this->assertEquals($expected,$actual);
+    }
+
     public function testOrdinalDowMonths() {
         // mo(interval),(ordinal),(day of week)
 
@@ -621,6 +680,37 @@ class TDateRepeaterTest extends TestCase
 
     }
 
+    public function testCalculatedEndDatesMonthDowMultiple()
+    {
+        $ordinal = '2';
+        $dow = 3;
+        $occurances = 3;
+        $interval = 3;
+        $startDate = '2018-01-09';
+        $expected = '2018-07-11';
+
+        $pattern = 'mo'.$interval.",$ordinal,$dow";
+        $repeater = new TDateRepeater();
+        $actual = $repeater->getRepeatDateRange($pattern,$startDate,$occurances);
+        $this->assertEquals(2,sizeof($actual));
+        $actual = $actual[1];
+        $this->assertEquals($expected,$actual);
+
+
+        $ordinal = '23';
+        $dow = 3;
+        $occurances = 3;
+        $interval = 3;
+        $startDate = '2018-01-09';
+        $expected = '2018-07-18';
+        $pattern = 'mo'.$interval.",$ordinal,$dow";
+        $repeater = new TDateRepeater();
+        $actual = $repeater->getRepeatDateRange($pattern,$startDate,$occurances);
+        $this->assertEquals(2,sizeof($actual));
+        $actual = $actual[1];
+        $this->assertEquals($expected,$actual);
+    }
+
     public function testCalculatedEndDatesMonthDow()
     {
         $ordinal = 2;
@@ -648,6 +738,7 @@ class TDateRepeaterTest extends TestCase
         $this->assertEquals(2,sizeof($actual));
         $actual = $actual[1];
         $this->assertEquals($expected,$actual);
+
 
     }
 

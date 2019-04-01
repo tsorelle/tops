@@ -469,11 +469,50 @@ class TDates
         return $d->format('d');
     }
 
-    public static function IncrementDate(DateTime $date,$i,$unit,$constraint=false) {
-        $test = sprintf('%s %d %s',
-            ($i < 0 ? '-' : '+'), abs($i), $unit);
-        return self::ModifyDate($date,sprintf('%s %d %s',
-            ($i < 0 ? '-' : '+'), abs($i), $unit),$constraint);
+    /**
+     * @param DateTime $date
+     * @param $i
+     * @param bool $constraint
+     * @return bool|string
+     *
+     * In PHP a modfication by month treat a month unit as 31 days (go figure)
+     * This routine accounts for diferences in number of days in a month
+     */
+    public static function IncrementMonth(DateTime $date,$i,$constraint=false) {
+        $month = $date->format('n');
+        $day = $date->format('j');
+        $year = $date->format('Y');
+        $original = $date->format('Y-m-d');
+
+        $direction = $i>0 ? 'next' : 'last';
+        $steps = abs($i);
+        for ($i = 0; $i<$steps; $i++) {
+            $date->modify("first day of $direction month");
+        }
+        $month = $date->format('n');
+        $year = $date->format('Y');
+        $last = self::GetLastDayOfMonth($year,$month);
+        if ($day > $last) {
+            $day = $last;
+        }
+        $date->setDate($year,$month,$day);
+        $result = $date->format('Y-m-d');
+
+        if ($constraint) {
+            return self::checkDateConstraint($date,
+                date_parse($original),
+                $constraint);
+        }
+        return $result;
+    }
+
+    public static function IncrementDate(DateTime $date,$i,$unit,$constraint=false)
+    {
+        if (strtolower($unit) === 'month') {
+            return self::IncrementMonth($date,$i,$constraint);
+        }
+        $modification = sprintf('%s %d %s', ($i < 0 ? '-' : '+'), abs($i), $unit);
+        return self::ModifyDate($date, $modification);
     }
 
     public static function SetSundayThisWeek(DateTime $date) {
@@ -590,4 +629,15 @@ class TDates
         return $result === false ? false : $date;
     }
 
+    public static function IncrementToDOW(\DateTime $date, $dow = 1,$first=1) {
+        $d =  TDates::GetDowNumber($date->format('D'));
+        $offset =  $dow - $d;
+        if ($offset < 0) {
+            $offset += 7;
+        }
+        $offset += ($first -1) * 7;
+        if ($offset) {
+            TDates::IncrementDate($date,$offset,'days');
+        }
+    }
 }
