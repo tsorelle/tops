@@ -34,6 +34,34 @@ class TDates
         return date($newFormat, $time);
     }
 
+    public static function ValidDowName($name) {
+        return in_array(substr($name,0,3),self::DowNames);
+    }
+
+
+
+    public static function To24HourTime($time=null,$blanks = '00:00') {
+        if ($time===null) {
+            return date('H:i');
+        }
+        $time = trim($time);
+        if ($time === '') {
+            if ($blanks === true) {
+                return '';
+            }
+            if (strtolower($blanks) === 'now') {
+                return date('H:i');
+            }
+            return $blanks;
+        }
+        try {
+            return (new \DateTime($time))->format('H:i');
+        }
+        catch(\Exception $ex) {
+            return false;
+        }
+    }
+
     public static function stringToTimestamp($timeString, $originalFormat = null)
     {
         if (empty($originalFormat)) {
@@ -343,7 +371,7 @@ class TDates
         }
         return $result;
     }
-    
+
     public static function GetCalendarMonth($year,$month,$pageDirection='')
     {
         $result = new \stdClass();
@@ -438,6 +466,40 @@ class TDates
             }
         }
         return $d;
+    }
+
+    public static function CreateDateObject($date) {
+        return self::CreateDateTimeObject($date,true);
+    }
+
+    public static function CreateDateTimeObject($date,$stripTime = false)
+    {
+        try {
+            $t = strtotime($date);
+            if ($t === false) {
+                return false;
+            }
+            $format = $stripTime ? 'Y-m-d' :  DATE_ATOM;
+            $d = new \DateTime(date($format,$t));
+            return $d;
+        }
+        catch(Exception $ex) {
+            return false;
+        }
+    }
+
+    public static function ToShortDow($dow='today') {
+        $dow = trim($dow);
+        if (is_numeric($dow)) {
+            $result = @self::DowNames[$dow - 1];
+            return $result ?? false;
+        }
+        $dow = ucfirst(strtolower($dow));
+        if ($dow === 'Today') {
+            return date('D');
+        }
+        $dow = substr(ucfirst($dow),0,3);
+        return in_array($dow,self::DowNames) ? $dow : false;
     }
 
     public static function ToDateTime($date)
@@ -590,6 +652,25 @@ class TDates
         return $date;
     }
 
+    /**
+     * @param DateTime|null $date
+     * @return int
+     * @throws \Exception
+     */
+    public static function GetWeekNumber(DateTime $date = null) {
+        $date = $date ? clone($date) : new \DateTime();
+        $n = 0;
+        $m = $date->format('n');
+        while(true) {
+            $n++;
+            $date->modify('-1 week');
+            if ($date->format('n') != $m) {
+                break;
+            }
+        }
+        return $n;
+    }
+
     public static function SetFirstOfMonth(DateTime $date) {
         $date->setDate($date->format('Y'),$date->format('m'),1);
     }
@@ -640,4 +721,5 @@ class TDates
             TDates::IncrementDate($date,$offset,'days');
         }
     }
+
 }
