@@ -574,7 +574,7 @@ class TDates
             return self::IncrementMonth($date,$i,$constraint);
         }
         $modification = sprintf('%s %d %s', ($i < 0 ? '-' : '+'), abs($i), $unit);
-        return self::ModifyDate($date, $modification);
+        return self::ModifyDate($date, $modification,$constraint);
     }
 
     public static function SetSundayThisWeek(DateTime $date) {
