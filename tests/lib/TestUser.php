@@ -63,6 +63,7 @@ class TestUser extends TAbstractUser
             $this->id = 2;
             $this->roles = array('finance');
         }
+        return $this;
     }
 
     /**

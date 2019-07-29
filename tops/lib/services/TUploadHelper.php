@@ -50,7 +50,33 @@ class TUploadHelper
         return $fileNames;
     }
 
-    public static function upload(IMessageContainer $client, $destinationFolder, $normalize = true, $incrementDuplicates = true)
+    public static function openFile(IMessageContainer $client) {
+        global $_FILES;
+        $uploaded = array();
+        if (!$_FILES) {
+            return $uploaded;
+        }
+
+        $files = $_FILES;
+        $fileCount = ($files ? count($files) : 0);
+        if ($fileCount == 0) {
+            return false;
+        }
+        foreach ($files as $file) {
+            $tmpName = $file['tmp_name'];
+            $error = $file['error'];
+            if ($error > 0) {
+                // See http://www.php.net/manual/en/features.file-upload.errors.php
+                $client->addErrorMessage('document-error-upload-' . ($error > 8 ? '0' : $error));
+                // unlink($file['tmp_name']); not needed?
+                return false;
+            }
+            return file($tmpName);
+        }
+        return false;
+    }
+
+    public static function upload(IMessageContainer $client, $destinationFolder, $rename=null, $normalize = true, $incrementDuplicates = true)
     {
         global $_FILES;
         $uploaded = array();
@@ -94,10 +120,11 @@ class TUploadHelper
                 };
 
                 $tmpName = $file['tmp_name'];
-                $destination = $destinationFolder . '/' . $fileName;
+                $destinationFileName = empty($rename) ? $fileName : $rename;
+                $destination = $destinationFolder . '/' . $destinationFileName;
                 if ($incrementDuplicates) {
-                    $fileName = TPath::incrementFileName($destinationFolder,$fileName);
-                    $destination = $destinationFolder . '/' . $fileName;
+                    $destinationFileName = TPath::incrementFileName($destinationFolder,$destinationFileName);
+                    $destination = $destinationFolder . '/' . $destinationFileName;
                 }
                 else if (file_exists($destination)) {
                     unlink($destinationFolder . '/' .$fileName);

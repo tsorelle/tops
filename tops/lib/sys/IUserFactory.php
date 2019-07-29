@@ -10,19 +10,14 @@ namespace Tops\sys;
 
 
 interface IUserFactory {
-    const duplicateUsernameError = 'account-error-duplicate-name';
-    const duplicateEmailError = 'account-error-duplicate-email';
-    const addAccountError = 'account-error-add-failed';
-    const addAccountParameterError = 'account-error-bad-args';
-
     /**
      * @return IUser
      */
     public function createUser();
 
     /**
-     * @return TAddUserAccountResponse
+     * @return IUserAccountManager
      */
-    public function addAccount($username,$password,$email=null,$roles=[],$profile=[]);
+    public function createAccountManager();
 
 }

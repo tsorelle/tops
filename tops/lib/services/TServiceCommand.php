@@ -8,11 +8,14 @@
 
 namespace Tops\services;
 use Tops\sys\IUser;
+use Tops\sys\TL;
+use Tops\sys\TLanguage;
 use Tops\sys\TPermissionsManager;
 use Tops\sys\TSession;
 // use Tops\sys\IUser;
 //  use Tops\sys\TTracer;
 // use Tops\sys\TUser;
+use Tops\sys\TTracer;
 use Tops\sys\TUser;
 
 /**
@@ -50,6 +53,13 @@ abstract class TServiceCommand {
 
     public function addWarningMessage($text,$translated = false) {
         $this->context->AddWarningMessage($text,$translated);
+    }
+
+    public function setError($text) {
+        $this->context->setError();
+        $this->errorCount++;
+        $this->setReturnValue(TLanguage::text($text));
+        return;
     }
 
     public function setReturnValue($value) {
@@ -146,6 +156,7 @@ abstract class TServiceCommand {
             }
         }
 
+        $this->addErrorMessage($user->isAuthenticated() ? 'service-no-auth' : 'service-no-guest');
         return false;
     }
 
@@ -171,6 +182,9 @@ abstract class TServiceCommand {
 
     }
 
+    protected function requireAuthentication() {
+        $this->addAuthorizedRole(TPermissionsManager::authenticatedRole);
+    }
 
     /**
      * Check service request for insecure content, to prevent cross site scripting attacks.
@@ -201,23 +215,20 @@ abstract class TServiceCommand {
             }
         }
 
+        if (strpos($content,'<') !== false) {
+            $tags = $this->getUser()->isAdmin() ?
+                ['script','object'] :
+                ['script','object','form','style','iframe'];
 
-        if (strstr($content,'<')) {
-            // For content admins, disallow any html tags that might contain script injection.
-            // Disallow all tags for other users
-            $tags = ($this->getUser()->isAuthorized(TPermissionsManager::editContentPermissionsName)) ?
-                ['script', 'object','form'] :
-                ['script', 'object', 'img', 'a','button', 'p', 'span', 'div', 'form', 'section', 'input','ul','ol','select','text','style'];
+            $testtext = strtolower(str_replace([" ","\n","\t","\r","\\n","\\t","\\r"],'',$content));
             foreach ($tags as $tag) {
-                $pattern = '/(' . $tag . '|<*\s' . $tag . ')(>|\s)/i';
-                if (preg_match($pattern, $content)) {
+                if (strpos($testtext,'<'.$tag) !== false) {
                     return false;
                 }
             }
         }
         return true;
     }
-
 
     /**
      * @param $request
@@ -228,10 +239,9 @@ abstract class TServiceCommand {
         if (TSession::AuthenitcateSecurityToken($securityToken)) {
             if ($this->secureContent($request)) {
                 $this->request = $request;
-                if ($this->isAuthorized())
+                if ($this->isAuthorized()) {
                     $this->run();
-                else
-                    $this->addErrorMessage('service-no-auth');
+                }
             }
             else {
                 $this->addErrorMessage("service-insecure");
@@ -241,6 +251,11 @@ abstract class TServiceCommand {
             $this->addErrorMessage("session-expired");
         }
 
+        $response = $this->context->GetResponse();
+        if (TTracer::Enabled()) {
+            TTracer::Stop();
+            $response->TraceMessages = TTracer::GetMesssageAsString();
+        }
         return $this->context->GetResponse();
     }
 }

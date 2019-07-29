@@ -57,7 +57,8 @@ class MailboxesRepository extends TEntityRepository
             $where= " WHERE active = ? AND public = ?";
         }
 
-        $sql = "SELECT $fieldList FROM ".$this->getTableName().$where;
+        $sql = "SELECT $fieldList FROM ".$this->getTableName().$where.
+            ' ORDER BY displaytext';
 
         $stmt = $this->executeStatement($sql,$params);
         $stmt->setFetchMode(PDO::FETCH_OBJ);

@@ -71,6 +71,17 @@ class TKeyValuePair
         return $result;
     }
 
+    public static function GetValues(array $objects) {
+        $result = array();
+        if (!empty($objects)) {
+            foreach ($objects as $kv) {
+                $result[] = $kv->Value;
+            }
+        }
+        return $result;
+    }
+
+
     public static function CreateCookie(array $a,$cookieName) {
         $encoded = self::CreateArray($a,true,array('+' => '[plus]'));
         $cookie =  '['. join(',',$encoded).']';

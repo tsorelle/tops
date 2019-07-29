@@ -96,8 +96,10 @@ class TSession
             return true;
         }
 
+        // todo: resolve sporatic token issue in chrome for multiple vms
         // if tokens have value compare them
         return ($token === $currentToken);
+        // return true;
     }
 
 

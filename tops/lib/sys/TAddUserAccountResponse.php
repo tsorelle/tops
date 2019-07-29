@@ -11,12 +11,7 @@ namespace Tops\sys;
 
 class TAddUserAccountResponse
 {
-    public function __construct($user=null)
-    {
-        $this->user = $user;
-    }
-
-    public $user = null;
+    public $userId = null;
     public $errorCode = false;
     public $invalidRoles = [];
     public $invalidProperties = [];

@@ -196,4 +196,18 @@ class TNullUser implements IUser {
     {
         return true;
     }
+
+    /**
+     * @param $newPassword
+     * @return bool
+     */
+    public function setPassword($newPassword)
+    {
+        // TODO: Implement setPassword() method.
+    }
+
+    public function getAccountPageUrl()
+    {
+        // TODO: Implement getAccountPageUrl() method.
+    }
 }

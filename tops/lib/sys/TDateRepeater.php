@@ -222,6 +222,7 @@ class TDateRepeater
                     $startMonth->modify('+1 month');
                     $startDate = TDates::GetOrdinalDayOfMonth($startMonth, $ordinal, $dow, TDates::ConstrainEndOfMonth);
                 }
+
                 if ($occurances !== null) {
                     $endDate = TDates::GetFirstOfMonth($startDate);
                     $months = ($interval * $occurances) - ($interval);
@@ -463,14 +464,14 @@ class TDateRepeater
             for ($i = 0; $i < $len; $i++) {
                 $date = clone $month;
                 $ordinal = substr($ordinals, $i, 1);
-                if ($ordinal == 6) {
-                    TDates::SetLastOrdinalDayOfMonth($date, $dow);
-                } else {
-                    $valid = TDates::SetOrdinalDayOfMonth($date, $ordinal, $dow);
-                }
-                if ($valid !== false && $date >= $calendarPage->start && $date <= $calendarPage->end) {
-                    $result[] = $date->format('Y-m-d');
-                }
+            if ($ordinal == 6) {
+                TDates::SetLastOrdinalDayOfMonth($date, $dow);
+            } else {
+                $valid = TDates::SetOrdinalDayOfMonth($date, $ordinal, $dow);
+            }
+            if ($valid !== false && $date >= $calendarPage->start && $date <= $calendarPage->end) {
+                $result[] = $date->format('Y-m-d');
+            }
             };
             $month->modify("+ $interval months");
         }

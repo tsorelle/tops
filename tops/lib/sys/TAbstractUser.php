@@ -81,6 +81,15 @@ abstract class TAbstractUser implements IUser
         return $result;
     }
 
+    /**
+     * @param $newPassword
+     * @return bool
+     *
+     * Override in subclass
+     */
+    public function setPassword($newPassword) {
+        return false;
+    }
 
     /**
      * @param $id

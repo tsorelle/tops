@@ -9,7 +9,6 @@
 namespace Tops\db;
 
 use \PDO;
-use PHPUnit\Runner\Exception;
 use Tops\sys\TObjectContainer;
 use Tops\sys\TPath;
 use Tops\sys\TSession;

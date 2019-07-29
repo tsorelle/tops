@@ -263,7 +263,7 @@ class TModelBuilder
         }
     }
 
-    public static function Build($config=array()) {
+    public static function Build($config=array(),$toolsRoot) {
         $databaseKey =  @$config['settings']['databaseKey'];
         $srcRoot=@$config['settings']['sourcePath'];
         $appNamespace = @$config['settings']['namespace'];
@@ -277,11 +277,12 @@ class TModelBuilder
             $srcRoot = TPath::getFileRoot().$appSrc.'/';
         }
         else {
-
-            $srcRoot = TPath::normalize(TPath::getFileRoot().$srcRoot);
+            // $fileroot = TPath::getFileRoot();
+            $srcRoot = "$toolsRoot/$srcRoot";
             if (substr($srcRoot,-1) !== '/') {
                 $srcRoot .= '/';
             }
+            //$srcRoot = TPath::normalize($srcPath);
 
         }
         if (!file_exists($srcRoot)) {

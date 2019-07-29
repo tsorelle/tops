@@ -371,7 +371,7 @@ class TDates
         }
         return $result;
     }
-
+    
     public static function GetCalendarMonth($year,$month,$pageDirection='')
     {
         $result = new \stdClass();
@@ -593,6 +593,40 @@ class TDates
         }
         return $date;
     }
+
+    /**
+     * @param \DateTime|NULL $date
+     *
+     * @return \DateTime
+     * @throws \Exception
+     */
+    public static function GetNextSunday(DateTime $date = null) {
+        return self::GetNextDayOfWeek('sunday',$date);
+    }
+
+    /**
+     * @param string $dow
+     * @param \DateTime|NULL $date
+     *
+     * @return \DateTime
+     * @throws \Exception
+     */
+    public static function GetNextDayOfWeek($dow='saturday',DateTime $date = null) {
+        if ($date === null) {
+            $date = new \DateTime();
+        }
+        else {
+            $date = is_string($date) ?
+                new DateTime($date) :
+                clone $date;
+        }
+
+        if ($date->format('D') !== substr(ucfirst($dow),0,3)) {
+            $date->modify('next '.$dow);
+        }
+        return $date;
+    }
+
 
     private static function checkDateConstraint(DateTime $date, $original, $constraint) {
         if ($constraint !== false) {

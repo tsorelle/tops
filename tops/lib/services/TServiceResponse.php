@@ -33,5 +33,7 @@ class TServiceResponse {
      * @var mixed
      */
     public $Value;
+
+    public $TraceMessages;
 }
 

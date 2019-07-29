@@ -14,6 +14,7 @@ use Tops\db\model\entity\ProcessLogEntry;
 use Tops\db\model\repository\ProcessesRepository;
 use Tops\db\model\repository\ProcessLogRepository;
 use Tops\sys\TDates;
+use Tops\sys\TWebSite;
 
 class TProcessManager
 {
@@ -134,6 +135,7 @@ class TProcessManager
             $process->paused = null;
             self::getProcessRepository()->update($process);
         }
+        $this->notificationCount = 0;
         return true;
     }
 
@@ -148,6 +150,39 @@ class TProcessManager
         );
 
         self::getlogRepository()->insert($entry);
+    }
+
+    private $notificationCount = 0;
+
+    /**
+     * @param \Exception $ex
+     * @param null $message
+     * @param bool $rethrow
+     * @throws \Exception
+     */
+    public function handleException(\Exception $ex, $message=null, $rethrow = true)
+    {
+        $message = $message ?? $ex->getMessage();
+        $processName = '(unknown)';
+        $when = date('Y-m-d H:i:s');
+        $timestamp = date('H:i:s:v');
+        $detail = 'Error code: '.$ex->getCode().', '.$ex->getFile().' ('.$ex->getLine().")\n".
+            $ex->getTraceAsString();
+        try {
+            $recipient =  'webadmin@'.TWebSite::GetDomain();
+            $processName = $this->getProcess()->name;
+            $this->log('failed',$message,MessageType::Error,$detail);
+        } catch (\Exception $ex) {
+            // ignore exceptions here
+        }
+        if (isset($recipient) && $this->notificationCount++ < 10) {
+            $subject = "Process error in $processName at $timestamp";
+            $body = "Error occurred at: $when\n$message\n\n$detail";
+            mail($recipient,$subject,$body);
+        }
+        if ($rethrow) {
+            throw $ex;
+        }
     }
 
     public function logError($event,$message='',$detail=null) {

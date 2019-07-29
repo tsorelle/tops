@@ -67,6 +67,11 @@ class TServiceContext implements IMessageContainer {
             $this->response->Result = ResultType::Errors;
     }
 
+    public function SetError() {
+        $this->response->Result = ResultType::Errors;
+    }
+
+
     public function GetResult() {
         return $this->response->Result;
     }
@@ -91,4 +96,5 @@ class TServiceContext implements IMessageContainer {
     public function SetReturnValue($value) {
         $this->response->Value = $value;
     }
-} 
+
+}

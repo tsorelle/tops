@@ -22,6 +22,7 @@ class TNullMailer implements IMailer {
     public function send(TEMailMessage $message)
     {
         // ignore
+        return true;
     }
 
     public function setSendEnabled($value)

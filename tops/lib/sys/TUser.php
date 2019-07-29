@@ -39,6 +39,8 @@ class TUser {
     const profileKeyShortName ='short-name';
     const profileKeyDisplayName ='display-name';
     const profileKeyEmail     ='email';
+    const profileKeyTimezone     ='timezone';
+    const profileKeyUserName   ='username';
     const profileKeyLanguage  ='language';
 
 
@@ -56,6 +58,11 @@ class TUser {
             self::$currentUser->loadCurrentUser();
         }
         return self::$currentUser;
+    }
+
+    public static function resetCurrentUser() {
+        self::$currentUser = self::Create();
+        self::$currentUser->loadCurrentUser();
     }
 
     /**T
@@ -77,37 +84,53 @@ class TUser {
     public static function SignIn($username, $password=null) {
         $user = self::Create();
         $success = $user->signIn($username,$password);
-        if ($success) {
-            $user->loadCurrentUser();
-            self::$currentUser = $user;
-        }
+
+//        if ($success) {
+//            TUser::resetCurrentUser();
+//        }
         return $success;
     }
 
     /**
      * @return TAddUserAccountResponse
      */
-    public static function  addAccount($username,$password,$email=null,$roles=[],$profile=[]) {
-        return self::getUserFactory()->addAccount($username,$password,$email,$roles,$profile);
+    public static function  addAccount($username,$password,$email=null,$roles=[],$profile=[],$requireAdmin=true) {
+        if ($requireAdmin && !self::getCurrent()->isAdmin()) {
+            $response = new TAddUserAccountResponse();
+            $response->errorCode = IUserAccountManager::notAuthorizedError;
+        }
+        $username = trim(@$username);
+        $password = trim(@$password);
+        $email = $email === null ? null : trim(@$email);
+        return self::getUserFactory()->
+            createAccountManager()->
+            addAccount($username,$password,$email,$roles,$profile);
     }
 
-    public static function getByUserName($userName) {
+    public static function getByUserName($userName)
+    {
 
         $result = self::Create();
-        $result->loadByUserName($userName);
-        return $result;
+        if ($result->loadByUserName($userName)) {
+            return $result;
+        }
+        return false;
     }
 
     public static function getById($uid) {
         $result = self::Create();
-        $result->loadById($uid);
-        return $result;
+        if ($result->loadById($uid)) {
+            return $result;
+        }
+        return false;
     }
 
     public static function getByEmail($email) {
         $result = self::Create();
-        $result->loadByEmail($email);
-        return $result;
+        if ($result->loadByEmail($email)) {
+            return $result;
+        }
+        return false;
     }
 
     private static $userFactory;

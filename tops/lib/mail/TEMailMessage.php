@@ -8,6 +8,9 @@
 
 namespace Tops\mail;
 // use Egulias\EmailValidator\EmailValidator;
+use Tops\sys\TLanguage;
+use Zend\I18n\Validator\DateTime;
+use Zend\Validator\Date;
 
 /**
  * Class TEMailMessage
@@ -18,11 +21,11 @@ class TEMailMessage {
     /**
      * @var string
      */
-    private $messageBody;
+    private $htmlContent = null;
     /**
      * @var string
      */
-    private $alternateBodyText;
+    private $textContent = null;
     /**
      * @var TEmailAddress[]
      */
@@ -76,6 +79,17 @@ class TEMailMessage {
 
     private $timeStamp;
 
+    private $options=array();
+
+    private $tags=array();
+
+    /**
+     * @var \DateTime
+     */
+    private $deliverytime;
+
+    private $headers = [];
+
     /**
      *
      */
@@ -88,6 +102,175 @@ class TEMailMessage {
         $this->validationErrors = array();
         $this->validationWarnings = array();
     }
+
+    /**** Content **********************/
+    /**
+     * @return int|string
+     */
+    public function getContentType() {
+        $hasHtml = !empty($this->htmlContent);
+        $hasText = !empty($this->textContent);
+        $hasAttachments = !empty($this->attachments);
+        if ($hasAttachments || ($hasHtml && $hasText)) {
+            return TContentType::MultiPart;
+        }
+        if ($hasHtml) {
+            return TContentType::Html;
+        }
+        if ($hasText) {
+            return TContentType::Text;
+        }
+        return null;
+    }
+
+
+    /**
+     * @return TEmailSendProperties
+     */
+    public function getSendProperties() {
+        // $result = new \stdClass();
+        $result = new TEmailSendProperties();
+        $result->contentType = $this->getContentType();
+        if (empty($result->contentType)) {
+            $this->validationErrors[] = TLanguage::text('email-message-content-error');
+            return false;
+        }
+
+        $result->to = $this->getRecipientsAsString();
+        $result->from = $this->getFromAddressAsString();
+        $result->text = $this->textContent;
+        $result->html = $this->htmlContent;
+        $result->attachments = $this->attachments;
+        $result->subject = $this->getSubject();
+
+        if ($result->to && $result->from && $result->subject) {
+            return $result;
+        }
+        $this->validationErrors[] = TLanguage::text('email-message-incomplete');
+        return false;
+    }
+
+    /**
+     * @param $string
+     * @return bool
+     */
+    private function containsScriptTags($string) {
+        $badTags = array('</script>','</object>','</applet>');
+        $string = preg_replace('/\s+/', '', $string);
+        foreach($badTags as $tag) {
+            if (stripos($string, $tag)) {
+                return true;
+            };
+        }
+        return false;
+    }
+
+    private function getPlainText($value) {
+        $value = strip_tags($value);
+        $value = str_replace ("\r\n", "\n", $value);
+        return stripslashes($value);
+    }
+
+    private function setHtmlContent($value,$textPart=null) {
+        $suspicious = $this->containsScriptTags($value);
+        if ($suspicious) {
+            $textPart = $value;
+            $this->htmlContent = null;
+        }
+        else {
+            $this->htmlContent = $value;
+        }
+        if ($textPart) {
+            $this->textContent = $this->getPlainText($textPart);
+        }
+
+        return !$suspicious;
+    }
+
+    /**
+     * @param $content
+     * @param string $contentType  -  'html' | 'text' | or text content part
+     * @param string $textPart  -  for backward compatibility, specify text part if $contentType == TContentType::Multipart.
+     *      Prefer use of $contentType parameter to pass multi-part text.
+     */
+    public function setMessageBody($content, $contentTypeOrTextPart='html',$textPart = null)
+    {
+        switch($contentTypeOrTextPart) {
+            case TContentType::Html :
+                $htmlPart = $content;
+                break;
+            case TContentType::Text :
+                $htmlPart = null;
+                $textPart = $content;
+                break;
+            case TContentType::MultiPart :
+                $htmlPart = $content;
+                if (!$textPart) {
+                    $textPart = $content;
+                }
+                break;
+            default:
+                $htmlPart = $content;
+                $textPart = $contentTypeOrTextPart;
+                break;
+        }
+        if ($htmlPart) {
+            $this->setHtmlContent($htmlPart,$textPart);
+        }
+        else {
+            $this->htmlContent = null;
+        }
+        if ($textPart) {
+            $this->textContent = $this->getPlainText($content);
+        }
+        else {
+            $this->textContent = null;
+        }
+    }  //  setMessageBody
+
+    /**
+     * @deprecated, use setMessageBody
+     * @param $content
+     * @param bool | string $setTextPart
+     */
+    public function setHtmlMessageBody($content, $setTextPart = false)
+    {
+        if ($setTextPart) {
+            $this->setMessageBody($content,TContentType::MultiPart);
+        }
+       $this->setMessageBody($content,TContentType::Html);
+    }
+
+    /**
+     * @deprecated use setMessageBody
+     * @param $text
+     */
+    public function setAlternateBodyText($text)
+    {
+        $this->textContent = $this->getPlainText($text);
+    }  //  setAlternateBodyText
+
+    /**
+     * @deprecated use getSendProperties
+     * @return string
+     */
+    public function getMessageBody() {
+        if (!empty($this->htmlContent)) {
+            return $this->htmlContent;
+        }
+        return $this->textContent;
+    }
+
+    /**
+     * @deprecated use getSendParameters
+     * @return string
+     */
+    public function getTextPart() {
+        return $this->textContent;
+    }
+
+
+    /** end content routines */
 
     private function toEmailAddress($address,$name=null)
     {
@@ -109,6 +292,13 @@ class TEMailMessage {
      */
     public function getValidationErrors() {
         return $this->validationErrors;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLastValidationError() {
+        return @array_pop($this->validationErrors);
     }
 
     /**
@@ -346,71 +536,6 @@ class TEMailMessage {
         $this->subject = stripslashes($value);
     }  //  setSubject
 
-    /**
-     * @param $string
-     * @return bool
-     */
-    public function containsScriptTags($string) {
-        $badTags = array('</script>','</object>','</applet>');
-        $string = preg_replace('/\s+/', '', $string);
-        foreach($badTags as $tag) {
-            if (stripos($string, $tag)) {
-                return true;
-            };
-        }
-        return false;
-    }
-
-    /**
-     * @param $value
-     * @param string $contentType
-     */
-    public function setMessageBody($value, $contentType='text')
-    {
-        if ($contentType == 'html') {
-            $this->setHtmlMessageBody($value);
-        }
-        else {
-            $this->setMessageText($value);
-        }
-    }  //  setMessageBody
-
-
-    public function setMessageText($value) {
-        if ($this->containsScriptTags($value)) {
-            // attempt to insert executable html in message
-            // don't take chances. Strip all tags.
-            $value = strip_tags($value);
-        }
-        $value = str_replace ("\r\n", "\n", $value);
-        $this->messageBody = stripslashes($value);
-    }
-
-    /**
-     * @param $text
-     * @param bool $setTextPart
-     */
-    public function setHtmlMessageBody($text, $setTextPart = true)
-    {
-        $this->setMessageBody($text);
-        if ($setTextPart) {
-            $this->setAlternateBodyText($text);
-        }
-        else {
-            $this->contentType = TContentType::Html;
-        }
-    }  //  setAlternateBodyText
-
-
-    /**
-     * @param $text
-     */
-    public function setAlternateBodyText($text)
-    {
-        $this->alternateBodyText = strip_tags( $text );
-        $this->contentType = TContentType::MultiPart;
-    }  //  setAlternateBodyText
-
 
     /**
      * @return string
@@ -425,6 +550,14 @@ class TEMailMessage {
     public function getFromAddress() {
         return $this->fromAddress;
     }
+
+    /**
+     * @return TEmailAddress
+     */
+    public function getFromAddressAsString() {
+        return $this->fromAddress->__toString();
+    }
+
 
     /**
      * @param $address
@@ -558,31 +691,6 @@ class TEMailMessage {
     }
 
 
-    /**
-     * @return int|string
-     */
-    public function getContentType() {
-        if (!isset($this->contentType))
-            $this->contentType = TContentType::Text;
-        return $this->contentType;
-    }
-
-    /**
-     * @return string
-     */
-    public function getMessageBody() {
-        return $this->messageBody;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTextPart() {
-        if (empty($this->alternateBodyText))
-            return strip_tags($this->messageBody);
-        return $this->alternateBodyText;
-    }
-
     public function getAddressCount() {
         return
             sizeof($this->recipientList) +
@@ -607,5 +715,71 @@ class TEMailMessage {
 
     public function getAttachments() {
         return $this->attachments;
+    }
+
+    public function setOption($key,$value=true) {
+        $this->options[$key] = $value;
+    }
+
+    public function getOptions() {
+        return $this->options;
+    }
+    public function addTag($value) {
+        if (!in_array($value,$this->tags)) {
+            $this->tags[] = $value;
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function getTags() {
+        return $this->tags;
+    }
+
+
+    /**
+     * @param $time string -- datetime format | +[number] [days | months | hours | minutes]
+     * @return bool|\DateTime
+     */
+    public function setDeliveryTime($time) {
+        $this->deliverytime = null;
+        if (empty($time)) {
+            return false;
+        }
+        try {
+            $today = new \DateTime();
+            if (substr($time, 0, 1) == '+') {
+                $date = clone $today;
+                $time = substr($time, 1);
+                $interval = date_interval_create_from_date_string($time);
+                $date->add($interval);
+            } else {
+                $date = new \DateTime($time);
+            }
+            if ($date == $today) {
+                return false;
+            }
+            $this->deliverytime = $date; //$date->format(DateTime::RFC2822);
+            return $this->deliverytime;
+        }
+        catch(\Exception $ex) {
+            return false;
+        }
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDeliveryTime() {
+        return $this->deliverytime;
+    }
+
+    public function addHeader($name,$text) {
+        $this->headers[$name] = $text;
+    }
+
+    public function getHeaders() {
+        return $this->headers;
     }
 } // TMailMessage

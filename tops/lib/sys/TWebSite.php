@@ -68,4 +68,29 @@ class TWebSite
     public static function SetBaseUrl($value) {
         $baseUrl = $value;
     }
+
+    /**
+     * Follows a convention where first part of sub-domain indicates deployment environment.
+     * e.g. staging, testing, local.  If not subdomain assume 'production'
+     */
+    public static function GetEnvironmentName() {
+        $domain = strtolower(self::GetDomain());
+        if ($domain == 'localhost') {
+            return 'local';
+        }
+        $parts = explode(',',$domain);
+        return count($parts) > 1 ? $parts[0] :  'production';
+    }
+
+    public static function AppendRequestParams($url,array $params) {
+        if (substr($url,-1) == '/') {
+            $url = substr($url,0,strlen($url) -1);
+        }
+        $delim = strpos($url,'?') === false ? '?' : '&';
+        foreach ($params as $key => $value) {
+            $url .= $delim.$key.'='.$value;
+            $delim = '&';
+        }
+        return $url;
+    }
 }

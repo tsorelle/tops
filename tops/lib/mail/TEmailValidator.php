@@ -21,19 +21,62 @@ class TEmailValidator
     private $dnsFailed = false;
 
     private static $instance;
+    public static function getInstance() {
+        if (!isset(self::$instance)) {
+            self::$instance = new TEmailValidator();
+        }
+        return self::$instance;
+    }
 
     public static function Create()
     {
         return new TEmailValidator();
     }
 
-    public static function Validate($emailAddress) {
+    /**
+     * @var IEmailValidator
+     */
+    private static $externalValidator;
+    public static function getExternalValidator() {
+        if (!isset(self::$externalValidator)) {
+            if ( TObjectContainer::HasDefinition('tops.mailvalidator')) {
+                /**
+                 * @var IEmailValidator
+                 */
+                self::$externalValidator = TObjectContainer::Get('tops.mailvalidator');
+            }
+            else {
+                self::$externalValidator = null;
+            }
+        }
+        return self::$externalValidator;
+    }
+
+    public static function Validate($emailAddress,$doubleCheck = false) {
         $result = new \stdClass();
-        $validator = new TEmailValidator();
-        $result->isValid = $validator->isValid($emailAddress);
+        $validator = self::getInstance();
+        $valid = $validator->isValid($emailAddress);
+        $result->usedExternal = false;
+        if ($doubleCheck && $valid) {
+            $external = self::getExternalValidator();
+            if ($external !== null) {
+                $response = $external->validate($emailAddress);
+                $valid = ($response === true);
+                if ((!$valid) && !empty($response->suggestion)) {
+                    $result->suggestion = $response->suggestion;
+                }
+                $result->usedExternal = true;
+            }
+        }
+        $result->isValid = $valid;
         $result->error = $validator->getError();
         $result->warnings = $validator->getWarnings();
         return $result;
+    }
+
+    public static function Invalid($emailAddress,$doubleCheck = false) {
+        $validation = self::Validate($emailAddress,$doubleCheck);
+        return !$validation->isValid;
     }
 
     private function getEmailAddress() {

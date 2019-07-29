@@ -102,7 +102,7 @@ class LookupTableRepository extends TNamedEntitiesRepository
                 if ($item->description === null) {
                     $result[$i]->description = '';
                 }
-                if ($translate) {
+                if ($translate && !empty($item->code)) {
                     if ($item->name === $item->description || $item->description=='') {
                         $item->description = null;
                     }

@@ -44,4 +44,5 @@ class TNullUserFactory implements IUserFactory {
             $this->createUser()
         );
     }
+
 }

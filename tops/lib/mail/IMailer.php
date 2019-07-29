@@ -14,7 +14,7 @@ interface IMailer {
      * @param TEMailMessage $message
      * @return bool | string
      *
-     * Return true if successfull for error message e.g.
+     * Return true if successfull or error message e.g.
      * $result = $mailer->send($message);
      * if ($result !== true) {
      *      logError($result);

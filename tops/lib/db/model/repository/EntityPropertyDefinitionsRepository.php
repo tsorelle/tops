@@ -67,6 +67,5 @@ class EntityPropertyDefinitionsRepository extends \Tops\db\TEntityRepository
             }
         }
         return $result;
-
     }
 }
